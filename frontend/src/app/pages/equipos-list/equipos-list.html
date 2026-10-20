@@ -1,0 +1,70 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Equipos</mat-card-title>
+    <mat-card-subtitle>Busca y filtra los equipos registrados</mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content>
+    <form class="filtros" (ngSubmit)="cargar()">
+      <mat-form-field appearance="outline" class="filtro-texto">
+        <mat-label>Buscar</mat-label>
+        <input matInput [formControl]="q" placeholder="Nombre, tipo, edificio…" />
+      </mat-form-field>
+
+      <mat-form-field appearance="outline">
+        <mat-label>Estado</mat-label>
+        <mat-select [formControl]="estado">
+          <mat-option value="todos">Todos</mat-option>
+          @for (estado of estados; track estado.valor) {
+            <mat-option [value]="estado.valor">{{ estado.etiqueta }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
+
+      <button matButton="filled" type="submit" [disabled]="cargando()">Buscar</button>
+    </form>
+
+    @if (cargando()) {
+      <div class="centro">
+        <mat-spinner diameter="40" />
+        <p>Cargando equipos…</p>
+      </div>
+    } @else if (mensajeError()) {
+      <p class="estado estado--error" role="alert">{{ mensajeError() }}</p>
+      <button matButton (click)="cargar()">Reintentar</button>
+    } @else if (cargado() && equipos().length === 0) {
+      <p class="estado">Sin resultados para esta búsqueda.</p>
+    } @else {
+      <div class="tabla">
+        <table mat-table [dataSource]="equipos()">
+          <ng-container matColumnDef="nombre">
+            <th mat-header-cell *matHeaderCellDef>Nombre</th>
+            <td mat-cell *matCellDef="let equipo">{{ equipo.nombre }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="tipo">
+            <th mat-header-cell *matHeaderCellDef>Tipo</th>
+            <td mat-cell *matCellDef="let equipo">{{ equipo.tipo }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="ubicacion">
+            <th mat-header-cell *matHeaderCellDef>Ubicación</th>
+            <td mat-cell *matCellDef="let equipo">{{ equipo.edificio }} — {{ equipo.sala }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="estado">
+            <th mat-header-cell *matHeaderCellDef>Estado</th>
+            <td mat-cell *matCellDef="let equipo">
+              <span class="chip" [class]="'chip--' + equipo.estado">
+                {{ etiquetaEstado(equipo.estado) }}
+              </span>
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="columnas"></tr>
+          <tr mat-row *matRowDef="let fila; columns: columnas"></tr>
+        </table>
+      </div>
+    }
+  </mat-card-content>
+</mat-card>

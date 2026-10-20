@@ -1,0 +1,24 @@
+.titulo {
+  font-weight: 600;
+  margin-right: 16px;
+}
+
+.navegacion {
+  display: flex;
+  gap: 4px;
+}
+
+.espacio {
+  flex: 1;
+}
+
+.usuario {
+  margin-right: 8px;
+  opacity: 0.9;
+}
+
+.contenido {
+  max-width: 1000px;
+  margin: 0 auto;
+  padding: 24px 16px;
+}

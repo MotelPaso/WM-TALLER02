@@ -1,0 +1,95 @@
+<mat-card>
+  <mat-card-header>
+    <mat-card-title>Reportes</mat-card-title>
+    <mat-card-subtitle>
+      {{ esTecnico ? 'Todos los reportes de los usuarios' : 'Tus reportes' }}
+    </mat-card-subtitle>
+  </mat-card-header>
+
+  <mat-card-content>
+    @if (cargando()) {
+      <div class="centro">
+        <mat-spinner diameter="40" />
+        <p>Cargando reportes…</p>
+      </div>
+    } @else if (mensajeError()) {
+      <p class="estado estado--error" role="alert">{{ mensajeError() }}</p>
+      <button matButton (click)="cargar()">Reintentar</button>
+    } @else if (cargado() && reportes().length === 0) {
+      <p class="estado">No tienes reportes todavía.</p>
+    } @else {
+      <div class="tabla">
+        <table mat-table [dataSource]="reportes()">
+          <ng-container matColumnDef="titulo">
+            <th mat-header-cell *matHeaderCellDef>Título</th>
+            <td mat-cell *matCellDef="let reporte">{{ reporte.titulo }}</td>
+          </ng-container>
+
+          <ng-container matColumnDef="equipo">
+            <th mat-header-cell *matHeaderCellDef>Equipo</th>
+            <td mat-cell *matCellDef="let reporte">
+              {{ reporte.equipo_nombre ?? ('#' + reporte.equipo_id) }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="usuario">
+            <th mat-header-cell *matHeaderCellDef>Usuario</th>
+            <td mat-cell *matCellDef="let reporte">
+              {{ reporte.usuario_nombre ?? ('#' + reporte.usuario_id) }}
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="prioridad">
+            <th mat-header-cell *matHeaderCellDef>Prioridad</th>
+            <td mat-cell *matCellDef="let reporte">
+              <span class="chip" [class]="'chip--' + reporte.prioridad">
+                {{ etiquetaPrioridad(reporte.prioridad) }}
+              </span>
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="estado">
+            <th mat-header-cell *matHeaderCellDef>Estado</th>
+            <td mat-cell *matCellDef="let reporte">
+              @if (esTecnico) {
+               <mat-form-field appearance="outline">
+                  <mat-label>Estado</mat-label>
+                  <mat-select
+                    [value]="reporte.estado"
+                    [disabled]="enProceso().has(reporte.id)"
+                    (selectionChange)="cambiarEstado(reporte, $event.value)"
+                  >
+                    @for (estado of estados; track estado) {
+                      <mat-option [value]="estado">{{ etiquetaEstado(estado) }}</mat-option>
+                    }
+                  </mat-select>
+                </mat-form-field>
+              } @else {
+                {{ etiquetaEstado(reporte.estado) }}
+              }
+            </td>
+          </ng-container>
+
+          <ng-container matColumnDef="acciones">
+            <th mat-header-cell *matHeaderCellDef>Acciones</th>
+            <td mat-cell *matCellDef="let reporte">
+              @if (sePuedeEliminar(reporte)) {
+                <button
+                  matIconButton
+                  aria-label="Eliminar reporte"
+                  [disabled]="enProceso().has(reporte.id)"
+                  (click)="eliminar(reporte)"
+                >
+                  delete
+                </button>
+              }
+            </td>
+          </ng-container>
+
+          <tr mat-header-row *matHeaderRowDef="columnas()"></tr>
+          <tr mat-row *matRowDef="let fila; columns: columnas()"></tr>
+        </table>
+      </div>
+    }
+  </mat-card-content>
+</mat-card>
