@@ -8,6 +8,7 @@ Proyecto con frontend en Angular y backend en FastAPI.
 - Angular CLI (`npm install -g @angular/cli`)
 - Python 3.14
 - [uv](https://docs.astral.sh/uv/)
+- [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 
 ## Estructura del proyecto
 
@@ -51,16 +52,58 @@ ng generate component nombre
 
 ## Backend
 
-### Crear el entorno e instalar dependencias
+Todos los comandos se ejecutan desde `backend/`.
 
 ```bash
 cd backend
-uv venv
+```
+
+### 1. Instalar dependencias
+
+```bash
 uv sync
 ```
 
-### Correr el backend
+### 2. Configurar variables de entorno
 
 ```bash
-uv run backend
+cp .env.example .env      # Windows: copy .env.example .env
+```
+
+Completa `.env` con tus valores. Este archivo no se sube al repositorio.
+
+### 3. Levantar la base de datos
+
+```bash
+docker compose up -d --wait
+```
+
+### 4. Crear las tablas
+
+```bash
+uv run init-db
+```
+
+### 5. Levantar la API
+
+```bash
+uv run fastapi dev src/backend/main.py
+```
+
+- API: http://localhost:8000
+- Documentación: http://localhost:8000/docs
+- Estado: http://localhost:8000/health
+
+### Uso diario
+
+```bash
+docker compose up -d
+uv run fastapi dev src/backend/main.py
+```
+
+### Apagar la base de datos
+
+```bash
+docker compose down        # conserva los datos
+docker compose down -v     # borra todos los datos
 ```
