@@ -11,9 +11,9 @@
           <mat-label>Correo</mat-label>
           <input matInput formControlName="correo" type="email" autocomplete="email" />
           @if (form.controls.correo.hasError('required')) {
-            <mat-error>Ingresa tu correo.</mat-error>
+          <mat-error>Ingresa tu correo.</mat-error>
           } @else if (form.controls.correo.hasError('email')) {
-            <mat-error>Correo inválido.</mat-error>
+          <mat-error>Correo inválido.</mat-error>
           }
         </mat-form-field>
 
@@ -21,18 +21,22 @@
           <mat-label>Contraseña</mat-label>
           <input matInput formControlName="contrasena" type="password" autocomplete="current-password" />
           @if (form.controls.contrasena.hasError('required')) {
-            <mat-error>Ingresa tu contraseña.</mat-error>
+          <mat-error>Ingresa tu contraseña.</mat-error>
           }
         </mat-form-field>
 
         @if (error()) {
-          <p class="error" role="alert">{{ error() }}</p>
+        <p class="error" role="alert">{{ error() }}</p>
         }
 
-        <button matButton="filled" type="submit" [disabled]="cargando()">
-          {{ cargando() ? 'Ingresando…' : 'Ingresar' }}
-        </button>
+        <div class="flex flex-row justify-around items-center">
+          <button matButton="filled" type="submit" [disabled]="cargando()">
+            {{ cargando() ? 'Ingresando…' : 'Ingresar' }}
+          </button>
+          <a matButton="filled" routerLink="/registro">Registrarme</a>
+        </div>
       </form>
     </mat-card-content>
+
   </mat-card>
 </div>
