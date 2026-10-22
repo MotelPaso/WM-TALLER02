@@ -8,11 +8,11 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 
-import { etiquetaEstadoEquipo, Equipo, ESTADOS_EQUIPO, EstadoEquipo } from '../../models';
-import { EquiposService } from '../../services/equipos.service';
+import { etiquetaEstadoDispositivo, Dispositivo, ESTADOS_DISPOSITIVO, EstadoDispositivo } from '../../models';
+import { DispositivosService } from '../../services/dispositivos.service';
 
 @Component({
-  selector: 'app-equipos-list',
+  selector: 'app-dispositivos-list',
   imports: [
     ReactiveFormsModule,
     MatButtonModule,
@@ -23,25 +23,25 @@ import { EquiposService } from '../../services/equipos.service';
     MatSelectModule,
     MatTableModule,
   ],
-  templateUrl: './equipos-list.html',
-  styleUrl: './equipos-list.css',
+  templateUrl: './dispositivos-list.html',
+  styleUrl: './dispositivos-list.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class EquiposList implements OnInit {
-  private readonly equiposService = inject(EquiposService);
+export class DispositivosList implements OnInit {
+  private readonly dispositivosService = inject(DispositivosService);
 
   protected readonly columnas = ['nombre', 'tipo', 'ubicacion', 'estado'];
-  protected readonly estados = ESTADOS_EQUIPO;
+  protected readonly estados = ESTADOS_DISPOSITIVO;
 
   protected readonly q = new FormControl('', { nonNullable: true });
-  protected readonly estado = new FormControl<'todos' | EstadoEquipo>('todos', { nonNullable: true });
+  protected readonly estado = new FormControl<'todos' | EstadoDispositivo>('todos', { nonNullable: true });
 
-  protected readonly equipos = signal<Equipo[]>([]);
+  protected readonly dispositivos = signal<Dispositivo[]>([]);
   protected readonly cargando = signal(false);
   protected readonly cargado = signal(false);
   protected readonly mensajeError = signal('');
 
-  protected etiquetaEstado = etiquetaEstadoEquipo;
+  protected etiquetaEstado = etiquetaEstadoDispositivo;
 
   ngOnInit(): void {
     this.cargar();
@@ -50,11 +50,11 @@ export class EquiposList implements OnInit {
   protected cargar(): void {
     this.cargando.set(true);
     this.mensajeError.set('');
-    this.equiposService
+    this.dispositivosService
       .listar({ q: this.q.value || undefined, estado: this.estado.value })
       .subscribe({
-        next: (equipos) => {
-          this.equipos.set(equipos);
+        next: (dispositivos) => {
+          this.dispositivos.set(dispositivos);
           this.cargando.set(false);
           this.cargado.set(true);
         },

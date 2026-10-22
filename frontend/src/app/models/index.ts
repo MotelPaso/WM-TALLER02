@@ -1,7 +1,7 @@
-// Contrato asumido con el backend (FastAPI). Si el equipo de backend usa
+// Contrato asumido con el backend (FastAPI). Si el backend usa
 // otros nombres de campos, se ajustan aquí.
 export type RolUsuario = 'usuario' | 'tecnico';
-export type EstadoEquipo = 'operativo' | 'con_falla' | 'en_reparacion' | 'fuera_de_servicio';
+export type EstadoDispositivo = 'operativo' | 'con_falla' | 'en_reparacion' | 'fuera_de_servicio';
 export type EstadoReporte = 'abierto' | 'en_proceso' | 'resuelto';
 export type PrioridadReporte = 'baja' | 'media' | 'alta';
 
@@ -17,18 +17,18 @@ export interface LoginResponse {
   user: User;
 }
 
-export interface Equipo {
+export interface Dispositivo {
   id: number;
   nombre: string;
   tipo: string;
   edificio: string;
   sala: string;
-  estado: EstadoEquipo;
+  estado: EstadoDispositivo;
 }
 
-export interface EquipoFiltros {
+export interface DispositivoFiltros {
   q?: string;
-  estado?: EstadoEquipo | 'todos';
+  estado?: EstadoDispositivo | 'todos';
 }
 
 export interface Reporte {
@@ -37,19 +37,19 @@ export interface Reporte {
   descripcion: string;
   prioridad: PrioridadReporte;
   estado: EstadoReporte;
-  equipo_id: number;
+  dispositivo_id: number;
   usuario_id: number;
   usuario_nombre?: string;
-  equipo_nombre?: string;
+  dispositivo_nombre?: string;
   creado_en: string;
 }
 
-export interface EstadoEquipoEtiqueta {
-  valor: EstadoEquipo;
+export interface EstadoDispositivoEtiqueta {
+  valor: EstadoDispositivo;
   etiqueta: string;
 }
 
-export const ESTADOS_EQUIPO: EstadoEquipoEtiqueta[] = [
+export const ESTADOS_DISPOSITIVO: EstadoDispositivoEtiqueta[] = [
   { valor: 'operativo', etiqueta: 'Operativo' },
   { valor: 'con_falla', etiqueta: 'Con falla' },
   { valor: 'en_reparacion', etiqueta: 'En reparación' },
@@ -59,8 +59,8 @@ export const ESTADOS_EQUIPO: EstadoEquipoEtiqueta[] = [
 export const ESTADOS_REPORTE: EstadoReporte[] = ['abierto', 'en_proceso', 'resuelto'];
 export const PRIORIDADES_REPORTE: PrioridadReporte[] = ['baja', 'media', 'alta'];
 
-export function etiquetaEstadoEquipo(estado: EstadoEquipo): string {
-  return ESTADOS_EQUIPO.find((e) => e.valor === estado)?.etiqueta ?? estado;
+export function etiquetaEstadoDispositivo(estado: EstadoDispositivo): string {
+  return ESTADOS_DISPOSITIVO.find((e) => e.valor === estado)?.etiqueta ?? estado;
 }
 
 export function etiquetaEstadoReporte(estado: EstadoReporte): string {

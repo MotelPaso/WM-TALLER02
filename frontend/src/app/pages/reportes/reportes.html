@@ -25,10 +25,10 @@
             <td mat-cell *matCellDef="let reporte">{{ reporte.titulo }}</td>
           </ng-container>
 
-          <ng-container matColumnDef="equipo">
-            <th mat-header-cell *matHeaderCellDef>Equipo</th>
+          <ng-container matColumnDef="dispositivo">
+            <th mat-header-cell *matHeaderCellDef>Dispositivo</th>
             <td mat-cell *matCellDef="let reporte">
-              {{ reporte.equipo_nombre ?? ('#' + reporte.equipo_id) }}
+              {{ reporte.dispositivo_nombre ?? ('#' + reporte.dispositivo_id) }}
             </td>
           </ng-container>
 
