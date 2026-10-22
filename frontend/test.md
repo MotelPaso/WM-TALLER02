@@ -27,7 +27,7 @@ simplemente el procedimiento manual:
    estuviera "abierto". Si la app ya está cargada, basta recargar la página
    para que `restaurarSesion()` levante ese valor en la signal.
 
-5. **Qué van a ver dentro** — navegarán bien por `/equipos` y `/reportes` con
+5. **Qué van a ver dentro** — navegarán bien por `/dispositivos` y `/reportes` con
    sus shells de Material, pero las peticiones `GET /api/...` fallarán porque
    el backend no existe aún: verán los estados de error ("botón reintentar")
    que ya implementaron en esas páginas. Es lo esperado, no un bug del truco.

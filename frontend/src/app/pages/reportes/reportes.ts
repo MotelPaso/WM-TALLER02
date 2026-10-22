@@ -42,8 +42,8 @@ export class Reportes implements OnInit {
 
   protected readonly columnas = computed(() =>
     this.esTecnico
-      ? ['titulo', 'equipo', 'usuario', 'prioridad', 'estado']
-      : ['titulo', 'equipo', 'prioridad', 'estado', 'acciones'],
+      ? ['titulo', 'dispositivo', 'usuario', 'prioridad', 'estado']
+      : ['titulo', 'dispositivo', 'prioridad', 'estado', 'acciones'],
   );
 
   protected readonly reportes = signal<Reporte[]>([]);

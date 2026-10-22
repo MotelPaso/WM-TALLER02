@@ -37,7 +37,7 @@ export class Login {
     this.cargando.set(true);
     const { correo, contrasena } = this.form.getRawValue();
     this.auth.login(correo, contrasena).subscribe({
-      next: () => this.router.navigateByUrl('/equipos'),
+      next: () => this.router.navigateByUrl('/dispositivos'),
       error: (err) => {
         this.error.set(
           err.status === 401 || err.status === 400
