@@ -1,0 +1,38 @@
+<div>
+    <mat-card>
+        <mat-card-header>
+            <mat-card-title class="py-4">Registro</mat-card-title>
+        </mat-card-header>
+
+        <mat-card-content>
+            <form [formGroup]="form" (ngSubmit)="submit()" class="flex flex-col">
+                <mat-form-field appearance="outline">
+                    <mat-label>Correo</mat-label>
+                    <input matInput formControlName="correo" type="email" autocomplete="email">
+                    @if (form.controls.correo.hasError('required')) {
+                    <mat-error>Ingresa tu correo.</mat-error>
+                    } @else if (form.controls.correo.hasError('email')) {
+                    <mat-error>Correo inválido.</mat-error>
+                    }
+                </mat-form-field>
+
+                <mat-form-field appearance="outline" class="campo">
+                    <mat-label>Contraseña</mat-label>
+                    <input matInput formControlName="contrasena" type="password" autocomplete="new-password" />
+                    @if (form.controls.contrasena.hasError('required')) {
+                    <mat-error>Ingresa tu contraseña.</mat-error>
+                    }
+                </mat-form-field>
+                @if (error()) {
+                <p class="error" role="alert">{{ error() }}</p>
+                }
+                <div class="flex flex-row justify-around items-center">
+                    <button matButton="filled" type="submit" [disabled]="cargando()">
+                        {{ cargando() ? 'Ingresando…' : 'Registrar' }}
+                    </button>
+                    <a matButton="filled" routerLink="/login">Login</a>
+                </div>
+            </form>
+        </mat-card-content>
+    </mat-card>
+</div>
