@@ -5,3 +5,15 @@ class RolOut(BaseModel):
 
     id: int
     nombre: str
+
+class TipoDispositivoOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    nombre: str
+
+class EstadoDispositivoOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    nombre: str
