@@ -38,6 +38,14 @@ def recalcular_estado_dispositivo(db: Session, dispositivo: Dispositivo) -> None
 
     dispositivo.estado = obtener_por_nombre(db, EstadoDispositivo, nuevo)
 
+def cambiar_fuera_de_servicio(db: Session, dispositivo: Dispositivo, fuera: bool) -> None:
+    """Única forma manual de cambiar el estado de un dispositivo."""
+    if fuera:
+        dispositivo.estado = obtener_por_nombre(db, EstadoDispositivo, "fuera_de_servicio")
+    elif dispositivo.estado.nombre == "fuera_de_servicio":
+        dispositivo.estado = obtener_por_nombre(db, EstadoDispositivo, "operativo")
+        recalcular_estado_dispositivo(db, dispositivo)
+
 def cambiar_estado_reporte(db: Session, reporte: Reporte, nuevo: str) -> None:
     actual = reporte.estado.nombre
     if ORDEN_ESTADOS_REPORTE.index(nuevo) <= ORDEN_ESTADOS_REPORTE.index(actual):
