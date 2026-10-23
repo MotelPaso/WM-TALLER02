@@ -78,11 +78,14 @@ Completa `.env` con tus valores. Este archivo no se sube al repositorio.
 docker compose up -d --wait
 ```
 
-### 4. Crear las tablas
+### 4. Crear las tablas y cargar datos iniciales
 
 ```bash
 uv run init-db
+uv run seed
 ```
+
+`seed` carga los catálogos, el técnico inicial (`SEED_TECNICO_*` del `.env`) y dispositivos de demo.
 
 ### 5. Levantar la API
 
