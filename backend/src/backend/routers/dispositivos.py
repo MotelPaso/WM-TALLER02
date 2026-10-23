@@ -1,10 +1,11 @@
 from fastapi import APIRouter, HTTPException, status
-from sqlalchemy import Select, or_, select
-from sqlalchemy.orm import contains_eager
+from sqlalchemy import Select, exists, or_, select
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session, contains_eager
 
-from backend.dependencies import CurrentUser, DbSession
-from backend.models import Dispositivo, Edificio, EstadoDispositivo, Sala, TipoDispositivo
-from backend.schemas import DispositivoOut
+from backend.dependencies import CurrentUser, DbSession, TechnicianUser
+from backend.models import Dispositivo, Edificio, EstadoDispositivo, Reporte, Sala, TipoDispositivo
+from backend.schemas import DispositivoCreate, DispositivoOut, DispositivoUpdate
 
 router = APIRouter(prefix="/dispositivos", tags=["dispositivos"])
 
@@ -54,9 +55,72 @@ def list_dispositivos(
 
     return db.scalars(stmt.order_by(Dispositivo.codigo_inventario)).all()
 
-@router.get("/{dispositivo_id}", response_model=DispositivoOut)
-def get_dispositivo(dispositivo_id: int, db: DbSession, user: CurrentUser):
+def obtener_dispositivo(db: Session, dispositivo_id: int) -> Dispositivo:
     dispositivo = db.scalars(select_dispositivos().where(Dispositivo.id == dispositivo_id)).first()
     if dispositivo is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Dispositivo no encontrado")
     return dispositivo
+
+def validar_referencias(db: Session, datos: dict) -> None:
+    referencias = {
+        "tipo_dispositivo_id": (TipoDispositivo, "El tipo de dispositivo no existe"),
+        "sala_id": (Sala, "La sala no existe"),
+        "estado_dispositivo_id": (EstadoDispositivo, "El estado de dispositivo no existe"),
+    }
+    for campo, (modelo, mensaje) in referencias.items():
+        if campo in datos and db.get(modelo, datos[campo]) is None:
+            raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, detail=mensaje)
+
+def guardar(db: Session) -> None:
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="Ya existe un dispositivo con ese código de inventario",
+        )
+
+@router.get("/{dispositivo_id}", response_model=DispositivoOut)
+def get_dispositivo(dispositivo_id: int, db: DbSession, user: CurrentUser):
+    return obtener_dispositivo(db, dispositivo_id)
+
+@router.post("", response_model=DispositivoOut, status_code=status.HTTP_201_CREATED)
+def create_dispositivo(data: DispositivoCreate, db: DbSession, user: TechnicianUser):
+    datos = data.model_dump()
+    validar_referencias(db, datos)
+
+    operativo = db.scalars(select(EstadoDispositivo).where(EstadoDispositivo.nombre == "operativo")).first()
+    if operativo is None:
+        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Falta el estado 'operativo' en la base de datos")
+
+    dispositivo = Dispositivo(**datos, estado=operativo)
+    db.add(dispositivo)
+    guardar(db)
+    return obtener_dispositivo(db, dispositivo.id)
+
+@router.patch("/{dispositivo_id}", response_model=DispositivoOut)
+def update_dispositivo(dispositivo_id: int, data: DispositivoUpdate, db: DbSession, user: TechnicianUser):
+    dispositivo = obtener_dispositivo(db, dispositivo_id)
+
+    cambios = data.model_dump(exclude_unset=True)
+    validar_referencias(db, cambios)
+    for campo, valor in cambios.items():
+        setattr(dispositivo, campo, valor)
+
+    guardar(db)
+    return obtener_dispositivo(db, dispositivo_id)
+
+@router.delete("/{dispositivo_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_dispositivo(dispositivo_id: int, db: DbSession, user: TechnicianUser):
+    dispositivo = obtener_dispositivo(db, dispositivo_id)
+
+    tiene_reportes = db.scalar(select(exists().where(Reporte.dispositivo_id == dispositivo_id)))
+    if tiene_reportes:
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT,
+            detail="El dispositivo tiene reportes asociados; márcalo como fuera de servicio",
+        )
+
+    db.delete(dispositivo)
+    db.commit()
