@@ -5,7 +5,8 @@ from sqlalchemy.orm import Session, contains_eager
 
 from backend.dependencies import CurrentUser, DbSession, TechnicianUser
 from backend.models import Dispositivo, Edificio, EstadoDispositivo, Reporte, Sala, TipoDispositivo
-from backend.schemas import DispositivoCreate, DispositivoOut, DispositivoUpdate
+from backend.routers.reportes import select_reportes
+from backend.schemas import DispositivoCreate, DispositivoOut, DispositivoUpdate, ReporteOut
 
 router = APIRouter(prefix="/dispositivos", tags=["dispositivos"])
 
@@ -84,6 +85,12 @@ def guardar(db: Session) -> None:
 @router.get("/{dispositivo_id}", response_model=DispositivoOut)
 def get_dispositivo(dispositivo_id: int, db: DbSession, user: CurrentUser):
     return obtener_dispositivo(db, dispositivo_id)
+
+@router.get("/{dispositivo_id}/reportes", response_model=list[ReporteOut])
+def list_reportes_dispositivo(dispositivo_id: int, db: DbSession, user: CurrentUser):
+    obtener_dispositivo(db, dispositivo_id)
+    stmt = select_reportes().where(Reporte.dispositivo_id == dispositivo_id)
+    return db.scalars(stmt.order_by(Reporte.creado_en.desc())).all()
 
 @router.post("", response_model=DispositivoOut, status_code=status.HTTP_201_CREATED)
 def create_dispositivo(data: DispositivoCreate, db: DbSession, user: TechnicianUser):
