@@ -1,3 +1,5 @@
+from datetime import UTC, datetime
+
 from sqlalchemy import select
 from sqlalchemy.orm import Session
 
@@ -5,9 +7,10 @@ from backend.database.config import settings
 from backend.database.session import SessionLocal, engine
 from backend.models import (
     Dispositivo, Edificio, EstadoDispositivo, EstadoReporte,
-    Prioridad, Rol, Sala, TipoDispositivo, Usuario,
+    Prioridad, Reporte, Rol, Sala, TipoDispositivo, Usuario,
 )
 from backend.security import hash_password
+from backend.services import recalcular_estado_dispositivo
 
 ROLES = ["usuario", "tecnico"]
 ESTADOS_DISPOSITIVO = ["operativo", "con_falla", "en_reparacion", "fuera_de_servicio"]
@@ -41,6 +44,13 @@ DISPOSITIVOS = [
     ("UCN-004514", "Punto WiFi", "201", "operativo", None),
 ]
 
+REPORTES = [
+    ("UCN-004504", "No proyecta imagen", "El proyector enciende pero no muestra señal del PC.", "abierto", None),
+    ("UCN-004514", "Señal intermitente", "El WiFi se corta cada pocos minutos en la sala.", "abierto", "baja"),
+    ("UCN-004508", "No enciende", "El computador del puesto 1 no da señal al presionar el botón.", "en_proceso", "alta"),
+    ("UCN-004511", "Atasco de papel", "La impresora se atasca con cada hoja.", "resuelto", "media"),
+]
+
 
 def get_or_create(db: Session, model, defaults: dict | None = None, **unique):
     obj = db.scalars(select(model).filter_by(**unique)).first()
@@ -64,16 +74,16 @@ def seed_catalogos(db: Session) -> None:
         get_or_create(db, TipoDispositivo, nombre=nombre)
 
 
-def seed_tecnico(db: Session) -> None:
+def seed_tecnico(db: Session) -> Usuario | None:
     nombre = settings.seed_tecnico_nombre
     correo = settings.seed_tecnico_correo
     contrasena = settings.seed_tecnico_contrasena
     if not (nombre and correo and contrasena):
         print("Sin SEED_TECNICO_* en .env: no se crea el técnico inicial")
-        return
+        return None
 
     rol = get_or_create(db, Rol, nombre="tecnico")
-    get_or_create(
+    return get_or_create(
         db, Usuario, correo=correo.strip().lower(),
         defaults={
             "nombre": nombre,
@@ -104,11 +114,32 @@ def seed_demo(db: Session) -> None:
         )
 
 
+def seed_reportes(db: Session, autor: Usuario) -> None:
+    estados = {e.nombre: e for e in db.scalars(select(EstadoReporte))}
+    prioridades = {p.nombre: p for p in db.scalars(select(Prioridad))}
+
+    for codigo, titulo, descripcion, estado, prioridad in REPORTES:
+        dispositivo = db.scalars(select(Dispositivo).filter_by(codigo_inventario=codigo)).one()
+        get_or_create(
+            db, Reporte, titulo=titulo, dispositivo_id=dispositivo.id,
+            defaults={
+                "descripcion": descripcion,
+                "creado_por": autor,
+                "estado": estados[estado],
+                "prioridad": prioridades.get(prioridad),
+                "finalizado_en": datetime.now(UTC) if estado == "resuelto" else None,
+            },
+        )
+        recalcular_estado_dispositivo(db, dispositivo)
+
+
 def main() -> None:
     with SessionLocal() as db:
         seed_catalogos(db)
-        seed_tecnico(db)
+        tecnico = seed_tecnico(db)
         seed_demo(db)
+        if tecnico is not None:
+            seed_reportes(db, tecnico)
         db.commit()
     engine.dispose()
     print("Seed completado")

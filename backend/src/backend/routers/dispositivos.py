@@ -7,6 +7,7 @@ from backend.dependencies import CurrentUser, DbSession, TechnicianUser
 from backend.models import Dispositivo, Edificio, EstadoDispositivo, Reporte, Sala, TipoDispositivo
 from backend.routers.reportes import select_reportes
 from backend.schemas import DispositivoCreate, DispositivoOut, DispositivoUpdate, ReporteOut
+from backend.services import cambiar_fuera_de_servicio, obtener_por_nombre
 
 router = APIRouter(prefix="/dispositivos", tags=["dispositivos"])
 
@@ -66,7 +67,6 @@ def validar_referencias(db: Session, datos: dict) -> None:
     referencias = {
         "tipo_dispositivo_id": (TipoDispositivo, "El tipo de dispositivo no existe"),
         "sala_id": (Sala, "La sala no existe"),
-        "estado_dispositivo_id": (EstadoDispositivo, "El estado de dispositivo no existe"),
     }
     for campo, (modelo, mensaje) in referencias.items():
         if campo in datos and db.get(modelo, datos[campo]) is None:
@@ -97,10 +97,7 @@ def create_dispositivo(data: DispositivoCreate, db: DbSession, user: TechnicianU
     datos = data.model_dump()
     validar_referencias(db, datos)
 
-    operativo = db.scalars(select(EstadoDispositivo).where(EstadoDispositivo.nombre == "operativo")).first()
-    if operativo is None:
-        raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail="Falta el estado 'operativo' en la base de datos")
-
+    operativo = obtener_por_nombre(db, EstadoDispositivo, "operativo")
     dispositivo = Dispositivo(**datos, estado=operativo)
     db.add(dispositivo)
     guardar(db)
@@ -111,9 +108,12 @@ def update_dispositivo(dispositivo_id: int, data: DispositivoUpdate, db: DbSessi
     dispositivo = obtener_dispositivo(db, dispositivo_id)
 
     cambios = data.model_dump(exclude_unset=True)
+    fuera_de_servicio = cambios.pop("fuera_de_servicio", None)
     validar_referencias(db, cambios)
     for campo, valor in cambios.items():
         setattr(dispositivo, campo, valor)
+    if fuera_de_servicio is not None:
+        cambiar_fuera_de_servicio(db, dispositivo, fuera_de_servicio)
 
     guardar(db)
     return obtener_dispositivo(db, dispositivo_id)

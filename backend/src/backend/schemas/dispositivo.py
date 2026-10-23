@@ -26,12 +26,12 @@ class DispositivoUpdate(BaseModel):
     codigo_inventario: CodigoInventario | None = None
     tipo_dispositivo_id: int | None = None
     sala_id: int | None = None
-    estado_dispositivo_id: int | None = None
     descripcion: Descripcion | None = None
+    fuera_de_servicio: bool | None = None
 
     @model_validator(mode="after")
     def sin_nulos_obligatorios(self) -> "DispositivoUpdate":
-        for campo in ("codigo_inventario", "tipo_dispositivo_id", "sala_id", "estado_dispositivo_id"):
+        for campo in ("codigo_inventario", "tipo_dispositivo_id", "sala_id", "fuera_de_servicio"):
             if campo in self.model_fields_set and getattr(self, campo) is None:
                 raise ValueError(f"{campo} no puede ser null")
         return self
