@@ -14,6 +14,10 @@ class Settings(BaseSettings):
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 30
 
+    seed_tecnico_nombre: str | None = None
+    seed_tecnico_correo: str | None = None
+    seed_tecnico_contrasena: SecretStr | None = None
+
     @property
     def database_url(self) -> str:
         return (
