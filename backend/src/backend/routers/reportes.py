@@ -2,10 +2,10 @@ from fastapi import APIRouter, HTTPException, status
 from sqlalchemy import Select, select
 from sqlalchemy.orm import Session, joinedload
 
-from backend.dependencies import CurrentUser, DbSession, is_technician
+from backend.dependencies import CurrentUser, DbSession, TechnicianUser, is_technician
 from backend.models import Dispositivo, EstadoReporte, Prioridad, Reporte, Sala
-from backend.schemas import ReporteCreate, ReporteOut
-from backend.services import obtener_por_nombre, recalcular_estado_dispositivo
+from backend.schemas import ReporteCreate, ReporteEstadoUpdate, ReporteOut, ReportePrioridadUpdate
+from backend.services import cambiar_estado_reporte, obtener_por_nombre, recalcular_estado_dispositivo
 
 router = APIRouter(prefix="/reportes", tags=["reportes"])
 
@@ -71,3 +71,37 @@ def get_reporte(reporte_id: int, db: DbSession, user: CurrentUser):
     if not is_technician(user) and reporte.creado_por_id != user.id:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="No tienes acceso a este reporte")
     return reporte
+
+@router.patch("/{reporte_id}/prioridad", response_model=ReporteOut)
+def update_prioridad(reporte_id: int, data: ReportePrioridadUpdate, db: DbSession, user: TechnicianUser):
+    reporte = obtener_reporte(db, reporte_id)
+    if reporte.estado.nombre == "resuelto":
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="El reporte ya está resuelto")
+
+    prioridad = db.get(Prioridad, data.prioridad_id)
+    if prioridad is None:
+        raise HTTPException(status_code=status.HTTP_422_UNPROCESSABLE_CONTENT, detail="La prioridad no existe")
+
+    reporte.prioridad = prioridad
+    db.commit()
+    return obtener_reporte(db, reporte_id)
+
+@router.patch("/{reporte_id}/estado", response_model=ReporteOut)
+def update_estado(reporte_id: int, data: ReporteEstadoUpdate, db: DbSession, user: TechnicianUser):
+    reporte = obtener_reporte(db, reporte_id)
+    cambiar_estado_reporte(db, reporte, data.estado)
+    db.commit()
+    return obtener_reporte(db, reporte_id)
+
+@router.delete("/{reporte_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_reporte(reporte_id: int, db: DbSession, user: CurrentUser):
+    reporte = obtener_reporte(db, reporte_id)
+    if reporte.creado_por_id != user.id:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Solo puedes eliminar tus propios reportes")
+    if reporte.estado.nombre != "abierto":
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Solo se puede eliminar un reporte abierto")
+
+    dispositivo = reporte.dispositivo
+    db.delete(reporte)
+    recalcular_estado_dispositivo(db, dispositivo)
+    db.commit()

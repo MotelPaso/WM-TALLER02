@@ -1,5 +1,5 @@
 from datetime import datetime
-from typing import Annotated
+from typing import Annotated, Literal
 
 from pydantic import AfterValidator, BaseModel, ConfigDict, Field
 
@@ -17,6 +17,12 @@ class ReporteCreate(BaseModel):
     titulo: Annotated[str, Field(min_length=1, max_length=150), AfterValidator(sin_espacios_extremos)]
     descripcion: Annotated[str, Field(min_length=1, max_length=2000), AfterValidator(sin_espacios_extremos)]
     dispositivo_id: int
+
+class ReportePrioridadUpdate(BaseModel):
+    prioridad_id: int
+
+class ReporteEstadoUpdate(BaseModel):
+    estado: Literal["en_proceso", "resuelto"]
 
 class ReporteOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
