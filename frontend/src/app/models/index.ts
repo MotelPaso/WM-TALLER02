@@ -5,16 +5,22 @@ export type EstadoDispositivo = 'operativo' | 'con_falla' | 'en_reparacion' | 'f
 export type EstadoReporte = 'abierto' | 'en_proceso' | 'resuelto';
 export type PrioridadReporte = 'baja' | 'media' | 'alta';
 
+export interface Rol {
+  id: number;
+  nombre: RolUsuario;
+}
+
 export interface User {
   id: number;
   nombre: string;
   correo: string;
-  rol: RolUsuario;
+  activo: boolean;
+  rol: Rol;
 }
 
 export interface LoginResponse {
-  token: string;
-  user: User;
+  access_token: string;
+  token_type: string;
 }
 
 export interface Dispositivo {

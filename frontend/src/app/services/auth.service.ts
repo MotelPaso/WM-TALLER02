@@ -1,6 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
-import { HttpClient } from '@angular/common/http';
-import { tap } from 'rxjs';
+import { HttpClient, HttpParams } from '@angular/common/http';
+import { switchMap, tap } from 'rxjs';
 
 import { LoginResponse, User } from '../models';
 
@@ -23,13 +23,16 @@ export class AuthService {
   }
 
   get esTecnico(): boolean {
-    return this._usuario()?.rol === 'tecnico';
+    return this._usuario()?.rol.nombre === 'tecnico';
   }
 
   login(correo: string, contrasena: string) {
-    return this.http
-      .post<LoginResponse>(`${API}/auth/login`, { correo, contrasena })
-      .pipe(tap((res) => this.guardarSesion(res.user, res.token)));
+    const body = new HttpParams().set('username', correo).set('password', contrasena);
+    return this.http.post<LoginResponse>(`${API}/auth/login`, body).pipe(
+      tap((res) => localStorage.setItem(TOKEN_KEY, res.access_token)),
+      switchMap(() => this.http.get<User>(`${API}/auth/me`)),
+      tap((user) => this.guardarSesion(user)),
+    );
   }
 
   logout(): void {
@@ -42,8 +45,7 @@ export class AuthService {
     return localStorage.getItem(TOKEN_KEY);
   }
 
-  private guardarSesion(user: User, token: string): void {
-    localStorage.setItem(TOKEN_KEY, token);
+  private guardarSesion(user: User): void {
     localStorage.setItem(USER_KEY, JSON.stringify(user));
     this._usuario.set(user);
   }

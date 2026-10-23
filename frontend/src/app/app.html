@@ -6,7 +6,7 @@
       <a matButton routerLink="/reportes">Reportes</a>
     </nav>
     <span class="espacio"></span>
-    <span class="usuario">{{ usuario.nombre }} · {{ usuario.rol }}</span>
+    <span class="usuario">{{ usuario.nombre }} · {{ usuario.rol.nombre }}</span>
     <button matButton (click)="logout()">Salir</button>
   </mat-toolbar>
 }
