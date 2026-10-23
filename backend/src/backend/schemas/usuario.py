@@ -20,6 +20,12 @@ class UsuarioCreate(BaseModel):
     def lowercase_correo(cls, v: str) -> str:
         return v.lower()
 
+class UsuarioResumenOut(BaseModel):
+    model_config = ConfigDict(from_attributes=True)
+
+    id: int
+    nombre: str
+
 class UsuarioOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 

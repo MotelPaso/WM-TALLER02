@@ -32,8 +32,11 @@ def get_current_user(
 
 CurrentUser = Annotated[Usuario, Depends(get_current_user)]
 
+def is_technician(user: Usuario) -> bool:
+    return user.rol.nombre == "tecnico"
+
 def require_technician(user: CurrentUser) -> Usuario:
-    if user.rol.nombre != "tecnico":
+    if not is_technician(user):
         raise HTTPException(
             status_code=status.HTTP_403_FORBIDDEN,
             detail="Se requiere rol técnico",
