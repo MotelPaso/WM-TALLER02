@@ -17,6 +17,7 @@ dependencies = [
 ]
 
 [project.scripts]
+backend = "backend:main"
 init-db = "backend.database.init_db:main"
 
 [build-system]
