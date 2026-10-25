@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 
 import { Dispositivo, DispositivoFiltros } from '../models';
 
-const API = '/api';
+import { API } from './api';
 
 @Injectable({ providedIn: 'root' })
 export class DispositivosService {

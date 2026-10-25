@@ -4,7 +4,8 @@ import { switchMap, tap } from 'rxjs';
 
 import { LoginResponse, User } from '../models';
 
-const API = '/api';
+import { API } from './api';
+
 const TOKEN_KEY = 'reportaucn.token';
 const USER_KEY = 'reportaucn.usuario';
 

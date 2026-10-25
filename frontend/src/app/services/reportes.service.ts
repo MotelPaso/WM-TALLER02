@@ -4,7 +4,7 @@ import { Observable } from 'rxjs';
 
 import { EstadoReporte, Reporte } from '../models';
 
-const API = '/api';
+import { API } from './api';
 
 @Injectable({ providedIn: 'root' })
 export class ReportesService {
