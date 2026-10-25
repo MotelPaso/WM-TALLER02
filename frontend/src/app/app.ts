@@ -14,7 +14,7 @@ import { AuthService } from './services/auth.service';
 })
 export class App {
   protected readonly auth = inject(AuthService);
-  private readonly router = inject(Router);
+  protected readonly router = inject(Router);
 
   protected logout(): void {
     this.auth.logout();

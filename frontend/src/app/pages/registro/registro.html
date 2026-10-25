@@ -1,38 +1,62 @@
-<div>
-    <mat-card>
-        <mat-card-header>
-            <mat-card-title class="py-4">Registro</mat-card-title>
-        </mat-card-header>
+<div class="fondo">
+    <section class="tarjeta border-0">
+        <div>
+            <h1 class="text-center text-4xl py-2">Crea tu cuenta</h1>
+            <h3 class="text-center text-sm text-[--subtitle] py-2">Regístrate para reportar fallas en la
+                universidad.</h3>
+        </div>
 
         <mat-card-content>
-            <form [formGroup]="form" (ngSubmit)="submit()" class="flex flex-col">
-                <mat-form-field appearance="outline">
-                    <mat-label>Correo</mat-label>
-                    <input matInput formControlName="correo" type="email" autocomplete="email">
+            <form [formGroup]="form" (ngSubmit)="submit()">
+                <p class="text-sm font-medium my-2 pb-2">Nombre de usuario</p>
+                <mat-form-field appearance="outline" class="campo">
+                    <mat-label>Ingresa tu nombre</mat-label>
+                    <input matInput formControlName="nombre" type="text" autocomplete="text" />
                     @if (form.controls.correo.hasError('required')) {
-                    <mat-error>Ingresa tu correo.</mat-error>
+                    <mat-error>Debes ingresar un nombre.</mat-error>
+                    }
+                </mat-form-field>
+
+
+                <p class="text-sm font-medium my-2 pb-2">Correo electronico</p>
+                <mat-form-field appearance="outline" class="campo">
+                    <mat-label>nombre.apellido@ucn.cl</mat-label>
+                    <input matInput formControlName="correo" type="email" autocomplete="email" />
+                    @if (form.controls.correo.hasError('required')) {
+                    <mat-error>Debes ingresar un correo.</mat-error>
                     } @else if (form.controls.correo.hasError('email')) {
                     <mat-error>Correo inválido.</mat-error>
                     }
-                </mat-form-field>
-
-                <mat-form-field appearance="outline" class="campo">
-                    <mat-label>Contraseña</mat-label>
-                    <input matInput formControlName="contrasena" type="password" autocomplete="new-password" />
-                    @if (form.controls.contrasena.hasError('required')) {
-                    <mat-error>Ingresa tu contraseña.</mat-error>
+                    @else if (form.controls.correo.hasError('pattern')) {
+                    <mat-error>Solo correos institucionales.</mat-error>
                     }
                 </mat-form-field>
+                <p class="text-sm font-medium my-2 pb-2">Contraseña</p>
+                <mat-form-field appearance="outline" class="campo">
+                    <mat-label>Crea una contraseña</mat-label>
+                    <input matInput formControlName="contrasena" type="password" autocomplete="new-password"
+                        minlength="8" />
+                    @if (form.controls.contrasena.hasError('required')) {
+                    <mat-error>Ingresa tu contraseña.</mat-error>
+                    } @else if (form.controls.contrasena.hasError('minlength')){
+                    <mat-error>Contraseña debe ser mayor a 8 caracteres.</mat-error>
+                    }
+                </mat-form-field>
+
                 @if (error()) {
                 <p class="error" role="alert">{{ error() }}</p>
                 }
+
                 <div class="flex flex-row justify-around items-center">
-                    <button matButton="filled" type="submit" [disabled]="cargando()">
-                        {{ cargando() ? 'Ingresando…' : 'Registrar' }}
+                    <button matButton="filled" type="submit" [disabled]="cargando()" class="boton">
+                        {{ cargando() ? 'Registrando…' : 'Registrar' }}
                     </button>
-                    <a matButton="filled" routerLink="/login">Login</a>
                 </div>
+                <p class="text-center pt-8">¿Ya tienes cuenta?
+                    <a class="font-bold" routerLink="/login">Inicia sesión</a>
+                </p>
             </form>
         </mat-card-content>
-    </mat-card>
+
+    </section>
 </div>

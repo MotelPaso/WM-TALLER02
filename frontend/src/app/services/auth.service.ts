@@ -36,6 +36,13 @@ export class AuthService {
     );
   }
 
+  register(nombre: string, correo: string, contrasena: string) {
+    const body = { nombre: nombre, correo: correo, contrasena: contrasena };
+    return this.http
+      .post<User>(`${API}/auth/register`, body)
+      .pipe(switchMap(() => this.login(correo, contrasena)));
+  }
+
   logout(): void {
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(USER_KEY);

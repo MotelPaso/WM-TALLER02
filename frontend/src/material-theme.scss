@@ -19,6 +19,47 @@ html {
   );
 }
 
+// ============================================================
+// DESIGN TOKENS — edit the values here, never the components.
+// Borra una línea entera (deja vacía) para volver al valor
+// que mat.theme() genera por defecto.
+// ============================================================
+:root {
+  /* ---- COLORES prominentes: botones primary, switches ON, foco ---- */
+  --mat-sys-primary: hsl(211 96% 46%);
+  --mat-sys-on-primary: hsl(0 0% 100%);       /* texto SOBRE primary */
+  --mat-sys-primary-container: hsl(213 100% 92%);   /* botones tonales, chips destacadas */
+  --mat-sys-on-primary-container: hsl(213 90% 16%);
+  --mat-sys-tertiary: hsl(28 85% 50%);        /* acentos: FAB, tags */
+  --mat-sys-error: hsl(0 65% 51%);            /* formularios inválidos, snackbar error */
+  --mat-sys-on-error: hsl(0 0% 100%);
+
+  /* ---- SUPERFICIES: la piel de la app ---- */
+  --mat-sys-background: hsl(220 20% 97%);     /* fondo de la app */
+  --mat-sys-surface: hsl(0 0% 100%);          /* cards, toolbar, dialogs, menús */
+  --mat-sys-surface-container: hsl(220 20% 95%);    /* card elevada / sidebar */
+  --mat-sys-on-surface: hsl(0 0% 10%);        /* texto principal */
+  --mat-sys-on-surface-variant: hsl(220 5% 40%);    /* texto secundario, labels */
+  --mat-sys-outline: hsl(220 5% 55%);         /* borde de inputs outlined, chips */
+  --mat-sys-outline-variant: hsl(220 15% 88%);      /* divisores de tablas/listas */
+
+  /* ---- SHAPE: radios de botones, cards, campos, dialogs ---- */
+  --mat-sys-corner-small: 8px;
+  --mat-sys-corner-medium: 12px;
+  --mat-sys-corner-large: 16px;
+  --mat-sys-corner-full: 9999px;              /* FABs / botones circulares */
+
+  /* ---- TIPOGRAFÍA: formato "peso tamaño/interlineado fuente" ---- */
+  --mat-sys-title-large: 600 1.5rem/1.6 system-ui, sans-serif;   /* dialogs y cards */
+  --mat-sys-title-medium: 600 1rem/1.5 system-ui, sans-serif;    /* headers de tablas */
+  --mat-sys-body-medium: 400 0.875rem/1.4 system-ui, sans-serif; /* botones, listas */
+  --mat-sys-label-large: 500 0.875rem/1.4 system-ui, sans-serif; /* labels de tabs */
+
+  /* ---- ESTATES: intensidad de hover / pressed ---- */
+  --mat-sys-hover-state-layer-opacity: 0.06;
+  --mat-sys-pressed-state-layer-opacity: 0.1;
+}
+
 body {
   // Default the application to a light color theme. This can be changed to
   // `dark` to enable the dark color theme, or to `light dark` to defer to the

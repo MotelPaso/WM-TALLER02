@@ -1,0 +1,30 @@
+:root {
+  --subtitle: #28587b;
+}
+
+.fondo {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: calc(100vh - 64px);
+  padding: 16px;
+}
+
+.tarjeta {
+  width: 100%;
+  max-width: 420px;
+}
+
+.campo {
+  width: 100%;
+}
+
+.error {
+  color: var(--mat-sys-error);
+  margin: 0 0 12px;
+}
+
+.boton {
+  --mat-sys-primary: #06d6a0;
+  --mat-sys-on-primary: #000000;
+}

@@ -1,3 +1,7 @@
+:root {
+  --subtitle: #28587b;
+}
+
 .fondo {
   display: flex;
   justify-content: center;
@@ -8,7 +12,7 @@
 
 .tarjeta {
   width: 100%;
-  max-width: 380px;
+  max-width: 420px;
 }
 
 .campo {
@@ -18,4 +22,9 @@
 .error {
   color: var(--mat-sys-error);
   margin: 0 0 12px;
+}
+
+.boton {
+  --mat-sys-primary: #06d6a0;
+  --mat-sys-on-primary: #000000;
 }

@@ -1,14 +1,17 @@
-@if (auth.usuario(); as usuario) {
-  <mat-toolbar color="primary">
-    <span class="titulo">ReportaUCN</span>
-    <nav class="navegacion">
-      <a matButton routerLink="/dispositivos">Dispositivos</a>
-      <a matButton routerLink="/reportes">Reportes</a>
-    </nav>
-    <span class="espacio"></span>
-    <span class="usuario">{{ usuario.nombre }} · {{ usuario.rol.nombre }}</span>
-    <button matButton (click)="logout()">Salir</button>
-  </mat-toolbar>
+@if (auth.usuario(); as usuario){
+@if (!router.url.startsWith('/login')) {
+
+<mat-toolbar color="primary">
+  <span class="titulo">ReportaUCN</span>
+  <nav class="navegacion">
+    <a matButton routerLink="/dispositivos">Dispositivos</a>
+    <a matButton routerLink="/reportes">Reportes</a>
+  </nav>
+  <span class="espacio"></span>
+  <span class="usuario">{{ usuario.nombre }} · {{ usuario.rol.nombre }}</span>
+  <button matButton (click)="logout()">Salir</button>
+</mat-toolbar>
+}
 }
 
 <main class="contenido">
