@@ -15,6 +15,32 @@ Proyecto con frontend en Angular y backend en FastAPI.
 - `frontend/` — aplicación Angular
 - `backend/` — API con FastAPI
 
+## Uso rápido (desarrollo)
+
+Con Docker corriendo y `backend/.env` creado (ver [Backend](#backend)), desde la raíz del proyecto:
+
+```bash
+./scripts/dev.sh
+```
+
+El script:
+
+- levanta PostgreSQL con Docker y espera a que esté sano,
+- instala las dependencias si faltan (`uv sync` y `npm install`),
+- crea las tablas con `init-db` y carga el seed solo si la base está vacía,
+- inicia la API y el frontend con logs etiquetados `[api]` y `[web]`.
+
+- Frontend: http://localhost:4200
+- API: http://localhost:8000 · Documentación: http://localhost:8000/docs
+
+`Ctrl+C` detiene la API y el frontend; PostgreSQL sigue corriendo para el próximo arranque. Para apagarlo: `cd backend && docker compose down`.
+
+Para forzar la creación de tablas y el seed: `./scripts/dev.sh --init`.
+
+El resto del README describe los comandos manuales por si necesitas levantar cada parte por separado.
+
+no estoy seguro si esto funciona para windows...
+
 ## Frontend
 
 ### Instalar dependencias

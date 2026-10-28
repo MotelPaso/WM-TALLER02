@@ -35,7 +35,7 @@ export class Login {
     contrasena: ['', Validators.required],
   });
 
-  protected submit(): void {
+  protected async submit(): Promise<void> {
     this.error.set('');
     if (this.form.invalid) {
       this.form.markAllAsTouched();
@@ -43,7 +43,7 @@ export class Login {
     }
     this.cargando.set(true);
     const { correo, contrasena } = this.form.getRawValue();
-    this.auth.login(correo, contrasena).subscribe({
+    (await this.auth.login(correo, contrasena)).subscribe({
       next: () => this.router.navigateByUrl('/dispositivos'),
       error: (err) => {
         this.error.set(

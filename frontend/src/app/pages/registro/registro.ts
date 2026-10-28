@@ -32,7 +32,7 @@ export class Registro {
     correo: ['', [Validators.required, Validators.email, Validators.pattern('.*@ucn.*')]],
     contrasena: ['', Validators.required, Validators.minLength(8)],
   });
-  protected submit(): void {
+  protected async submit(): Promise<void> {
     this.error.set('');
     if (this.form.invalid) {
       this.form.markAllAsTouched();
@@ -40,7 +40,7 @@ export class Registro {
     }
     this.cargando.set(true);
     const { nombre, correo, contrasena } = this.form.getRawValue();
-    this.auth.register(nombre, correo, contrasena).subscribe({
+    (await this.auth.register(nombre, correo, contrasena)).subscribe({
       next: () => this.router.navigateByUrl('/dispositivos'),
       error: (err) => {
         this.error.set(

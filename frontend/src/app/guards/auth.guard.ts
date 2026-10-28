@@ -13,3 +13,13 @@ export const authGuard: CanActivateFn = () => {
   }
   return router.createUrlTree(['/login']);
 };
+
+export const logged: CanActivateFn = () => {
+  const auth = inject(AuthService);
+  const router = inject(Router);
+
+  if (!auth.sesionIniciada) {
+    return true;
+  }
+  return router.createUrlTree(['/dispositivos']);
+};

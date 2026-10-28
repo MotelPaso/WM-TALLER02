@@ -27,18 +27,18 @@ export class AuthService {
     return this._usuario()?.rol.nombre === 'tecnico';
   }
 
-  login(correo: string, contrasena: string) {
+  async login(correo: string, contrasena: string) {
     const body = new HttpParams().set('username', correo).set('password', contrasena);
-    return this.http.post<LoginResponse>(`${API}/auth/login`, body).pipe(
+    return await this.http.post<LoginResponse>(`${API}/auth/login`, body).pipe(
       tap((res) => localStorage.setItem(TOKEN_KEY, res.access_token)),
       switchMap(() => this.http.get<User>(`${API}/auth/me`)),
       tap((user) => this.guardarSesion(user)),
     );
   }
 
-  register(nombre: string, correo: string, contrasena: string) {
+  async register(nombre: string, correo: string, contrasena: string) {
     const body = { nombre: nombre, correo: correo, contrasena: contrasena };
-    return this.http
+    return await this.http
       .post<User>(`${API}/auth/register`, body)
       .pipe(switchMap(() => this.login(correo, contrasena)));
   }
