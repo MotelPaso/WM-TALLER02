@@ -1,13 +1,18 @@
 import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
+import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
+import { MatDialog } from '@angular/material/dialog';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 import { MatTableModule } from '@angular/material/table';
 
-
+import { EstadoVacio } from '../../components/estado-vacio/estado-vacio';
+import { ReporteChips } from '../../components/reporte-chips/reporte-chips';
+import { TarjetaDispositivo } from '../../components/tarjeta-dispositivo/tarjeta-dispositivo';
+import { GestionarReporte } from '../../dialogs/gestionar-reporte/gestionar-reporte';
 import {
   ESTADOS_REPORTE,
   EstadoReporte,
@@ -27,6 +32,10 @@ import { ReportesService } from '../../services/reportes.service';
     MatProgressSpinnerModule,
     MatSelectModule,
     MatTableModule,
+    RouterLink,
+    EstadoVacio,
+    ReporteChips,
+    TarjetaDispositivo,
   ],
   templateUrl: './reportes.html',
   styleUrl: './reportes.css',
@@ -36,6 +45,7 @@ export class Reportes implements OnInit {
   private readonly reportesService = inject(ReportesService);
   private readonly auth = inject(AuthService);
   private readonly snackBar = inject(MatSnackBar);
+  private readonly dialog = inject(MatDialog);
 
   protected readonly estados = ESTADOS_REPORTE;
   protected readonly esTecnico = this.auth.esTecnico;
@@ -133,6 +143,10 @@ export class Reportes implements OnInit {
         );
       },
     });
+  }
+
+  protected abrirGestionar(): void {
+    this.dialog.open(GestionarReporte, { width: '560px' });
   }
 
   private marcarEnProceso(id: number, activo: boolean): void {

@@ -1,0 +1,46 @@
+<!--
+  Diálogo "Reportar falla". Se abre desde la ficha: dialog.open(ReportarFalla, { data: dispositivo, width: '560px' })
+  Imports: MatDialogModule, ReactiveFormsModule, MatFormFieldModule, MatInputModule, MatButtonModule.
+  Reactive Form:
+    titulo: ['', [Validators.required, Validators.maxLength(150)]]
+    descripcion: ['', [Validators.required, Validators.maxLength(2000)]]
+  POST /reportes {titulo, descripcion, dispositivo_id} → cerrar con el reporte creado y mostrar snackbar.
+-->
+
+<h2 mat-dialog-title>Reportar falla</h2>
+
+
+<form [formGroup]="form" (ngSubmit)="enviar()" novalidate>
+  <mat-dialog-content class="font-form">
+    <p class="flex items-center gap-2 text-texto-suave">
+      <span class="material-symbols-outlined text-lg" aria-hidden="true">devices</span>
+      <!-- {{ data.codigo_inventario }} · {{ data.tipo.nombre }} · {{ data.sala.codigo }} -->
+      UCN-004512 · Proyector · X1-29
+    </p>
+
+    <div class="mt-5 flex flex-col gap-2">
+      <label for="titulo" class="text-sm font-medium text-texto">Título</label>
+      <mat-form-field appearance="outline">
+        <input matInput id="titulo" formControlName="titulo" maxlength="150" placeholder="Ej: No proyecta imagen" />
+        <mat-error>Escribe un título corto.</mat-error>
+      </mat-form-field>
+
+      <label for="descripcion" class="text-sm font-medium text-texto">Descripción</label>
+      <mat-form-field appearance="outline">
+        <textarea matInput id="descripcion" formControlName="descripcion" rows="4" maxlength="2000" placeholder="Cuéntanos qué pasa con el dispositivo"></textarea>
+        <mat-error>Describe la falla.</mat-error>
+      </mat-form-field>
+    </div>
+
+    <p class="flex items-start gap-2.5 rounded-lg bg-crema px-4 py-3 text-[13px] text-texto-suave">
+      <span class="material-symbols-outlined text-xl" aria-hidden="true">info</span>
+      La prioridad la asigna el técnico al revisar tu reporte.
+    </p>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button matButton="outlined" type="button" mat-dialog-close>Cancelar</button>
+    <!-- [disabled]="enviando()" · mientras envía: "Enviando…" -->
+    <button matButton="filled" type="submit">Enviar reporte</button>
+  </mat-dialog-actions>
+</form>

@@ -1,70 +1,187 @@
-<mat-card>
-  <mat-card-header>
-    <mat-card-title>Dispositivos</mat-card-title>
-    <mat-card-subtitle>Busca y filtra los dispositivos registrados</mat-card-subtitle>
-  </mat-card-header>
+<!--
+  Dispositivos (lista). Ruta /dispositivos.
+  HTML estático con datos de ejemplo: los comentarios dicen qué va en cada parte al conectarlo.
+  Datos: GET /dispositivos?q=&estado=&tipo_id=&sala_id=  →  lista de dispositivos
+    codigo_inventario · tipo.nombre · sala.codigo ("X1-29") · estado.nombre ("operativo", "con_falla"...)
+  Los estados de la interfaz (cargando / error / vacío) están al final; cada uno reemplaza a la lista.
+-->
 
-  <mat-card-content>
-    <form class="filtros" (ngSubmit)="cargar()">
-      <mat-form-field appearance="outline" class="filtro-texto">
-        <mat-label>Buscar</mat-label>
-        <input matInput [formControl]="q" placeholder="Nombre, tipo, edificio…" />
-      </mat-form-field>
+<div class="flex flex-wrap items-start justify-between gap-x-6 gap-y-4">
+  <div>
+    <h1 class="text-[28px] leading-tight font-semibold tracking-tight sm:text-[32px]">Dispositivos</h1>
+    <p class="mt-2 max-w-[70ch] text-sm text-texto-suave">Administra y monitorea los dispositivos de las salas académicas.</p>
+  </div>
+  <!-- Solo técnico: @if (esTecnico) -->
+  <a matButton="filled" routerLink="/dispositivos/nuevo">
+    <span class="material-symbols-outlined" aria-hidden="true">add</span>
+    Nuevo dispositivo
+  </a>
+</div>
 
-      <mat-form-field appearance="outline">
-        <mat-label>Estado</mat-label>
-        <mat-select [formControl]="estado">
-          <mat-option value="todos">Todos</mat-option>
-          @for (estado of estados; track estado.valor) {
-            <mat-option [value]="estado.valor">{{ estado.etiqueta }}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
+<!-- ===== Filtros ===== -->
+<div class="mt-6 flex flex-wrap items-center gap-x-2 gap-y-3 sm:mt-8" role="search">
+  <label class="relative flex w-full items-center lg:mr-2 lg:w-80">
+    <span class="sr-only">Buscar por código, tipo o sala</span>
+    <span class="material-symbols-outlined pointer-events-none absolute left-4 text-texto-suave" aria-hidden="true">search</span>
+    <!-- [formControl]="q" -->
+    <input
+      type="search"
+      placeholder="Buscar por código, tipo o sala"
+      class="h-14 w-full rounded-full bg-busqueda pr-5 pl-14 text-base text-texto placeholder:text-texto-suave transition-colors hover:bg-[#e6dfea] focus:bg-white focus:outline-2 focus:outline-primario"
+    />
+  </label>
 
-      <button matButton="filled" type="submit" [disabled]="cargando()">Buscar</button>
-    </form>
+  <mat-form-field appearance="outline" subscriptSizing="dynamic" class="filtro w-44">
+    <mat-select aria-label="Estado" value="todos">
+      <mat-option value="todos">Estado: Todos</mat-option>
+      <mat-option value="operativo">Operativo</mat-option>
+      <mat-option value="con_falla">Con falla</mat-option>
+      <mat-option value="en_reparacion">En reparación</mat-option>
+      <mat-option value="fuera_de_servicio">Fuera de servicio</mat-option>
+    </mat-select>
+  </mat-form-field>
 
-    @if (cargando()) {
-      <div class="centro">
-        <mat-spinner diameter="40" />
-        <p>Cargando dispositivos…</p>
-      </div>
-    } @else if (mensajeError()) {
-      <p class="estado estado--error" role="alert">{{ mensajeError() }}</p>
-      <button matButton (click)="cargar()">Reintentar</button>
-    } @else if (cargado() && dispositivos().length === 0) {
-      <p class="estado">Sin resultados para esta búsqueda.</p>
-    } @else {
-      <div class="tabla">
-        <table mat-table [dataSource]="dispositivos()">
-          <ng-container matColumnDef="nombre">
-            <th mat-header-cell *matHeaderCellDef>Nombre</th>
-            <td mat-cell *matCellDef="let dispositivo">{{ dispositivo.nombre }}</td>
-          </ng-container>
+  <!-- Opciones desde GET /catalogos/tipos-dispositivo -->
+  <mat-form-field appearance="outline" subscriptSizing="dynamic" class="filtro w-44">
+    <mat-select aria-label="Tipo" value="todos">
+      <mat-option value="todos">Tipo: Todos</mat-option>
+      <mat-option value="1">Computador</mat-option>
+      <mat-option value="2">Proyector</mat-option>
+    </mat-select>
+  </mat-form-field>
 
-          <ng-container matColumnDef="tipo">
-            <th mat-header-cell *matHeaderCellDef>Tipo</th>
-            <td mat-cell *matCellDef="let dispositivo">{{ dispositivo.tipo }}</td>
-          </ng-container>
+  <!-- Opciones desde GET /salas (mostrar sala.codigo) -->
+  <mat-form-field appearance="outline" subscriptSizing="dynamic" class="filtro w-40">
+    <mat-select aria-label="Sala" value="todas">
+      <mat-option value="todas">Sala: Todas</mat-option>
+      <mat-option value="1">X1-29</mat-option>
+      <mat-option value="2">Y1-101</mat-option>
+    </mat-select>
+  </mat-form-field>
+</div>
 
-          <ng-container matColumnDef="ubicacion">
-            <th mat-header-cell *matHeaderCellDef>Ubicación</th>
-            <td mat-cell *matCellDef="let dispositivo">{{ dispositivo.edificio }} — {{ dispositivo.sala }}</td>
-          </ng-container>
+<!-- ===== Resumen + selector de vista ===== -->
+<div class="mt-6 mb-4 flex flex-wrap items-center justify-between gap-3 text-sm text-texto-suave tabular-nums sm:mt-8">
+  <p>14 dispositivos · 6 salas</p>
+  <!-- Vista activa: aria-pressed="true" (cambia el color). (click)="vista.set('sala' | 'cuadricula')" -->
+  <div class="flex gap-2" role="group" aria-label="Vista">
+    <button
+      type="button"
+      aria-pressed="true"
+      class="group inline-flex h-8 items-center gap-2 rounded-lg border border-borde-fuerte px-4 font-medium text-texto-suave transition-colors hover:bg-neutro aria-pressed:border-transparent aria-pressed:bg-primario-contenedor aria-pressed:text-en-primario-contenedor"
+    >
+      <span class="material-symbols-outlined hidden text-lg group-aria-pressed:inline" aria-hidden="true">check</span>
+      Por sala
+    </button>
+    <button
+      type="button"
+      aria-pressed="false"
+      class="group inline-flex h-8 items-center gap-2 rounded-lg border border-borde-fuerte px-4 font-medium text-texto-suave transition-colors hover:bg-neutro aria-pressed:border-transparent aria-pressed:bg-primario-contenedor aria-pressed:text-en-primario-contenedor"
+    >
+      <span class="material-symbols-outlined hidden text-lg group-aria-pressed:inline" aria-hidden="true">check</span>
+      Cuadrícula
+    </button>
+  </div>
+</div>
 
-          <ng-container matColumnDef="estado">
-            <th mat-header-cell *matHeaderCellDef>Estado</th>
-            <td mat-cell *matCellDef="let dispositivo">
-              <span class="chip" [class]="'chip--' + dispositivo.estado">
-                {{ etiquetaEstado(dispositivo.estado) }}
-              </span>
-            </td>
-          </ng-container>
+<!-- ===================================================================
+     VISTA "POR SALA"  →  @if (vista() === 'sala')
+     Agrupar los dispositivos por sala.codigo en el .ts (computed).
+     =================================================================== -->
+<div class="grid grid-cols-1 items-start gap-6 xl:grid-cols-2">
+  <!-- @for (grupo of porSala(); track grupo.sala) · fondo alterno: bg-[#fdf3ee] en las pares, bg-superficie en las impares -->
+  <section class="rounded-2xl border border-borde bg-[#fdf3ee] p-4 sm:p-6" aria-labelledby="sala-x1-29">
+    <h2 id="sala-x1-29" class="mb-5 flex items-center gap-3 text-lg font-medium">
+      <span class="material-symbols-outlined" aria-hidden="true">location_on</span>
+      X1-29
+      <span class="text-[13px] font-normal text-texto-tenue">2 dispositivos</span>
+    </h2>
 
-          <tr mat-header-row *matHeaderRowDef="columnas"></tr>
-          <tr mat-row *matRowDef="let fila; columns: columnas"></tr>
-        </table>
-      </div>
-    }
-  </mat-card-content>
-</mat-card>
+    <ul class="flex flex-col gap-3">
+      <li>
+        <a [routerLink]="['/dispositivos', 2]" class="group block h-full rounded-xl text-inherit no-underline">
+          <app-tarjeta-dispositivo codigo="UCN-004502" detalle="Computador" estado="operativo" />
+        </a>
+      </li>
+      <li>
+        <a [routerLink]="['/dispositivos', 1]" class="group block h-full rounded-xl text-inherit no-underline">
+          <app-tarjeta-dispositivo codigo="UCN-004501" detalle="Proyector" estado="con_falla" />
+        </a>
+      </li>
+    </ul>
+  </section>
+
+  <section class="rounded-2xl border border-borde bg-superficie p-4 sm:p-6" aria-labelledby="sala-y1-101">
+    <h2 id="sala-y1-101" class="mb-5 flex items-center gap-3 text-lg font-medium">
+      <span class="material-symbols-outlined" aria-hidden="true">location_on</span>
+      Y1-101
+      <span class="text-[13px] font-normal text-texto-tenue">2 dispositivos</span>
+    </h2>
+    <ul class="flex flex-col gap-3">
+      <li>
+        <a [routerLink]="['/dispositivos', 8]" class="group block h-full rounded-xl text-inherit no-underline">
+          <app-tarjeta-dispositivo codigo="UCN-004508" detalle="Computador" estado="en_reparacion" />
+        </a>
+      </li>
+      <li>
+        <a [routerLink]="['/dispositivos', 13]" class="group block h-full rounded-xl text-inherit no-underline">
+          <app-tarjeta-dispositivo codigo="UCN-004513" detalle="Proyector" estado="fuera_de_servicio" />
+        </a>
+      </li>
+    </ul>
+  </section>
+</div>
+
+<!-- ===================================================================
+     VISTA "CUADRÍCULA"  →  @else
+     Misma tarjeta, pero el tipo va con la sala: "Proyector · X1-29"
+     =================================================================== -->
+<ul class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4">
+  <!-- @for (d of dispositivos(); track d.id) -->
+  <li>
+    <a [routerLink]="['/dispositivos', 1]" class="group block h-full rounded-xl text-inherit no-underline">
+      <app-tarjeta-dispositivo codigo="UCN-004501" detalle="Proyector · X1-29" estado="con_falla" />
+    </a>
+  </li>
+</ul>
+
+<!-- ===================================================================
+     ESTADOS DE LA INTERFAZ
+     =================================================================== -->
+
+<!-- @if (cargando())  →  skeleton con la forma de la tarjeta -->
+<ul class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4" aria-busy="true" aria-label="Cargando dispositivos">
+  <!-- @for (i of [1, 2, 3, 4, 5, 6, 7, 8]; track i) -->
+  <li class="flex min-h-[118px] flex-col gap-4 rounded-xl border border-borde bg-white p-5">
+    <span class="esqueleto h-[22px] w-1/2"></span>
+    <span class="flex items-center justify-between">
+      <span class="esqueleto h-3.5 w-2/5"></span>
+      <span class="esqueleto h-6 w-[72px]"></span>
+    </span>
+  </li>
+</ul>
+
+<!-- @else if (mensajeError())  →  error de carga -->
+<app-estado-vacio
+  class="mt-8"
+  tono="error"
+  icono="cloud_off"
+  titulo="No pudimos cargar los dispositivos"
+  mensaje="Revisa tu conexión e inténtalo de nuevo."
+>
+  <!-- (click)="cargar()" -->
+  <button matButton="filled" type="button">
+    <span class="material-symbols-outlined" aria-hidden="true">refresh</span>
+    Reintentar
+  </button>
+</app-estado-vacio>
+
+<!-- @else if (dispositivos().length === 0)  →  sin resultados -->
+<app-estado-vacio
+  class="mt-8"
+  icono="search_off"
+  titulo="Sin resultados"
+  mensaje="Ningún dispositivo coincide con la búsqueda y los filtros elegidos."
+>
+  <button matButton="outlined" type="button">Limpiar filtros</button>
+</app-estado-vacio>

@@ -1,12 +1,12 @@
 import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
-import { Router, RouterLink, RouterOutlet } from '@angular/router';
+import { Router, RouterLink, RouterLinkActive, RouterOutlet } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatToolbarModule } from '@angular/material/toolbar';
 
 import { AuthService } from './services/auth.service';
 
 @Component({
-  imports: [RouterOutlet, RouterLink, MatButtonModule, MatToolbarModule],
+  imports: [RouterOutlet, RouterLink, RouterLinkActive, MatButtonModule, MatToolbarModule],
   selector: 'app-root',
   styleUrl: './app.css',
   templateUrl: './app.html',

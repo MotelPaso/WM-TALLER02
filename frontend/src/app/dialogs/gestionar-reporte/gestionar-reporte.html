@@ -1,0 +1,47 @@
+<!--
+  Diálogo "Gestionar reporte" (técnico). dialog.open(GestionarReporte, { data: reporte, width: '560px' })
+  Imports: MatDialogModule, MatChipsModule, ReactiveFormsModule, MatButtonModule.
+  Al guardar:
+    si cambió la prioridad → PATCH /reportes/{id}/prioridad {prioridad_id}
+    si cambió el estado    → PATCH /reportes/{id}/estado    {estado: "en_proceso" | "resuelto"}
+  Reglas del backend: el estado solo avanza, y exige prioridad antes de avanzar.
+  → deshabilitar los estados anteriores al actual y "En proceso"/"Resuelto" si no hay prioridad.
+-->
+
+<h2 mat-dialog-title>Gestionar reporte</h2>
+
+<form [formGroup]="form" (ngSubmit)="guardar()" novalidate>
+  <mat-dialog-content>
+    <div class="grid gap-1 rounded-xl border border-borde bg-white p-4">
+      <!-- REP-{{ id }} · {{ titulo }} -->
+      <strong class="font-medium text-texto">REP-0248 · Proyector sin imagen</strong>
+      <p class="text-[13px] text-texto-suave">UCN-004512 · Proyector · X1-29 · Camila Rojas, 24 oct 2026</p>
+      <p class="text-[13px] text-texto-suave">Se enciende pero no muestra nada, ni con el notebook ni con el PC de la sala.</p>
+    </div>
+
+    <p id="label-prioridad" class="mt-5 mb-2 font-form text-sm font-medium text-texto">Prioridad</p>
+    <mat-chip-listbox formControlName="prioridad_id" aria-labelledby="label-prioridad">
+      <mat-chip-option [value]="1">Baja</mat-chip-option>
+      <mat-chip-option [value]="2">Media</mat-chip-option>
+      <mat-chip-option [value]="3">Alta</mat-chip-option>
+    </mat-chip-listbox>
+
+    <p id="label-estado" class="mt-5 mb-2 font-form text-sm font-medium text-texto">Estado</p>
+    <mat-chip-listbox formControlName="estado" aria-labelledby="label-estado">
+      <mat-chip-option value="abierto" disabled>Abierto</mat-chip-option>
+      <mat-chip-option value="en_proceso">En proceso</mat-chip-option>
+      <mat-chip-option value="resuelto">Resuelto</mat-chip-option>
+    </mat-chip-listbox>
+
+    <p class="mt-5 flex items-start gap-2.5 rounded-lg bg-crema px-4 py-3 text-[13px] text-texto-suave">
+      <span class="material-symbols-outlined text-xl" aria-hidden="true">info</span>
+      Asigna una prioridad antes de avanzar el estado. Al resolver se registra la fecha de cierre y el
+      dispositivo vuelve a Operativo si no tiene otros reportes pendientes.
+    </p>
+  </mat-dialog-content>
+
+  <mat-dialog-actions align="end">
+    <button matButton="outlined" type="button" mat-dialog-close>Cancelar</button>
+    <button matButton="filled" type="submit">Guardar cambios</button>
+  </mat-dialog-actions>
+</form>

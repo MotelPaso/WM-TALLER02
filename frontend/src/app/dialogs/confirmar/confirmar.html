@@ -1,0 +1,26 @@
+<!--
+  Diálogo de confirmación genérico (eliminar dispositivo / eliminar reporte).
+  dialog.open(Confirmar, { data: { titulo, mensaje, accion: 'Eliminar' }, width: '440px' })
+  Imports: MatDialogModule, MatButtonModule.
+  Cierra con true si confirma: dialog.afterClosed() → llamar al DELETE en el componente que lo abrió.
+  Si el DELETE de dispositivo devuelve 409 (tiene reportes), mostrar el aviso de abajo o un snackbar.
+-->
+
+<!-- {{ data.titulo }} -->
+<h2 mat-dialog-title>¿Eliminar UCN-004512?</h2>
+
+<mat-dialog-content>
+  <!-- {{ data.mensaje }} -->
+  <p class="text-texto-suave">Esta acción no se puede deshacer. Solo se pueden eliminar dispositivos sin reportes.</p>
+
+  <!-- @if (data.error) -->
+  <p role="alert" class="mt-4 flex items-start gap-2.5 rounded-lg bg-[#f8dcdb] px-4 py-3 text-[13px] text-[#9b2f2c]">
+    <span class="material-symbols-outlined text-xl" aria-hidden="true">error</span>
+    Este dispositivo tiene reportes y no se puede eliminar. Márcalo como “Fuera de servicio” desde Editar.
+  </p>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button matButton="outlined" type="button" [mat-dialog-close]="false">Cancelar</button>
+  <button matButton="filled" type="button" class="boton-peligro" [mat-dialog-close]="true">Eliminar</button>
+</mat-dialog-actions>

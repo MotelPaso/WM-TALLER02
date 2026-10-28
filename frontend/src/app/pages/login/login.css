@@ -1,21 +1,2 @@
-.fondo {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: calc(100vh - 64px);
-  padding: 16px;
-}
-
-.tarjeta {
-  width: 100%;
-  max-width: 380px;
-}
-
-.campo {
-  width: 100%;
-}
-
-.error {
-  color: var(--mat-sys-error);
-  margin: 0 0 12px;
-}
+/* El diseño se hace con Tailwind en login.html y los colores de Material en material-theme.scss.
+   El botón usa matButton="filled" + .boton-auth (definida en material-theme.scss). */

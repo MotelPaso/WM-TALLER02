@@ -1,5 +1,6 @@
 import { ChangeDetectionStrategy, Component, OnInit, inject, signal } from '@angular/core';
 import { FormControl, ReactiveFormsModule } from '@angular/forms';
+import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -8,6 +9,8 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
 
+import { EstadoVacio } from '../../components/estado-vacio/estado-vacio';
+import { TarjetaDispositivo } from '../../components/tarjeta-dispositivo/tarjeta-dispositivo';
 import { etiquetaEstadoDispositivo, Dispositivo, ESTADOS_DISPOSITIVO, EstadoDispositivo } from '../../models';
 import { DispositivosService } from '../../services/dispositivos.service';
 
@@ -22,6 +25,9 @@ import { DispositivosService } from '../../services/dispositivos.service';
     MatProgressSpinnerModule,
     MatSelectModule,
     MatTableModule,
+    RouterLink,
+    EstadoVacio,
+    TarjetaDispositivo,
   ],
   templateUrl: './dispositivos-list.html',
   styleUrl: './dispositivos-list.css',

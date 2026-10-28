@@ -1,0 +1,102 @@
+<!--
+  Formulario de dispositivo (solo técnico). Rutas /dispositivos/nuevo y /dispositivos/:id/editar
+  POST /dispositivos  ·  PATCH /dispositivos/{id}   (409 = código repetido)
+  No hay campo "Estado": el backend lo calcula (al crear queda operativo).
+-->
+
+<a routerLink="/dispositivos" class="mb-6 inline-flex items-center gap-1 text-sm font-medium text-texto-suave no-underline hover:text-texto hover:underline hover:underline-offset-[3px]">
+  <span class="material-symbols-outlined text-lg" aria-hidden="true">arrow_back</span>
+  Volver a Dispositivos
+</a>
+
+<!-- Al editar: "Editar UCN-004512" -->
+<h1 class="text-[28px] leading-tight font-semibold tracking-tight sm:text-[32px]">Nuevo dispositivo</h1>
+<p class="mt-2 max-w-[70ch] text-sm text-texto-suave">
+  Registra un dispositivo en una sala. El código de inventario es el de la etiqueta física.
+</p>
+
+
+<form [formGroup]="form" (ngSubmit)="guardar()" class="mt-6 w-full max-w-[720px] rounded-2xl border border-borde bg-superficie px-4 py-5 font-form sm:mt-8 sm:p-6" novalidate>
+  <!-- @if (error())  →  409 u otro error del backend -->
+  <p role="alert" class="mb-6 flex items-start gap-2.5 rounded-lg bg-[#f8dcdb] px-4 py-3 text-[13px] text-[#9b2f2c]">
+    <span class="material-symbols-outlined text-xl" aria-hidden="true">error</span>
+    Ya existe un dispositivo con el código UCN-004512.
+  </p>
+
+  <div class="grid grid-cols-1 gap-x-5 gap-y-1 sm:grid-cols-2">
+    <div class="flex flex-col gap-2">
+      <label for="codigo" class="text-sm font-medium">Código de inventario</label>
+      <mat-form-field appearance="outline">
+        <input matInput id="codigo" formControlName="codigo_inventario" maxlength="30" placeholder="UCN-004512" spellcheck="false" />
+        <mat-error>Ingresa el código de inventario.</mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label for="tipo" class="text-sm font-medium">Tipo</label>
+      <mat-form-field appearance="outline">
+        <!-- @for (t of tipos(); track t.id) -->
+        <mat-select id="tipo" formControlName="tipo_dispositivo_id" placeholder="Selecciona un tipo">
+          <mat-option [value]="1">Computador</mat-option>
+          <mat-option [value]="2">Proyector</mat-option>
+        </mat-select>
+        <mat-error>Elige un tipo.</mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label for="edificio" class="text-sm font-medium">Edificio</label>
+      <mat-form-field appearance="outline">
+        <mat-select id="edificio" formControlName="edificio_id" placeholder="Selecciona un edificio">
+          <mat-option [value]="1">X1</mat-option>
+          <mat-option [value]="2">Y1</mat-option>
+        </mat-select>
+      </mat-form-field>
+    </div>
+
+    <div class="flex flex-col gap-2">
+      <label for="sala" class="text-sm font-medium">Sala</label>
+      <mat-form-field appearance="outline">
+        <!-- Salas filtradas por el edificio elegido; [disabled] mientras no haya edificio -->
+        <mat-select id="sala" formControlName="sala_id" placeholder="Selecciona una sala">
+          <mat-option [value]="1">X1-29</mat-option>
+          <mat-option [value]="2">X1-30</mat-option>
+        </mat-select>
+        <mat-hint>Primero elige el edificio.</mat-hint>
+        <mat-error>Elige una sala.</mat-error>
+      </mat-form-field>
+    </div>
+
+    <div class="col-span-full flex flex-col gap-2">
+      <label for="descripcion" class="text-sm font-medium">Descripción (opcional)</label>
+      <mat-form-field appearance="outline">
+        <textarea
+          matInput
+          id="descripcion"
+          formControlName="descripcion"
+          rows="4"
+          maxlength="500"
+          placeholder="Ej: fila 3, junto a la ventana. Marca y modelo si los sabes."
+        ></textarea>
+        <mat-hint align="end">{{ form.controls.descripcion.value.length }} / 500</mat-hint>
+      </mat-form-field>
+    </div>
+
+    <!-- @if (editando())  →  solo al editar -->
+    <div class="col-span-full mt-2 flex items-center justify-between gap-6 rounded-xl border border-borde bg-white p-4">
+      <div>
+        <p class="font-medium">Fuera de servicio</p>
+        <p class="mt-1 max-w-[52ch] text-[13px] text-texto-suave">
+          Marca el dispositivo como retirado. Al desactivarlo, su estado se recalcula según sus reportes pendientes.
+        </p>
+      </div>
+      <mat-slide-toggle formControlName="fuera_de_servicio" aria-label="Fuera de servicio" />
+    </div>
+  </div>
+
+  <div class="mt-8 flex justify-end gap-2 border-t border-borde pt-6">
+    <a matButton="outlined" routerLink="/dispositivos" class="flex-1 sm:flex-none">Cancelar</a>
+    <!-- [disabled]="guardando()" -->
+    <button matButton="filled" type="submit" class="flex-1 sm:flex-none">Guardar dispositivo</button>
+  </div>
+</form>
