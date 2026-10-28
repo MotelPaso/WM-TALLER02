@@ -1,3 +1,213 @@
-/* You can add global styles to this file, and also import other style files */
+/* Estilos globales: Tailwind v4 + tokens del Figma.
+   - Tailwind se usa para layout y para todo lo que NO es un componente de Material
+     (header, rail, tarjetas, etiquetas, estados vacío/error).
+   - Los componentes de Material se estilan en material-theme.scss (mixins *-overrides). */
 
 @import 'tailwindcss';
+
+/* Tokens del Figma → clases de Tailwind: bg-crema, text-marino, border-borde, font-form... */
+@theme {
+  --color-crema: #fff5ef;       /* background/light */
+  --color-carbon: #272932;      /* background/dark */
+  --color-menta: #06d6a0;       /* green/mint */
+  --color-menta-hover: #05c391;
+  --color-pizarra: #28587b;     /* blue/slate */
+  --color-marino: #031927;      /* blue/navy */
+  --color-celeste: #b9d6ff;     /* blue/light */
+  --color-ladrillo: #c3423f;    /* red/brick */
+
+  --color-superficie: #fef7ff;
+  --color-busqueda: #ece6f0;
+  --color-borde: #cac4d0;
+  --color-borde-fuerte: #79747e;
+  --color-texto: #1d1b20;
+  --color-texto-suave: #49454f;
+  --color-texto-tenue: #625b71;
+
+  --color-primario: #65558f;
+  --color-primario-contenedor: #e8def8;
+  --color-en-primario-contenedor: #4f378b;
+  --color-neutro: #eeeaf1;
+  --color-neutro-borde: #d6d0dc;
+
+  /* Estados (dispositivo / reporte / prioridad) */
+  --color-ok: #e3f6ec;
+  --color-ok-texto: #12704a;
+  --color-ok-borde: #b6e6d2;
+  --color-alerta: #fff1dc;
+  --color-alerta-texto: #9a4a00;
+  --color-alerta-borde: #f2d3a2;
+  --color-peligro: #fbe9e8;
+  --color-peligro-texto: #a8332f;
+  --color-peligro-borde: #f0c4c3;
+  --color-info: #dbe9ff;
+  --color-info-texto: #1f4a6b;
+
+  --font-app: 'Roboto', system-ui, sans-serif;
+  --font-form: 'Inter', system-ui, sans-serif;
+
+  --ease-salida: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+@layer base {
+  body {
+    font-family: var(--font-app);
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1,
+  h2,
+  h3 {
+    text-wrap: balance;
+  }
+
+  ::selection {
+    background: var(--color-primario-contenedor);
+    color: var(--color-en-primario-contenedor);
+  }
+
+  :focus-visible {
+    outline: 2px solid var(--color-primario);
+    outline-offset: 2px;
+  }
+
+  html {
+    scrollbar-color: var(--color-borde-fuerte) transparent;
+  }
+}
+
+/* Íconos: <span class="material-symbols-outlined">search</span>
+   (la fuente se carga en index.html). "icono-lleno" = versión rellena. */
+@utility icono-lleno {
+  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+}
+
+@layer components {
+  .etiqueta {
+    display: inline-flex;
+    align-items: center;
+    height: 24px;
+    padding: 0 10px;
+    border-radius: 4px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .etiqueta-operativo {
+    background: var(--color-ok);
+    color: var(--color-ok-texto);
+  }
+  .etiqueta-con_falla {
+    background: var(--color-alerta);
+    color: var(--color-alerta-texto);
+  }
+  .etiqueta-en_reparacion {
+    background: var(--color-info);
+    color: var(--color-info-texto);
+  }
+  .etiqueta-fuera_de_servicio {
+    background: var(--color-peligro);
+    color: var(--color-peligro-texto);
+  }
+  .etiqueta-abierto {
+    background: var(--color-primario-contenedor);
+    color: var(--color-en-primario-contenedor);
+  }
+  .etiqueta-en_proceso {
+    background: var(--color-neutro);
+    color: var(--color-texto-suave);
+  }
+  .etiqueta-resuelto {
+    background: var(--color-neutro);
+    color: var(--color-texto-suave);
+  }
+
+  .chip {
+    display: inline-flex;
+    align-items: center;
+    height: 32px;
+    padding: 0 15px;
+    border: 1px solid var(--color-neutro-borde);
+    border-radius: 8px;
+    background: var(--color-neutro);
+    color: var(--color-texto-suave);
+    font-size: 0.875rem;
+    font-weight: 500;
+    white-space: nowrap;
+  }
+  .chip-sin_prioridad {
+    background: var(--color-crema);
+    border-color: #ead9c9;
+  }
+  .chip-baja {
+    background: #dcf5eb;
+    border-color: var(--color-ok-borde);
+    color: #1d5a45;
+  }
+  .chip-resuelto {
+    background: #dcf5eb;
+    border-color: var(--color-ok-borde);
+    color: #1d5a45;
+  }
+  .chip-media {
+    background: var(--color-alerta);
+    border-color: var(--color-alerta-borde);
+    color: #6d4512;
+  }
+  .chip-alta {
+    background: var(--color-peligro);
+    border-color: var(--color-peligro-borde);
+    color: var(--color-peligro-texto);
+  }
+  .chip-en_proceso {
+    background: var(--color-info);
+    border-color: var(--color-celeste);
+    color: var(--color-info-texto);
+  }
+  .chip-operativo {
+    background: var(--color-ok);
+    border-color: #bfe6d0;
+    color: var(--color-ok-texto);
+  }
+  .chip-con_falla {
+    background: var(--color-alerta);
+    border-color: var(--color-alerta-borde);
+    color: var(--color-alerta-texto);
+  }
+  .chip-en_reparacion {
+    background: var(--color-info);
+    border-color: var(--color-celeste);
+    color: var(--color-info-texto);
+  }
+  .chip-fuera_de_servicio {
+    background: var(--color-peligro);
+    border-color: var(--color-peligro-borde);
+    color: var(--color-peligro-texto);
+  }
+}
+
+/* Skeleton de carga */
+@utility esqueleto {
+  border-radius: 4px;
+  background: linear-gradient(90deg, #ece7ee 0%, #f6f2f7 50%, #ece7ee 100%) 0 0 / 200% 100%;
+  animation: brillo 1.4s ease-in-out infinite;
+}
+
+@keyframes brillo {
+  from {
+    background-position: 100% 0;
+  }
+  to {
+    background-position: -100% 0;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 1ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 1ms !important;
+  }
+}

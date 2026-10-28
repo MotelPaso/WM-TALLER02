@@ -1,8 +1,8 @@
-// Include theming for Angular Material with `mat.theme()`.
-// This Sass mixin will define CSS variables that are used for styling Angular Material
-// components according to the Material 3 design spec.
-// Learn more about theming and how to use it for your application's
-// custom components at https://material.angular.dev/guide/theming
+// Tema de Angular Material con los colores y formas del Figma.
+// Los componentes de Material (mat-form-field, mat-select, matButton, mat-chip,
+// mat-dialog, mat-snack-bar...) se estilan AQUÍ con los mixins *-overrides,
+// no con clases de Tailwind: Tailwind solo llega al host, no a su HTML interno.
+// Docs: https://material.angular.dev/guide/theming
 @use '@angular/material' as mat;
 
 html {
@@ -10,29 +10,179 @@ html {
   @include mat.theme(
     (
       color: (
-        primary: mat.$azure-palette,
-        tertiary: mat.$blue-palette,
+        primary: mat.$violet-palette,
+        tertiary: mat.$green-palette,
       ),
       typography: Roboto,
       density: 0,
     )
   );
+
+  // Colores exactos del Figma sobre las variables de sistema de Material.
+  // Todo componente de Material que use "primary", "surface", "error"... toma estos.
+  --mat-sys-primary: #65558f;
+  --mat-sys-on-primary: #ffffff;
+  --mat-sys-primary-container: #e8def8;
+  --mat-sys-on-primary-container: #4f378b;
+  --mat-sys-secondary-container: #e8def8;
+  --mat-sys-on-secondary-container: #4f378b;
+  --mat-sys-surface: #fff5ef; // background/light
+  --mat-sys-surface-container-lowest: #ffffff;
+  --mat-sys-surface-container-low: #fef7ff;
+  --mat-sys-surface-container: #fef7ff;
+  --mat-sys-surface-container-high: #ece6f0;
+  --mat-sys-surface-container-highest: #ece6f0;
+  --mat-sys-on-surface: #1d1b20;
+  --mat-sys-on-surface-variant: #49454f;
+  --mat-sys-outline: #79747e;
+  --mat-sys-outline-variant: #cac4d0;
+  --mat-sys-error: #c3423f; // red/brick
+  --mat-sys-error-container: #fbe9e8;
+  --mat-sys-on-error-container: #a8332f;
+
+  // ---- Campos (mat-form-field appearance="outline") ----
+  @include mat.form-field-overrides(
+    (
+      outlined-container-shape: 12px,
+      outlined-outline-color: #79747e,
+      outlined-hover-outline-color: #1d1b20,
+      outlined-focus-outline-color: #65558f,
+      outlined-error-outline-color: #c3423f,
+      outlined-error-hover-outline-color: #a8332f,
+      outlined-error-focus-outline-color: #c3423f,
+      error-text-color: #c3423f,
+      outlined-input-text-placeholder-color: #6f6977,
+      container-text-font: 'Inter, Roboto, sans-serif',
+      outlined-label-text-font: 'Inter, Roboto, sans-serif',
+      subscript-text-font: 'Inter, Roboto, sans-serif',
+    )
+  );
+
+  // ---- Botones (matButton="filled" | "outlined" | "tonal" | "text") ----
+  @include mat.button-overrides(
+    (
+      filled-container-shape: 999px,
+      outlined-container-shape: 999px,
+      tonal-container-shape: 999px,
+      text-container-shape: 999px,
+      filled-container-color: #65558f,
+      outlined-outline-color: #79747e,
+      outlined-label-text-color: #49454f,
+    )
+  );
+
+  // ---- Chips (mat-chip-option en filtros y en el diálogo "Gestionar reporte") ----
+  @include mat.chips-overrides(
+    (
+      container-shape-radius: 8px,
+      outline-color: #79747e,
+      label-text-color: #49454f,
+      elevated-selected-container-color: #e8def8,
+      selected-label-text-color: #4f378b,
+    )
+  );
+
+  // ---- Diálogos (MatDialog) ----
+  @include mat.dialog-overrides(
+    (
+      container-shape: 28px,
+      container-color: #fef7ff,
+    )
+  );
+
+  // ---- Snackbar (MatSnackBar) ----
+  @include mat.snack-bar-overrides(
+    (
+      container-shape: 4px,
+    )
+  );
+
+  // ---- Interruptor (mat-slide-toggle) "Fuera de servicio": rojo al activarse ----
+  @include mat.slide-toggle-overrides(
+    (
+      selected-track-color: #c3423f,
+      selected-hover-track-color: #a8332f,
+      selected-focus-track-color: #a8332f,
+      selected-pressed-track-color: #a8332f,
+      selected-handle-color: #ffffff,
+      selected-hover-handle-color: #ffffff,
+      selected-focus-handle-color: #ffffff,
+      selected-pressed-handle-color: #ffffff,
+      selected-icon-color: #c3423f,
+    )
+  );
 }
 
 body {
-  // Default the application to a light color theme. This can be changed to
-  // `dark` to enable the dark color theme, or to `light dark` to defer to the
-  // user's system settings.
   color-scheme: light;
-
-  // Set a default background, font and text colors for the application using
-  // Angular Material's system-level CSS variables. Learn more about these
-  // variables at https://material.angular.dev/guide/system-variables
   background-color: var(--mat-sys-surface);
   color: var(--mat-sys-on-surface);
   font: var(--mat-sys-body-medium);
-
-  // Reset the user agent margin.
   margin: 0;
   height: 100%;
+}
+
+// ---- Variantes con clase (se ponen en el HTML) ----
+
+// Botón de login/registro: menta, ancho, con flecha (Figma)
+.boton-auth {
+  @include mat.button-overrides(
+    (
+      filled-container-shape: 12px,
+      filled-container-color: #06d6a0,
+      filled-label-text-color: #031927,
+      filled-container-height: 56px,
+      filled-horizontal-padding: 24px,
+    )
+  );
+
+  .mdc-button__label {
+    width: 100%;
+  }
+}
+
+// Botón de peligro (Eliminar): matButton="outlined" class="boton-peligro"
+.boton-peligro {
+  @include mat.button-overrides(
+    (
+      outlined-outline-color: #c3423f,
+      outlined-label-text-color: #c3423f,
+      filled-container-color: #c3423f,
+    )
+  );
+}
+
+// Filtros compactos de las listas: <mat-form-field class="filtro"> con mat-select
+.filtro {
+  @include mat.form-field-overrides(
+    (
+      container-height: 40px,
+      container-vertical-padding: 8px,
+      outlined-container-shape: 8px,
+      container-text-size: 14px,
+      container-text-weight: 500,
+      container-text-font: 'Roboto, sans-serif',
+    )
+  );
+}
+
+// Íconos de Material Symbols dentro de botones de Material: tamaño y separación del texto.
+// Uso: <button matButton="filled"><span class="material-symbols-outlined">add</span> Texto</button>
+.mat-mdc-button-base .mdc-button__label {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.mat-mdc-button-base .mdc-button__label > .material-symbols-outlined {
+  font-size: 18px;
+  margin-inline-start: -4px;
+}
+
+.mat-mdc-button-base:not(:disabled) {
+  transition: transform 160ms cubic-bezier(0.23, 1, 0.32, 1);
+
+  &:active {
+    transform: scale(0.97);
+  }
 }
