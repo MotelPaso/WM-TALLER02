@@ -1,86 +1,74 @@
 <div class="flex min-h-dvh flex-col px-4 font-form sm:px-6">
-  <p class="mt-[clamp(48px,13vh,132px)] text-center text-[clamp(2.75rem,6vw,4rem)] leading-tight font-bold tracking-[-0.035em] text-texto">
-    ReportesUCN
-  </p>
-
-  <main class="mx-auto mt-[clamp(48px,10vh,100px)] mb-16 w-full max-w-[416px]">
-    <h1 class="text-center text-3xl font-semibold tracking-tight text-marino sm:text-4xl">Crea tu cuenta</h1>
-    <p class="mx-auto mt-4 max-w-[36ch] text-center text-[15px] leading-relaxed text-pizarra">
-      Regístrate con tu correo para reportar fallas en los dispositivos de la universidad.
+    <p
+        class="mt-[clamp(48px,13vh,132px)] text-center text-[clamp(2.75rem,6vw,4rem)] leading-tight font-bold tracking-[-0.035em] text-texto">
+        ReportesUCN
     </p>
 
-    <!-- Para que funcione completo, en registro.ts el form necesita:
-         nombre: ['', Validators.required]
-         contrasena: ['', [Validators.required, Validators.minLength(8)]]
-         y enviar {nombre, correo, contrasena} a POST /auth/register.
-         El 409 (correo repetido) se muestra en error(). -->
-    <form [formGroup]="form" (ngSubmit)="submit()" class="mt-8 flex flex-col gap-2" novalidate>
-      @if (error()) {
-        <p role="alert" class="mb-4 flex items-start gap-2.5 rounded-lg bg-[#f8dcdb] px-4 py-3 text-[13px] text-[#9b2f2c]">
-          <span class="material-symbols-outlined text-xl" aria-hidden="true">error</span>
-          {{ error() }}
+    <main class="mx-auto mt-[clamp(48px,10vh,100px)] mb-16 w-full max-w-[416px]">
+        <h1 class="text-center text-3xl font-semibold tracking-tight text-marino sm:text-4xl">Crea tu cuenta</h1>
+        <p class="mx-auto mt-4 max-w-[36ch] text-center text-[15px] leading-relaxed text-pizarra">
+            Regístrate con tu correo para reportar fallas en los dispositivos de la universidad.
         </p>
-      }
 
-      <label for="nombre" class="text-sm font-medium text-texto">Nombre completo</label>
-      <mat-form-field appearance="outline">
-        <!-- Cuando exista el control: agregar formControlName="nombre" y su mat-error -->
-        <input matInput id="nombre" type="text" autocomplete="name" placeholder="Camila Rojas" />
-      </mat-form-field>
+        <form [formGroup]="form" (ngSubmit)="submit()" class="mt-8 flex flex-col gap-2" novalidate>
+            @if (error()) {
+            <p role="alert"
+                class="mb-4 flex items-start gap-2.5 rounded-lg bg-[#f8dcdb] px-4 py-3 text-[13px] text-[#9b2f2c]">
+                <span class="material-symbols-outlined text-xl" aria-hidden="true">error</span>
+                {{ error() }}
+            </p>
+            }
 
-      <label for="correo" class="text-sm font-medium text-texto">Correo electrónico</label>
-      <mat-form-field appearance="outline">
-        <input
-          matInput
-          id="correo"
-          formControlName="correo"
-          type="email"
-          autocomplete="email"
-          placeholder="nombre@alumnos.ucn.cl"
-        />
-        @if (form.controls.correo.hasError('required')) {
-          <mat-error>Ingresa tu correo.</mat-error>
-        } @else if (form.controls.correo.hasError('email')) {
-          <mat-error>Ingresa un correo válido.</mat-error>
-        }
-      </mat-form-field>
+            <label for="nombre" class="text-sm font-medium text-texto">Nombre completo</label>
+            <mat-form-field appearance="outline">
+                <input matInput id="nombre" type="text" autocomplete="name" formControlName="nombre"
+                    placeholder="Diego Malebran" />
+            </mat-form-field>
 
-      <label for="contrasena" class="text-sm font-medium text-texto">Contraseña</label>
-      <mat-form-field appearance="outline">
-        <input
-          matInput
-          id="contrasena"
-          formControlName="contrasena"
-          type="password"
-          autocomplete="new-password"
-          placeholder="Mínimo 8 caracteres"
-        />
-        @if (form.controls.contrasena.hasError('required')) {
-          <mat-error>Ingresa una contraseña.</mat-error>
-        } @else if (form.controls.contrasena.hasError('minlength')) {
-          <mat-error>La contraseña debe tener al menos 8 caracteres.</mat-error>
-        }
-      </mat-form-field>
+            <label for="correo" class="text-sm font-medium text-texto">Correo electrónico</label>
+            <mat-form-field appearance="outline">
+                <input matInput id="correo" formControlName="correo" type="email" autocomplete="email"
+                    placeholder="nombre@alumnos.ucn.cl" />
+                @if (form.controls.correo.hasError('required')) {
+                <mat-error>Ingresa tu correo.</mat-error>
+                } @else if (form.controls.correo.hasError('email')) {
+                <mat-error>Ingresa un correo válido.</mat-error>
+                }
+            </mat-form-field>
 
-      <button matButton="filled" type="submit" class="boton-auth group w-full" [disabled]="cargando()">
-        <span class="flex w-full items-center justify-between text-base font-semibold">
-          {{ cargando() ? 'Creando cuenta…' : 'Crear cuenta' }}
-          <span class="material-symbols-outlined transition-transform duration-200 ease-salida group-hover:translate-x-1" aria-hidden="true">
-            arrow_forward
-          </span>
-        </span>
-      </button>
+            <label for="contrasena" class="text-sm font-medium text-texto">Contraseña</label>
+            <mat-form-field appearance="outline">
+                <input matInput id="contrasena" formControlName="contrasena" type="password" autocomplete="new-password"
+                    placeholder="Mínimo 8 caracteres" />
+                @if (form.controls.contrasena.hasError('required')) {
+                <mat-error>Ingresa una contraseña.</mat-error>
+                } @else if (form.controls.contrasena.hasError('minlength')) {
+                <mat-error>La contraseña debe tener al menos 8 caracteres.</mat-error>
+                }
+            </mat-form-field>
 
-      <p class="mt-6 text-center text-[15px] text-pizarra">
-        ¿Ya tienes cuenta?
-        <a routerLink="/login" class="font-semibold text-marino underline decoration-marino/35 underline-offset-[3px] hover:decoration-current">
-          Inicia sesión
-        </a>
-      </p>
-    </form>
-  </main>
+            <button matButton="filled" type="submit" class="boton-auth group w-full" [disabled]="cargando()">
+                <span class="flex w-full items-center justify-between text-base font-semibold">
+                    {{ cargando() ? 'Creando cuenta…' : 'Crear cuenta' }}
+                    <span
+                        class="material-symbols-outlined transition-transform duration-200 ease-salida group-hover:translate-x-1"
+                        aria-hidden="true">
+                        arrow_forward
+                    </span>
+                </span>
+            </button>
 
-  <footer class="mt-auto pt-6 pb-10 text-center text-xs text-pizarra sm:pl-[5vw] sm:text-left">
-    2026 · Introducción al Desarrollo Web/Móvil
-  </footer>
+            <p class="mt-6 text-center text-[15px] text-pizarra">
+                ¿Ya tienes cuenta?
+                <a routerLink="/login"
+                    class="font-semibold text-marino underline decoration-marino/35 underline-offset-[3px] hover:decoration-current">
+                    Inicia sesión
+                </a>
+            </p>
+        </form>
+    </main>
+
+    <footer class="mt-auto pt-6 pb-10 text-center text-xs text-pizarra sm:pl-[5vw] sm:text-left">
+        2026 · Introducción al Desarrollo Web/Móvil
+    </footer>
 </div>
