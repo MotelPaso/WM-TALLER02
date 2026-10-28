@@ -1,0 +1,15 @@
+<div
+  [attr.role]="tono() === 'error' ? 'alert' : null"
+  class="flex flex-col items-center gap-3 rounded-2xl border border-dashed border-borde bg-superficie px-6 py-14 text-center"
+>
+  <span class="grid size-14 place-items-center rounded-full {{ claseIcono() }}">
+    <span class="material-symbols-outlined" aria-hidden="true">{{ icono() }}</span>
+  </span>
+  <p class="text-lg font-medium">{{ titulo() }}</p>
+  @if (mensaje()) {
+    <p class="max-w-[44ch] text-sm text-texto-suave">{{ mensaje() }}</p>
+  }
+  <div class="mt-2 empty:hidden">
+    <ng-content />
+  </div>
+</div>
