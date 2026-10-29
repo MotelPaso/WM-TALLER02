@@ -31,6 +31,7 @@ import {
   TipoDispositivo,
 } from '../../models';
 import { DispositivosService } from '../../services/dispositivos.service';
+import { TarjetaSala } from '../../components/tarjeta-sala/tarjeta-sala';
 
 @Component({
   selector: 'app-dispositivos-list',
@@ -47,6 +48,7 @@ import { DispositivosService } from '../../services/dispositivos.service';
     EstadoVacio,
     TarjetaDispositivo,
     FiltroSelect,
+    TarjetaSala,
   ],
   templateUrl: './dispositivos-list.html',
   styleUrl: './dispositivos-list.css',
@@ -80,6 +82,11 @@ export class DispositivosList implements OnInit {
   protected readonly opcionesEstados = computed<OpcionFiltro[]>(() =>
     this.estados().map((estado) => ({ id: estado.id, label: estado.nombre })),
   );
+
+  protected readonly salasConDispositivos = computed(() => {
+    const ids = new Set(this.dispositivos().map((dispositivo) => dispositivo.sala.id));
+    return this.salas().filter((sala) => ids.has(sala.id));
+  });
 
   protected readonly cargando = signal(false);
   protected readonly cargado = signal(false);
@@ -131,6 +138,7 @@ export class DispositivosList implements OnInit {
         this.dispositivos.set(dispositivos);
         this.cargando.set(false);
         this.cargado.set(true);
+        console.log(dispositivos);
       },
       error: (err) => {
         this.mensajeError.set(

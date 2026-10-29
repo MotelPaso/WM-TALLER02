@@ -41,7 +41,7 @@
 
 <!-- ===== Resumen + selector de vista ===== -->
 <div class="mt-6 mb-4 flex flex-wrap items-center justify-between gap-3 text-sm text-texto-suave tabular-nums sm:mt-8">
-  <p>14 dispositivos · 6 salas</p>
+  <p>{{ dispositivos().length }} dispositivos · {{ salasConDispositivos().length }} salas</p>
   <!-- Vista activa: aria-pressed="true" (cambia el color). (click)="vista.set('sala' | 'cuadricula')" -->
   <div class="flex gap-2" role="group" aria-label="Vista">
     <button type="button" aria-pressed="true"
@@ -57,52 +57,12 @@
   </div>
 </div>
 
-<!-- ===================================================================
-     VISTA "POR SALA"  →  @if (vista() === 'sala')
-     Agrupar los dispositivos por sala.codigo en el .ts (computed).
-     =================================================================== -->
+
 <div class="grid grid-cols-1 items-start gap-6 xl:grid-cols-2">
   <!-- @for (grupo of porSala(); track grupo.sala) · fondo alterno: bg-[#fdf3ee] en las pares, bg-superficie en las impares -->
-  <section class="rounded-2xl border border-borde bg-[#fdf3ee] p-4 sm:p-6" aria-labelledby="sala-x1-29">
-    <h2 id="sala-x1-29" class="mb-5 flex items-center gap-3 text-lg font-medium">
-      <span class="material-symbols-outlined" aria-hidden="true">location_on</span>
-      X1-29
-      <span class="text-[13px] font-normal text-texto-tenue">2 dispositivos</span>
-    </h2>
-
-    <ul class="flex flex-col gap-3">
-      <li>
-        <a [routerLink]="['/dispositivos', 2]" class="group block h-full rounded-xl text-inherit no-underline">
-          <app-tarjeta-dispositivo codigo="UCN-004502" detalle="Computador" />
-        </a>
-      </li>
-      <li>
-        <a [routerLink]="['/dispositivos', 1]" class="group block h-full rounded-xl text-inherit no-underline">
-          <app-tarjeta-dispositivo codigo="UCN-004501" detalle="Proyector" />
-        </a>
-      </li>
-    </ul>
-  </section>
-
-  <section class="rounded-2xl border border-borde bg-superficie p-4 sm:p-6" aria-labelledby="sala-y1-101">
-    <h2 id="sala-y1-101" class="mb-5 flex items-center gap-3 text-lg font-medium">
-      <span class="material-symbols-outlined" aria-hidden="true">location_on</span>
-      Y1-101
-      <span class="text-[13px] font-normal text-texto-tenue">2 dispositivos</span>
-    </h2>
-    <ul class="flex flex-col gap-3">
-      <li>
-        <a [routerLink]="['/dispositivos', 8]" class="group block h-full rounded-xl text-inherit no-underline">
-          <app-tarjeta-dispositivo codigo="UCN-004508" detalle="Computador" />
-        </a>
-      </li>
-      <li>
-        <a [routerLink]="['/dispositivos', 13]" class="group block h-full rounded-xl text-inherit no-underline">
-          <app-tarjeta-dispositivo codigo="UCN-004513" detalle="Proyector" />
-        </a>
-      </li>
-    </ul>
-  </section>
+  @for (sala of salasConDispositivos(); track sala.id) {
+  <app-tarjeta-sala [sala]="sala" [dispositivos]="dispositivos()"></app-tarjeta-sala>
+  }
 </div>
 
 <!-- ===================================================================

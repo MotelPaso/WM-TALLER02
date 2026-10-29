@@ -40,9 +40,9 @@ export interface LoginResponse {
 
 export interface Dispositivo {
   id: number;
-  nombre: string;
-  tipo: string;
-  edificio: string;
+  codigo_inventario: string;
+  descripcion: string;
+  tipo: TipoDispositivo;
   sala: Sala;
   estado: EstadoDispositivo;
 }

@@ -1,6 +1,13 @@
 import { ChangeDetectionStrategy, Component, computed, input } from '@angular/core';
 
-import { EstadoDispositivo } from '../../models';
+import { Dispositivo } from '../../models';
+
+const ETIQUETAS_ESTADO: Record<string, string> = {
+  operativo: 'Operativo',
+  con_falla: 'Con falla',
+  en_reparacion: 'En reparación',
+  fuera_de_servicio: 'Fuera de servicio',
+};
 
 @Component({
   selector: 'app-tarjeta-dispositivo',
@@ -10,25 +17,10 @@ import { EstadoDispositivo } from '../../models';
   host: { class: 'block h-full' },
 })
 export class TarjetaDispositivo {
-  readonly codigo = input.required<string>();
-  readonly detalle = input.required<string>();
+  readonly dispositivo = input<Dispositivo>();
 
-  protected readonly etiqueta = 'Operativo';
-
-  readonly ESTADOS_DISPOSITIVO: EstadoDispositivoEtiqueta[] = [
-    { valor: 'operativo', etiqueta: 'Operativo' },
-    { valor: 'con_falla', etiqueta: 'Con falla' },
-    { valor: 'en_reparacion', etiqueta: 'En reparación' },
-    { valor: 'fuera_de_servicio', etiqueta: 'Fuera de servicio' },
-  ];
-
-  readonly etiquetaEstadoDispositivo = (estado: EstadoDispositivo): string => {
-    return (
-      this.ESTADOS_DISPOSITIVO.find((e) => e.valor === estado.nombre)?.etiqueta ?? estado.nombre
-    );
-  };
-}
-interface EstadoDispositivoEtiqueta {
-  valor: string;
-  etiqueta: string;
+  protected readonly etiqueta = computed(() => {
+    const nombre = this.dispositivo()?.estado.nombre;
+    return nombre ? (ETIQUETAS_ESTADO[nombre] ?? nombre) : '';
+  });
 }

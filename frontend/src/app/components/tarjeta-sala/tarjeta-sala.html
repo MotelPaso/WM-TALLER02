@@ -1,0 +1,20 @@
+<section class="rounded-2xl border border-borde bg-[#fdf3ee] p-4 sm:p-6"
+    aria-labelledby="sala-{{sala().codigo.toLowerCase()}}">
+    <h2 id="sala-{{sala().codigo.toLowerCase()}}" class="mb-5 flex items-center gap-3 text-lg font-medium">
+        <span class="material-symbols-outlined" aria-hidden="true">location_on</span>
+        {{sala().codigo}}
+        <span class="text-[13px] font-normal text-texto-tenue">{{dispositivos_en_sala().length}} dispositivos</span>
+    </h2>
+
+    <ul class="flex flex-col gap-3">
+        @for (dispositivo of dispositivos_en_sala(); track dispositivo) {
+        <li>
+            <a [routerLink]="['/dispositivos', dispositivo.id]"
+                class="group block h-full rounded-xl text-inherit no-underline">
+                <app-tarjeta-dispositivo [dispositivo]="dispositivo" />
+            </a>
+        </li>
+        }
+
+    </ul>
+</section>

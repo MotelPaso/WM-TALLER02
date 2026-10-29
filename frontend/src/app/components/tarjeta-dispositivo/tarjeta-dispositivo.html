@@ -1,8 +1,8 @@
 <div
   class="flex h-full min-h-[98px] flex-col rounded-xl border border-borde bg-white p-5 transition-[border-color,box-shadow] duration-200 ease-salida group-hover:border-borde-fuerte group-hover:shadow-[0_6px_16px_-6px_rgb(29_27_32/0.14)]">
-  <span class="text-lg font-medium">{{ codigo() }}</span>
+  <span class="text-lg font-medium">{{ dispositivo()?.codigo_inventario }}</span>
   <span class="mt-3 flex items-center justify-between gap-3">
-    <span class="text-[13px] text-texto-tenue">{{ detalle() }}</span>
-    <span class="etiqueta etiqueta-">{{ etiqueta }}</span>
+    <span class="text-[13px] text-texto-tenue">{{ dispositivo()?.descripcion }}</span>
+    <span class="etiqueta etiqueta-{{ dispositivo()?.estado?.nombre }}">{{ etiqueta() }}</span>
   </span>
 </div>
