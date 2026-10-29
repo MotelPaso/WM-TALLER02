@@ -1,0 +1,8 @@
+<mat-form-field appearance="outline" subscriptSizing="dynamic" class="filtro w-44">
+  <mat-select [formControl]="control()" [aria-label]="etiqueta()" [placeholder]="textoTodos()">
+    <mat-option [value]="null">{{ textoTodos() }}</mat-option>
+    @for (opcion of opciones(); track opcion.id) {
+      <mat-option [value]="opcion.id">{{ opcion.label }}</mat-option>
+    }
+  </mat-select>
+</mat-form-field>

@@ -1,13 +1,28 @@
 // Contrato asumido con el backend (FastAPI). Si el backend usa
+
 // otros nombres de campos, se ajustan aquí.
 export type RolUsuario = 'usuario' | 'tecnico';
-export type EstadoDispositivo = 'operativo' | 'con_falla' | 'en_reparacion' | 'fuera_de_servicio';
+
 export type EstadoReporte = 'abierto' | 'en_proceso' | 'resuelto';
 export type PrioridadReporte = 'baja' | 'media' | 'alta';
 
 export interface Rol {
   id: number;
   nombre: RolUsuario;
+}
+
+export interface TipoDispositivo {
+  id: number;
+  nombre: string;
+}
+
+export interface EstadoDispositivo {
+  id: number;
+  nombre: string;
+}
+export interface OpcionFiltro {
+  id: number;
+  label: string;
 }
 
 export interface User {
@@ -28,13 +43,27 @@ export interface Dispositivo {
   nombre: string;
   tipo: string;
   edificio: string;
-  sala: string;
+  sala: Sala;
   estado: EstadoDispositivo;
 }
 
+export interface Sala {
+  id: number;
+  codigo: string;
+  numero: string;
+  edificio: Edificio;
+}
+
+export interface Edificio {
+  id: number;
+  numero: string;
+}
+
 export interface DispositivoFiltros {
+  sala_id?: number;
+  tipo_id?: number;
   q?: string;
-  estado?: EstadoDispositivo | 'todos';
+  estado?: string;
 }
 
 export interface Reporte {
@@ -50,24 +79,8 @@ export interface Reporte {
   creado_en: string;
 }
 
-export interface EstadoDispositivoEtiqueta {
-  valor: EstadoDispositivo;
-  etiqueta: string;
-}
-
-export const ESTADOS_DISPOSITIVO: EstadoDispositivoEtiqueta[] = [
-  { valor: 'operativo', etiqueta: 'Operativo' },
-  { valor: 'con_falla', etiqueta: 'Con falla' },
-  { valor: 'en_reparacion', etiqueta: 'En reparación' },
-  { valor: 'fuera_de_servicio', etiqueta: 'Fuera de servicio' },
-];
-
 export const ESTADOS_REPORTE: EstadoReporte[] = ['abierto', 'en_proceso', 'resuelto'];
 export const PRIORIDADES_REPORTE: PrioridadReporte[] = ['baja', 'media', 'alta'];
-
-export function etiquetaEstadoDispositivo(estado: EstadoDispositivo): string {
-  return ESTADOS_DISPOSITIVO.find((e) => e.valor === estado)?.etiqueta ?? estado;
-}
 
 export function etiquetaEstadoReporte(estado: EstadoReporte): string {
   switch (estado) {
