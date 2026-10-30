@@ -3,8 +3,16 @@
 // otros nombres de campos, se ajustan aquí.
 export type RolUsuario = 'usuario' | 'tecnico';
 
-export type EstadoReporte = 'abierto' | 'en_proceso' | 'resuelto';
-export type PrioridadReporte = 'baja' | 'media' | 'alta';
+export interface EstadoReporte {
+  id: number;
+  nombre: string;
+}
+
+export interface PrioridadReporte {
+  id: number;
+  nivel: number;
+  nombre: string;
+}
 
 export interface Rol {
   id: number;
@@ -45,6 +53,7 @@ export interface Dispositivo {
   tipo: TipoDispositivo;
   sala: Sala;
   estado: EstadoDispositivo;
+  creado_en: string;
 }
 
 export interface Sala {
@@ -56,7 +65,7 @@ export interface Sala {
 
 export interface Edificio {
   id: number;
-  numero: string;
+  nombre: string;
 }
 
 export interface DispositivoFiltros {
@@ -70,19 +79,24 @@ export interface Reporte {
   id: number;
   titulo: string;
   descripcion: string;
-  prioridad: PrioridadReporte;
+  dispositivo: Dispositivo;
+  creado_por: CreadoPor;
   estado: EstadoReporte;
-  dispositivo_id: number;
-  usuario_id: number;
-  usuario_nombre?: string;
-  dispositivo_nombre?: string;
+  prioridad?: PrioridadReporte;
   creado_en: string;
+  actualizado_en?: string;
+  finalizado_en?: string;
 }
 
-export const ESTADOS_REPORTE: EstadoReporte[] = ['abierto', 'en_proceso', 'resuelto'];
-export const PRIORIDADES_REPORTE: PrioridadReporte[] = ['baja', 'media', 'alta'];
+export interface CreadoPor {
+  id: number;
+  nombre: string;
+}
 
-export function etiquetaEstadoReporte(estado: EstadoReporte): string {
+export const ESTADOS_REPORTE: string[] = ['abierto', 'en_proceso', 'resuelto'];
+export const PRIORIDADES_REPORTE: string[] = ['baja', 'media', 'alta'];
+
+export function etiquetaEstadoReporte(estado: string): string {
   switch (estado) {
     case 'abierto':
       return 'Abierto';
@@ -91,8 +105,9 @@ export function etiquetaEstadoReporte(estado: EstadoReporte): string {
     case 'resuelto':
       return 'Resuelto';
   }
+  return '';
 }
 
 export function etiquetaPrioridad(prioridad: PrioridadReporte): string {
-  return prioridad.charAt(0).toUpperCase() + prioridad.slice(1);
+  return prioridad.nombre.charAt(0).toUpperCase() + prioridad.nombre.slice(1);
 }

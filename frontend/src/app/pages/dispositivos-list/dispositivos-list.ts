@@ -17,11 +17,10 @@ import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatTableModule } from '@angular/material/table';
-import { debounceTime } from 'rxjs';
+import { Subject, catchError, debounceTime, finalize, merge, of, startWith, switchMap } from 'rxjs';
 
 import { EstadoVacio } from '../../components/estado-vacio/estado-vacio';
 import { FiltroSelect } from '../../components/filtro-select/filtro-select';
-import { TarjetaDispositivo } from '../../components/tarjeta-dispositivo/tarjeta-dispositivo';
 import {
   Dispositivo,
   DispositivoFiltros,
@@ -46,7 +45,6 @@ import { TarjetaSala } from '../../components/tarjeta-sala/tarjeta-sala';
     MatTableModule,
     RouterLink,
     EstadoVacio,
-    TarjetaDispositivo,
     FiltroSelect,
     TarjetaSala,
   ],
@@ -92,17 +90,50 @@ export class DispositivosList implements OnInit {
   protected readonly cargado = signal(false);
   protected readonly mensajeError = signal('');
 
+  private readonly recargar$ = new Subject<void>();
+
   constructor() {
-    this.filtros.valueChanges
-      .pipe(debounceTime(300), takeUntilDestroyed(this.destroyRef))
-      .subscribe(() => this.cargar());
+    const { q, estado, tipoId, salaId } = this.filtros.controls;
+
+    merge(
+      q.valueChanges.pipe(debounceTime(300)),
+      estado.valueChanges,
+      tipoId.valueChanges,
+      salaId.valueChanges,
+      this.recargar$,
+    )
+      .pipe(
+        startWith(void 0),
+        switchMap(() => {
+          this.cargando.set(true);
+          this.mensajeError.set('');
+
+          return this.dispositivosService.getDispositivos(this.filtrosActuales()).pipe(
+            catchError((err) => {
+              this.mensajeError.set(
+                `No se pudo cargar el listado (status ${err.status ?? 'sin conexión'}). Revisa que el backend esté corriendo en localhost:8000.`,
+              );
+              return of(null);
+            }),
+            finalize(() => this.cargando.set(false)),
+          );
+        }),
+        takeUntilDestroyed(this.destroyRef),
+      )
+      .subscribe((dispositivos) => {
+        if (!dispositivos) {
+          return;
+        }
+
+        this.dispositivos.set(dispositivos);
+        this.cargado.set(true);
+      });
   }
 
   ngOnInit(): void {
     this.cargarSalas();
     this.cargarTipos();
     this.cargarEstados();
-    this.cargar();
   }
 
   protected cargarEstados(): void {
@@ -130,24 +161,11 @@ export class DispositivosList implements OnInit {
   }
 
   protected cargar(): void {
-    this.cargando.set(true);
-    this.mensajeError.set('');
+    this.recargar$.next();
+  }
 
-    this.dispositivosService.getDispositivos(this.filtrosActuales()).subscribe({
-      next: (dispositivos) => {
-        this.dispositivos.set(dispositivos);
-        this.cargando.set(false);
-        this.cargado.set(true);
-        console.log(dispositivos);
-      },
-      error: (err) => {
-        this.mensajeError.set(
-          `No se pudo cargar el listado (status ${err.status ?? 'sin conexión'}). Revisa que el backend esté corriendo en localhost:8000.`,
-        );
-        this.cargando.set(false);
-        this.cargado.set(true);
-      },
-    });
+  protected limpiarFiltros() {
+    this.filtros.reset();
   }
 
   private filtrosActuales(): DispositivoFiltros {

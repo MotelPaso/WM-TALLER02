@@ -7,6 +7,7 @@ import {
   DispositivoFiltros,
   Edificio,
   EstadoDispositivo,
+  Reporte,
   Sala,
   TipoDispositivo,
 } from '../models';
@@ -47,5 +48,12 @@ export class DispositivosService {
   }
   getEstados() {
     return this.http.get<EstadoDispositivo[]>(`${API}/catalogos/estados-dispositivo`);
+  }
+  getDispositivo(id: number): Observable<Dispositivo> {
+    return this.http.get<Dispositivo>(`${API}/dispositivos/${id}`);
+  }
+
+  getReportesDispositivo(id: number): Observable<Reporte[]> {
+    return this.http.get<Reporte[]>(`${API}/dispositivos/${id}/reportes`);
   }
 }

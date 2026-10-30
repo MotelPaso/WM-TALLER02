@@ -1,11 +1,6 @@
 import { ChangeDetectionStrategy, Component, input } from '@angular/core';
 
-import {
-  EstadoReporte,
-  etiquetaEstadoReporte,
-  etiquetaPrioridad,
-  PrioridadReporte,
-} from '../../models';
+import { etiquetaEstadoReporte, etiquetaPrioridad, PrioridadReporte } from '../../models';
 
 @Component({
   selector: 'app-reporte-chips',
@@ -15,8 +10,8 @@ import {
   host: { class: 'flex flex-wrap gap-2' },
 })
 export class ReporteChips {
-  readonly prioridad = input<PrioridadReporte | null>(null);
-  readonly estado = input.required<EstadoReporte>();
+  readonly prioridad = input<PrioridadReporte | undefined>(undefined);
+  readonly estado = input.required<string>();
 
   protected etiquetaEstado = etiquetaEstadoReporte;
   protected etiquetaPrioridad = etiquetaPrioridad;

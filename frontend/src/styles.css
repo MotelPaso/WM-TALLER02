@@ -7,14 +7,14 @@
 
 /* Tokens del Figma → clases de Tailwind: bg-crema, text-marino, border-borde, font-form... */
 @theme {
-  --color-crema: #fff5ef;       /* background/light */
-  --color-carbon: #272932;      /* background/dark */
-  --color-menta: #06d6a0;       /* green/mint */
+  --color-crema: #fff5ef; /* background/light */
+  --color-carbon: #272932; /* background/dark */
+  --color-menta: #06d6a0; /* green/mint */
   --color-menta-hover: #05c391;
-  --color-pizarra: #28587b;     /* blue/slate */
-  --color-marino: #031927;      /* blue/navy */
-  --color-celeste: #b9d6ff;     /* blue/light */
-  --color-ladrillo: #c3423f;    /* red/brick */
+  --color-pizarra: #28587b; /* blue/slate */
+  --color-marino: #031927; /* blue/navy */
+  --color-celeste: #b9d6ff; /* blue/light */
+  --color-ladrillo: #c3423f; /* red/brick */
 
   --color-superficie: #fef7ff;
   --color-busqueda: #ece6f0;
@@ -79,7 +79,11 @@
 /* Íconos: <span class="material-symbols-outlined">search</span>
    (la fuente se carga en index.html). "icono-lleno" = versión rellena. */
 @utility icono-lleno {
-  font-variation-settings: 'FILL' 1, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+  font-variation-settings:
+    'FILL' 1,
+    'wght' 400,
+    'GRAD' 0,
+    'opsz' 24;
 }
 
 @layer components {
@@ -144,6 +148,11 @@
     border-color: var(--color-ok-borde);
     color: #1d5a45;
   }
+  .chip-abierto {
+    background: var(--color-primario-contenedor);
+    border-color: #d0c4e8;
+    color: var(--color-en-primario-contenedor);
+  }
   .chip-resuelto {
     background: #dcf5eb;
     border-color: var(--color-ok-borde);
@@ -199,6 +208,22 @@
   }
   to {
     background-position: -100% 0;
+  }
+}
+
+/* Aparición suave para contenido que entra (animate.enter="fundido") */
+@utility fundido {
+  animation: fundido 260ms var(--ease-salida) both;
+}
+
+@keyframes fundido {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
   }
 }
 

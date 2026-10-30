@@ -2,7 +2,7 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 
-import { EstadoReporte, Reporte } from '../models';
+import { Reporte } from '../models';
 
 import { API } from './api';
 
@@ -15,8 +15,8 @@ export class ReportesService {
   }
 
   /** Cambia el estado del reporte; el backend debe validar que sea técnico. */
-  cambiarEstado(id: number, estado: EstadoReporte): Observable<Reporte> {
-    return this.http.patch<Reporte>(`${API}/reportes/${id}`, { estado });
+  cambiarEstado(id: number, estado: string): Observable<Reporte> {
+    return this.http.patch<Reporte>(`${API}/reportes/${id}/estado`, { estado });
   }
 
   /** Solo permitido para reportes propios que sigan "abiertos". */

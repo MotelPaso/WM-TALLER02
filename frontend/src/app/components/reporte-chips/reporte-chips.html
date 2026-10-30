@@ -1,6 +1,8 @@
 @if (prioridad(); as prioridad) {
-  <span class="chip chip-{{ prioridad }}">Prioridad: {{ etiquetaPrioridad(prioridad) }}</span>
+  <span class="chip chip-{{ prioridad.nombre }}"
+    >Prioridad: {{ etiquetaPrioridad(prioridad) }}</span
+  >
 } @else {
   <span class="chip chip-sin_prioridad">Prioridad: Sin prioridad</span>
 }
-<span class="chip chip-{{ estado() }}">{{ etiquetaEstado(estado()) }}</span>
+<span class="chip chip-{{ estado() }}">{{ etiquetaEstado(estado()) || estado() }}</span>

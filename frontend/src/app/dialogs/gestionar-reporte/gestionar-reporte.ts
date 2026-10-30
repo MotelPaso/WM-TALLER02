@@ -18,7 +18,7 @@ export class GestionarReporte {
 
   protected readonly form = this.fb.group({
     prioridad_id: this.fb.control<number | null>(null),
-    estado: this.fb.control<EstadoReporte>('abierto'),
+    estado: this.fb.control<EstadoReporte>({ id: 1, nombre: 'abierto' }),
   });
 
   protected guardar(): void {}

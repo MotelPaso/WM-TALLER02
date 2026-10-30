@@ -12,7 +12,9 @@
 
 @if (esTecnico) {
   <!-- ================= VISTA TÉCNICO: todos los reportes ================= -->
-  <h1 class="text-[28px] leading-tight font-semibold tracking-tight sm:text-[32px]">Todos los reportes</h1>
+  <h1 class="text-[28px] leading-tight font-semibold tracking-tight sm:text-[32px]">
+    Todos los reportes
+  </h1>
   <p class="mt-2 max-w-[70ch] text-sm text-texto-suave">
     Revisa los reportes de los usuarios, asigna la prioridad y avanza su estado.
   </p>
@@ -20,7 +22,11 @@
   <form class="mt-6 flex flex-wrap items-center gap-x-2 gap-y-3 sm:mt-8" role="search">
     <label class="relative flex w-full items-center lg:mr-2 lg:w-80">
       <span class="sr-only">Buscar por ID, usuario o dispositivo</span>
-      <span class="material-symbols-outlined pointer-events-none absolute left-4 text-texto-suave" aria-hidden="true">search</span>
+      <span
+        class="material-symbols-outlined pointer-events-none absolute left-4 text-texto-suave"
+        aria-hidden="true"
+        >search</span
+      >
       <!-- [formControl]="q" -->
       <input
         type="search"
@@ -60,24 +66,36 @@
   <ul class="mt-6 grid grid-cols-1 gap-x-6 gap-y-4 sm:mt-8 lg:grid-cols-2">
     <!-- @for (r of reportes(); track r.id)  ·  TARJETA DE REPORTE DEL TÉCNICO -->
     <li>
-      <article class="flex h-full flex-col rounded-2xl border border-borde bg-superficie p-4 sm:p-6">
+      <article
+        class="flex h-full flex-col rounded-2xl border border-borde bg-superficie p-4 sm:p-6"
+      >
         <div class="flex flex-wrap items-center gap-3">
           <span class="text-sm font-medium text-texto-suave tabular-nums">REP-0248</span>
-          <span class="order-1 mr-auto flex basis-full items-center gap-3 text-texto-suave sm:order-none sm:basis-auto">
-            <span class="grid size-10 place-items-center rounded bg-primario-contenedor font-medium text-en-primario-contenedor" aria-hidden="true">C</span>
+          <span
+            class="order-1 mr-auto flex basis-full items-center gap-3 text-texto-suave sm:order-none sm:basis-auto"
+          >
+            <span
+              class="grid size-10 place-items-center rounded bg-primario-contenedor font-medium text-en-primario-contenedor"
+              aria-hidden="true"
+              >C</span
+            >
             Camila Rojas
           </span>
-          <app-reporte-chips [prioridad]="null" estado="abierto" />
+          <app-reporte-chips [prioridad]="undefined" estado="abierto" />
         </div>
 
         <h2 class="mt-5 text-lg font-medium">Proyector sin imagen</h2>
         <ul class="mt-3 flex flex-wrap items-center gap-x-5 gap-y-1 text-texto-suave">
           <li class="flex items-center gap-2">
-            <span class="material-symbols-outlined text-xl text-texto" aria-hidden="true">devices</span>
+            <span class="material-symbols-outlined text-xl text-texto" aria-hidden="true"
+              >devices</span
+            >
             UCN-004512 (Proyector)
           </li>
           <li class="flex items-center gap-2">
-            <span class="material-symbols-outlined text-xl text-texto" aria-hidden="true">location_on</span>
+            <span class="material-symbols-outlined text-xl text-texto" aria-hidden="true"
+              >location_on</span
+            >
             X1-29
           </li>
         </ul>
@@ -85,37 +103,67 @@
 
         <div class="mt-auto flex flex-wrap gap-2 pt-6">
           <!-- @if (r.estado.nombre !== 'resuelto') -->
-          <button matButton="filled" type="button" class="flex-1 sm:flex-none" (click)="abrirGestionar()">Gestionar</button>
-          <a matButton="outlined" [routerLink]="['/dispositivos', 2]" class="flex-1 sm:flex-none">Ver dispositivo</a>
+          <button
+            matButton="filled"
+            type="button"
+            class="flex-1 sm:flex-none"
+            (click)="abrirGestionar()"
+          >
+            Gestionar
+          </button>
+          <a matButton="outlined" [routerLink]="['/dispositivos', 2]" class="flex-1 sm:flex-none"
+            >Ver dispositivo</a
+          >
         </div>
       </article>
     </li>
 
     <li>
-      <article class="flex h-full flex-col rounded-2xl border border-borde bg-superficie p-4 sm:p-6">
+      <article
+        class="flex h-full flex-col rounded-2xl border border-borde bg-superficie p-4 sm:p-6"
+      >
         <div class="flex flex-wrap items-center gap-3">
           <span class="text-sm font-medium text-texto-suave tabular-nums">REP-0243</span>
-          <span class="order-1 mr-auto flex basis-full items-center gap-3 text-texto-suave sm:order-none sm:basis-auto">
-            <span class="grid size-10 place-items-center rounded bg-primario-contenedor font-medium text-en-primario-contenedor" aria-hidden="true">M</span>
+          <span
+            class="order-1 mr-auto flex basis-full items-center gap-3 text-texto-suave sm:order-none sm:basis-auto"
+          >
+            <span
+              class="grid size-10 place-items-center rounded bg-primario-contenedor font-medium text-en-primario-contenedor"
+              aria-hidden="true"
+              >M</span
+            >
             Mateo Gómez
           </span>
-          <app-reporte-chips prioridad="alta" estado="en_proceso" />
+          <!-- <app-reporte-chips prioridad="alta" estado="en_proceso" /> -->
         </div>
         <h2 class="mt-5 text-lg font-medium">Impresora no responde</h2>
         <ul class="mt-3 flex flex-wrap items-center gap-x-5 gap-y-1 text-texto-suave">
           <li class="flex items-center gap-2">
-            <span class="material-symbols-outlined text-xl text-texto" aria-hidden="true">devices</span>
+            <span class="material-symbols-outlined text-xl text-texto" aria-hidden="true"
+              >devices</span
+            >
             UCN-004611 (Impresora)
           </li>
           <li class="flex items-center gap-2">
-            <span class="material-symbols-outlined text-xl text-texto" aria-hidden="true">location_on</span>
+            <span class="material-symbols-outlined text-xl text-texto" aria-hidden="true"
+              >location_on</span
+            >
             Y1-24
           </li>
         </ul>
         <time class="mt-3 text-xs text-texto-suave" datetime="2026-10-23">23 oct 2026</time>
         <div class="mt-auto flex flex-wrap gap-2 pt-6">
-          <button matButton="filled" type="button" class="flex-1 sm:flex-none" (click)="abrirGestionar()">Gestionar</button>
-          <a matButton="outlined" [routerLink]="['/dispositivos', 3]" class="flex-1 sm:flex-none">Ver dispositivo</a>
+          <button
+            matButton="filled"
+            type="button"
+            class="flex-1 sm:flex-none"
+            (click)="abrirGestionar()"
+          >
+            Gestionar
+          </button>
+          <a matButton="outlined" [routerLink]="['/dispositivos', 3]" class="flex-1 sm:flex-none"
+            >Ver dispositivo</a
+          >
         </div>
       </article>
     </li>
@@ -129,13 +177,21 @@
   />
 } @else {
   <!-- ================= VISTA USUARIO: mis reportes ================= -->
-  <h1 class="text-[28px] leading-tight font-semibold tracking-tight sm:text-[32px]">Mis reportes</h1>
-  <p class="mt-2 max-w-[70ch] text-sm text-texto-suave">Sigue el estado de las fallas que has reportado.</p>
+  <h1 class="text-[28px] leading-tight font-semibold tracking-tight sm:text-[32px]">
+    Mis reportes
+  </h1>
+  <p class="mt-2 max-w-[70ch] text-sm text-texto-suave">
+    Sigue el estado de las fallas que has reportado.
+  </p>
 
   <form class="mt-6 flex flex-wrap items-center gap-x-2 gap-y-3 sm:mt-8" role="search">
     <label class="relative flex w-full items-center lg:mr-2 lg:w-80">
       <span class="sr-only">Buscar por ID o dispositivo</span>
-      <span class="material-symbols-outlined pointer-events-none absolute left-4 text-texto-suave" aria-hidden="true">search</span>
+      <span
+        class="material-symbols-outlined pointer-events-none absolute left-4 text-texto-suave"
+        aria-hidden="true"
+        >search</span
+      >
       <!-- [formControl]="q" -->
       <input
         type="search"
@@ -175,13 +231,21 @@
     <ul class="grid grid-cols-1 gap-x-6 gap-y-4 lg:grid-cols-2">
       <!-- @for (r of grupo.reportes; track r.id)  ·  TARJETA DE REPORTE (buen candidato a componente) -->
       <li>
-        <article class="flex h-full flex-col rounded-2xl border border-borde bg-superficie px-4 pt-4 pb-4 sm:px-6 sm:pt-5 sm:pb-6">
+        <article
+          class="flex h-full flex-col rounded-2xl border border-borde bg-superficie px-4 pt-4 pb-4 sm:px-6 sm:pt-5 sm:pb-6"
+        >
           <div class="flex flex-wrap items-center gap-x-3 gap-y-2">
             <h3 class="text-xl font-medium tracking-tight tabular-nums sm:text-2xl">REP-0248</h3>
             <!-- class="etiqueta etiqueta-{{ r.estado.nombre }}" -->
             <span class="etiqueta etiqueta-abierto">Abierto</span>
             <!-- @if (r.estado.nombre === 'abierto') -->
-            <button matIconButton type="button" class="ml-auto text-texto-suave hover:text-ladrillo" aria-label="Eliminar REP-0248" title="Eliminar reporte">
+            <button
+              matIconButton
+              type="button"
+              class="ml-auto text-texto-suave hover:text-ladrillo"
+              aria-label="Eliminar REP-0248"
+              title="Eliminar reporte"
+            >
               <span class="material-symbols-outlined">delete</span>
             </button>
           </div>
@@ -194,9 +258,20 @@
             Se enciende pero no muestra nada, ni con el notebook ni con el PC de la sala.
           </p>
 
-          <a [routerLink]="['/dispositivos', 2]" class="group mt-auto flex items-center gap-2 rounded-xl pt-4 text-inherit no-underline sm:gap-4">
-            <app-tarjeta-dispositivo class="min-w-0 flex-1" codigo="UCN-004512" detalle="Proyector" estado="con_falla" />
-            <span class="material-symbols-outlined text-texto-suave transition-transform duration-200 ease-salida group-hover:translate-x-1 group-hover:text-texto" aria-hidden="true">
+          <a
+            [routerLink]="['/dispositivos', 2]"
+            class="group mt-auto flex items-center gap-2 rounded-xl pt-4 text-inherit no-underline sm:gap-4"
+          >
+            <app-tarjeta-dispositivo
+              class="min-w-0 flex-1"
+              codigo="UCN-004512"
+              detalle="Proyector"
+              estado="con_falla"
+            />
+            <span
+              class="material-symbols-outlined text-texto-suave transition-transform duration-200 ease-salida group-hover:translate-x-1 group-hover:text-texto"
+              aria-hidden="true"
+            >
               arrow_forward
             </span>
             <span class="sr-only">Ver dispositivo</span>
@@ -205,7 +280,9 @@
       </li>
 
       <li>
-        <article class="flex h-full flex-col rounded-2xl border border-borde bg-superficie px-4 pt-4 pb-4 sm:px-6 sm:pt-5 sm:pb-6">
+        <article
+          class="flex h-full flex-col rounded-2xl border border-borde bg-superficie px-4 pt-4 pb-4 sm:px-6 sm:pt-5 sm:pb-6"
+        >
           <div class="flex flex-wrap items-center gap-x-3 gap-y-2">
             <h3 class="text-xl font-medium tracking-tight tabular-nums sm:text-2xl">REP-0235</h3>
             <span class="etiqueta etiqueta-resuelto">Resuelto</span>
@@ -214,10 +291,23 @@
             <p class="text-base font-medium">Equipo no enciende</p>
             <time class="text-sm text-texto-suave" datetime="2026-10-21">21 oct 2026</time>
           </div>
-          <p class="mt-2 line-clamp-2 text-sm text-texto-suave">El botón de encendido no responde. La luz de la fuente está apagada.</p>
-          <a [routerLink]="['/dispositivos', 1]" class="group mt-auto flex items-center gap-2 rounded-xl pt-4 text-inherit no-underline sm:gap-4">
-            <app-tarjeta-dispositivo class="min-w-0 flex-1" codigo="UCN-004502" detalle="Computador" estado="operativo" />
-            <span class="material-symbols-outlined text-texto-suave transition-transform duration-200 ease-salida group-hover:translate-x-1 group-hover:text-texto" aria-hidden="true">
+          <p class="mt-2 line-clamp-2 text-sm text-texto-suave">
+            El botón de encendido no responde. La luz de la fuente está apagada.
+          </p>
+          <a
+            [routerLink]="['/dispositivos', 1]"
+            class="group mt-auto flex items-center gap-2 rounded-xl pt-4 text-inherit no-underline sm:gap-4"
+          >
+            <app-tarjeta-dispositivo
+              class="min-w-0 flex-1"
+              codigo="UCN-004502"
+              detalle="Computador"
+              estado="operativo"
+            />
+            <span
+              class="material-symbols-outlined text-texto-suave transition-transform duration-200 ease-salida group-hover:translate-x-1 group-hover:text-texto"
+              aria-hidden="true"
+            >
               arrow_forward
             </span>
             <span class="sr-only">Ver dispositivo</span>
@@ -238,7 +328,11 @@
   </app-estado-vacio>
 }
 
-<ul class="mt-8 grid grid-cols-1 gap-x-6 gap-y-4 lg:grid-cols-2" aria-busy="true" aria-label="Cargando reportes">
+<ul
+  class="mt-8 grid grid-cols-1 gap-x-6 gap-y-4 lg:grid-cols-2"
+  aria-busy="true"
+  aria-label="Cargando reportes"
+>
   <li class="flex flex-col gap-4 rounded-2xl border border-borde bg-superficie p-4 sm:p-6">
     <span class="flex items-center justify-between gap-3">
       <span class="esqueleto h-6 w-28"></span>

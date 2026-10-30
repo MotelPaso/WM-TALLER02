@@ -5,127 +5,151 @@
   "Reportar falla" abre dialogs/reportar-falla. "Eliminar" abre dialogs/confirmar.
 -->
 
-<a routerLink="/dispositivos" class="mb-6 inline-flex items-center gap-1 text-sm font-medium text-texto-suave no-underline hover:text-texto hover:underline hover:underline-offset-[3px]">
-  <span class="material-symbols-outlined text-lg" aria-hidden="true">arrow_back</span>
+<a
+  routerLink="/dispositivos"
+  class="mb-6 inline-flex items-center gap-1 text-sm font-medium text-texto-suave no-underline hover:text-texto hover:underline hover:underline-offset-[3px]"
+>
+  <span class="material-symbols-outlined text-lg hover:no-underline" aria-hidden="true"
+    >arrow_back</span
+  >
   Volver a Dispositivos
 </a>
 
-<div class="flex flex-wrap items-start justify-between gap-x-6 gap-y-5">
-  <div>
-    <div class="flex flex-wrap items-center gap-3">
-      <h1 class="text-[28px] leading-tight font-semibold tracking-tight sm:text-[32px]">UCN-004512</h1>
-      <!-- class="chip chip-{{ d.estado.nombre }}" -->
-      <span class="chip chip-con_falla text-[15px]">Con falla</span>
-    </div>
-    <p class="mt-2 text-[15px] text-texto-suave">Proyector · X1-29</p>
+@if (cargando()) {
+  <div role="status" class="mt-8 flex flex-col items-center gap-4 py-14 text-sm text-texto-suave">
+    <mat-spinner diameter="40" />
+    Cargando dispositivo…
   </div>
-
-  <div class="flex w-full flex-wrap gap-2 sm:w-auto">
-    <button matButton="filled" type="button" class="basis-full sm:basis-auto" (click)="abrirReportarFalla()">
-      <span class="material-symbols-outlined" aria-hidden="true">report</span>
-      Reportar falla
-    </button>
-    <!-- Editar y Eliminar: solo técnico -->
-    <a matButton="outlined" routerLink="/dispositivos/1/editar" class="flex-1 sm:flex-none">
-      <span class="material-symbols-outlined" aria-hidden="true">edit</span>
-      Editar
-    </a>
-    <button matButton="outlined" type="button" class="boton-peligro flex-1 sm:flex-none" (click)="abrirConfirmarEliminar()">
-      <span class="material-symbols-outlined" aria-hidden="true">delete</span>
-      Eliminar
-    </button>
-  </div>
-</div>
-
-<div class="mt-6 flex flex-col gap-5 sm:mt-8 sm:gap-8">
-  <!-- ===== Información ===== -->
-  <section class="rounded-2xl border border-borde bg-superficie px-4 py-5 sm:p-6" aria-labelledby="titulo-info">
-    <h2 id="titulo-info" class="text-lg font-medium">Información</h2>
-    <dl class="mt-5 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-y-5">
-      <div>
-        <dt class="text-xs text-texto-tenue">Tipo</dt>
-        <dd class="mt-1 text-base font-medium">Proyector</dd>
+} @else if (error()) {
+  <app-estado-vacio
+    class="mt-8"
+    tono="error"
+    icono="devices_off"
+    titulo="No encontramos este dispositivo"
+    [mensaje]="error()"
+  >
+    <a matButton="filled" routerLink="/dispositivos">Volver a Dispositivos</a>
+  </app-estado-vacio>
+} @else {
+  <div class="flex flex-wrap items-start justify-between gap-x-6 gap-y-5">
+    <div>
+      <div class="flex flex-wrap items-center gap-3">
+        <h1 class="text-[28px] leading-tight font-semibold tracking-tight sm:text-[32px]">
+          Dispositivo {{ dispositivo()?.codigo_inventario }}
+        </h1>
+        <span class="chip chip-{{ dispositivo()?.estado.nombre }} text-[15px]">{{
+          dispositivo()?.estado.nombre
+        }}</span>
       </div>
-      <div>
-        <dt class="text-xs text-texto-tenue">Edificio</dt>
-        <dd class="mt-1 text-base font-medium">X1</dd>
-      </div>
-      <div>
-        <dt class="text-xs text-texto-tenue">Sala</dt>
-        <dd class="mt-1 text-base font-medium">29</dd>
-      </div>
-      <div>
-        <dt class="text-xs text-texto-tenue">Código de inventario</dt>
-        <dd class="mt-1 text-base font-medium tabular-nums">UCN-004512</dd>
-      </div>
-      <div>
-        <dt class="text-xs text-texto-tenue">Estado</dt>
-        <dd class="mt-1 text-base font-medium">Con falla</dd>
-      </div>
-      <div>
-        <dt class="text-xs text-texto-tenue">Registrado</dt>
-        <!-- {{ d.creado_en | date: 'd MMM y' }} -->
-        <dd class="mt-1 text-base font-medium">12 sep 2026</dd>
-      </div>
-      <!-- @if (d.descripcion) -->
-      <div class="col-span-full">
-        <dt class="text-xs text-texto-tenue">Descripción</dt>
-        <dd class="mt-1 text-base font-medium [overflow-wrap:anywhere]">Fila 3, junto a la ventana. Epson EB-X41.</dd>
-      </div>
-    </dl>
-  </section>
-
-  <!-- ===== Historial de reportes ===== -->
-  <section class="rounded-2xl border border-borde bg-superficie px-4 py-5 sm:p-6" aria-labelledby="titulo-historial">
-    <div class="flex items-baseline justify-between gap-3 border-b border-borde pb-5">
-      <h2 id="titulo-historial" class="text-lg font-medium">Historial de reportes</h2>
-      <span class="text-sm text-texto-suave tabular-nums">3 reportes</span>
     </div>
 
-    <ul>
-      <!-- @for (r of historial(); track r.id) · código: 'REP-' + (r.id | number: '4.0-0') sin separador de miles -->
-      <li class="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-b border-borde py-5 last:border-b-0 last:pb-0">
-        <div>
-          <p class="text-xs font-semibold tracking-wide text-texto-suave tabular-nums">REP-0251</p>
-          <h3 class="mt-1 text-base font-medium">No proyecta imagen</h3>
-          <p class="mt-1 text-[13px] text-texto-suave">Camila Rojas · 22 oct 2026</p>
-        </div>
-        <app-reporte-chips [prioridad]="null" estado="abierto" />
-      </li>
-      <li class="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-b border-borde py-5 last:border-b-0 last:pb-0">
-        <div>
-          <p class="text-xs font-semibold tracking-wide text-texto-suave tabular-nums">REP-0240</p>
-          <h3 class="mt-1 text-base font-medium">La imagen parpadea</h3>
-          <p class="mt-1 text-[13px] text-texto-suave">Mateo Gómez · 14 oct 2026</p>
-        </div>
-        <app-reporte-chips prioridad="media" estado="en_proceso" />
-      </li>
-      <li class="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-b border-borde py-5 last:border-b-0 last:pb-0">
-        <div>
-          <p class="text-xs font-semibold tracking-wide text-texto-suave tabular-nums">REP-0219</p>
-          <h3 class="mt-1 text-base font-medium">Control remoto sin pilas</h3>
-          <p class="mt-1 text-[13px] text-texto-suave">Camila Rojas · 28 sep 2026</p>
-        </div>
-        <app-reporte-chips prioridad="baja" estado="resuelto" />
-      </li>
-    </ul>
+    <div class="flex w-full flex-wrap gap-2 sm:w-auto">
+      <button
+        matButton="filled"
+        type="button"
+        class="basis-full sm:basis-auto"
+        (click)="abrirReportarFalla()"
+      >
+        <span class="material-symbols-outlined" aria-hidden="true">report</span>
+        Reportar falla
+      </button>
+      <!-- Editar y Eliminar: solo técnico -->
+      <a matButton="outlined" routerLink="/dispositivos/1/editar" class="flex-1 sm:flex-none">
+        <span class="material-symbols-outlined" aria-hidden="true">edit</span>
+        Editar
+      </a>
+      <button
+        matButton="outlined"
+        type="button"
+        class="boton-peligro flex-1 sm:flex-none"
+        (click)="abrirConfirmarEliminar()"
+      >
+        <span class="material-symbols-outlined" aria-hidden="true">delete</span>
+        Eliminar
+      </button>
+    </div>
+  </div>
 
-    <!-- @empty del @for -->
-    <p class="pt-5 text-sm text-texto-suave">Este dispositivo no tiene reportes.</p>
-  </section>
-</div>
+  <div class="mt-6 flex flex-col gap-5 sm:mt-8 sm:gap-8">
+    <!-- ===== Información ===== -->
+    <section
+      class="rounded-2xl border border-borde bg-superficie px-4 py-5 sm:p-6"
+      aria-labelledby="titulo-info"
+    >
+      <h2 id="titulo-info" class="text-lg font-medium">Información</h2>
+      <dl class="mt-5 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-y-5">
+        <div>
+          <dt class="text-xs text-texto-tenue">Tipo</dt>
+          <dd class="mt-1 text-base font-medium">{{ dispositivo()?.tipo.nombre }}</dd>
+        </div>
+        <div>
+          <dt class="text-xs text-texto-tenue">Edificio</dt>
+          <dd class="mt-1 text-base font-medium">{{ dispositivo()?.sala?.edificio?.nombre }}</dd>
+        </div>
+        <div>
+          <dt class="text-xs text-texto-tenue">Sala</dt>
+          <dd class="mt-1 text-base font-medium">{{ dispositivo()?.sala?.numero }}</dd>
+        </div>
+        <div>
+          <dt class="text-xs text-texto-tenue">Código de inventario</dt>
+          <dd class="mt-1 text-base font-medium tabular-nums">
+            {{ dispositivo()?.codigo_inventario }}
+          </dd>
+        </div>
+        <div>
+          <dt class="text-xs text-texto-tenue">Estado</dt>
+          <dd class="mt-1 text-base font-medium">{{ dispositivo()?.estado.nombre }}</dd>
+        </div>
+        <div>
+          <dt class="text-xs text-texto-tenue">Registrado</dt>
+          <dd class="mt-1 text-base font-medium">
+            {{ dispositivo()?.creado_en | date: 'd MMM y' }}
+          </dd>
+        </div>
+        @if (dispositivo()?.descripcion) {
+          <div class="col-span-full">
+            <dt class="text-xs text-texto-tenue">Descripción</dt>
+            <dd class="mt-1 text-base font-medium [overflow-wrap:anywhere]">
+              {{ dispositivo()?.descripcion }}
+            </dd>
+          </div>
+        }
+      </dl>
+    </section>
 
-<div role="status" class="mt-8 flex flex-col items-center gap-4 py-14 text-sm text-texto-suave">
-  <mat-spinner diameter="40" />
-  Cargando dispositivo…
-</div>
+    <!-- ===== Historial de reportes ===== -->
+    <section
+      class="rounded-2xl border border-borde bg-superficie px-4 py-5 sm:p-6"
+      aria-labelledby="titulo-historial"
+    >
+      <div class="flex items-baseline justify-between gap-3 border-b border-borde pb-5">
+        <h2 id="titulo-historial" class="text-lg font-medium">Historial de reportes</h2>
+        <span class="text-sm text-texto-suave tabular-nums"
+          >{{ reportes().length }} reporte{{ reportes().length === 1 ? '' : 's' }}</span
+        >
+      </div>
 
-<app-estado-vacio
-  class="mt-8"
-  tono="error"
-  icono="devices_off"
-  titulo="No encontramos este dispositivo"
-  mensaje="Puede que se haya eliminado o que el enlace esté mal."
->
-  <a matButton="filled" routerLink="/dispositivos">Volver a Dispositivos</a>
-</app-estado-vacio>
+      <ul>
+        @for (reporte of reportes(); track reporte.id) {
+          <li
+            class="flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-b border-borde py-5 last:border-b-0 last:pb-0"
+          >
+            <div>
+              <h3 class="mt-1 text-base font-medium">{{ reporte.titulo }}</h3>
+              <p class="mt-1 text-[13px] text-texto-suave">
+                {{ reporte.creado_por.nombre }} · {{ reporte.creado_en | date: 'd MMM y' }}
+              </p>
+            </div>
+            <app-reporte-chips [prioridad]="reporte.prioridad" [estado]="reporte.estado.nombre" />
+          </li>
+        } @empty {
+          @if (!cargando_reportes()) {
+            <p class="pt-5 text-sm text-texto-suave text-center">
+              Este dispositivo no tiene reportes.
+            </p>
+          }
+        }
+      </ul>
+    </section>
+  </div>
+}

@@ -1,4 +1,11 @@
-import { ChangeDetectionStrategy, Component, OnInit, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  OnInit,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -13,13 +20,7 @@ import { EstadoVacio } from '../../components/estado-vacio/estado-vacio';
 import { ReporteChips } from '../../components/reporte-chips/reporte-chips';
 import { TarjetaDispositivo } from '../../components/tarjeta-dispositivo/tarjeta-dispositivo';
 import { GestionarReporte } from '../../dialogs/gestionar-reporte/gestionar-reporte';
-import {
-  ESTADOS_REPORTE,
-  EstadoReporte,
-  etiquetaEstadoReporte,
-  etiquetaPrioridad,
-  Reporte,
-} from '../../models';
+import { ESTADOS_REPORTE, etiquetaEstadoReporte, etiquetaPrioridad, Reporte } from '../../models';
 import { AuthService } from '../../services/auth.service';
 import { ReportesService } from '../../services/reportes.service';
 
@@ -92,17 +93,11 @@ export class Reportes implements OnInit {
   /** Un reporte se puede eliminar si es propio y sigue "abierto". */
   protected sePuedeEliminar(reporte: Reporte): boolean {
     const usuario = this.auth.usuario();
-    return (
-      !!usuario
-      && reporte.usuario_id === usuario.id
-      && reporte.estado === 'abierto'
-    );
+    return !!usuario && reporte.creado_por.id === usuario.id && reporte.estado.nombre === 'abierto';
   }
 
   protected async eliminar(reporte: Reporte): Promise<void> {
-    const confirmado = await this.confirmar(
-      `¿Eliminar el reporte "${reporte.titulo}"?`,
-    );
+    const confirmado = await this.confirmar(`¿Eliminar el reporte "${reporte.titulo}"?`);
     if (!confirmado) return;
 
     this.marcarEnProceso(reporte.id, true);
@@ -114,23 +109,19 @@ export class Reportes implements OnInit {
       },
       error: (err) => {
         this.marcarEnProceso(reporte.id, false);
-        this.snackBar.open(
-          `No se pudo eliminar (status ${err.status ?? 'sin conexión'}).`,
-          'OK',
-          { duration: 4000 },
-        );
+        this.snackBar.open(`No se pudo eliminar (status ${err.status ?? 'sin conexión'}).`, 'OK', {
+          duration: 4000,
+        });
       },
     });
   }
 
-  protected cambiarEstado(reporte: Reporte, estado: EstadoReporte): void {
-    if (estado === reporte.estado) return;
+  protected cambiarEstado(reporte: Reporte, estado: string): void {
+    if (estado === reporte.estado.nombre) return;
     this.marcarEnProceso(reporte.id, true);
     this.reportesService.cambiarEstado(reporte.id, estado).subscribe({
       next: (actualizado) => {
-        this.reportes.update((lista) =>
-          lista.map((r) => (r.id === reporte.id ? actualizado : r)),
-        );
+        this.reportes.update((lista) => lista.map((r) => (r.id === reporte.id ? actualizado : r)));
         this.marcarEnProceso(reporte.id, false);
         this.snackBar.open('Estado actualizado.', 'OK', { duration: 3000 });
       },
