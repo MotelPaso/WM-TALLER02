@@ -30,7 +30,7 @@ export class Registro {
   protected readonly form = this.fb.group({
     nombre: ['', Validators.required],
     correo: ['', [Validators.required, Validators.email, Validators.pattern('.*@ucn.*')]],
-    contrasena: ['', Validators.required, Validators.minLength(8)],
+    contrasena: ['', [Validators.required, Validators.minLength(8)]],
   });
   protected async submit(): Promise<void> {
     this.error.set('');
@@ -46,7 +46,9 @@ export class Registro {
         this.error.set(
           err.status === 409
             ? 'Usuario ya existe.'
-            : `Error al conectar con la base de datos... (error: ${err.status})`,
+            : err.status === 422
+              ? 'Datos inválidos. Revisa el correo y que la contraseña tenga al menos 8 caracteres.'
+              : `Error al conectar con el servidor... (error: ${err.status})`,
         );
         this.cargando.set(false);
       },
