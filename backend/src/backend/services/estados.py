@@ -8,6 +8,7 @@ from backend.models import Dispositivo, EstadoDispositivo, EstadoReporte, Report
 
 ORDEN_ESTADOS_REPORTE = ["abierto", "en_proceso", "resuelto"]
 
+
 def obtener_por_nombre(db: Session, modelo, nombre: str):
     valor = db.scalars(select(modelo).where(modelo.nombre == nombre)).first()
     if valor is None:
@@ -17,17 +18,23 @@ def obtener_por_nombre(db: Session, modelo, nombre: str):
         )
     return valor
 
+
 def recalcular_estado_dispositivo(db: Session, dispositivo: Dispositivo) -> None:
 
     if dispositivo.estado.nombre == "fuera_de_servicio":
         return
 
-    pendientes = set(db.scalars(
-        select(EstadoReporte.nombre)
-        .select_from(Reporte)
-        .join(Reporte.estado)
-        .where(Reporte.dispositivo_id == dispositivo.id, EstadoReporte.nombre != "resuelto")
-    ))
+    pendientes = set(
+        db.scalars(
+            select(EstadoReporte.nombre)
+            .select_from(Reporte)
+            .join(Reporte.estado)
+            .where(
+                Reporte.dispositivo_id == dispositivo.id,
+                EstadoReporte.nombre != "resuelto",
+            )
+        )
+    )
 
     if "en_proceso" in pendientes:
         nuevo = "en_reparacion"
@@ -38,13 +45,19 @@ def recalcular_estado_dispositivo(db: Session, dispositivo: Dispositivo) -> None
 
     dispositivo.estado = obtener_por_nombre(db, EstadoDispositivo, nuevo)
 
-def cambiar_fuera_de_servicio(db: Session, dispositivo: Dispositivo, fuera: bool) -> None:
+
+def cambiar_fuera_de_servicio(
+    db: Session, dispositivo: Dispositivo, fuera: bool
+) -> None:
     """Única forma manual de cambiar el estado de un dispositivo."""
     if fuera:
-        dispositivo.estado = obtener_por_nombre(db, EstadoDispositivo, "fuera_de_servicio")
+        dispositivo.estado = obtener_por_nombre(
+            db, EstadoDispositivo, "fuera_de_servicio"
+        )
     elif dispositivo.estado.nombre == "fuera_de_servicio":
         dispositivo.estado = obtener_por_nombre(db, EstadoDispositivo, "operativo")
         recalcular_estado_dispositivo(db, dispositivo)
+
 
 def cambiar_estado_reporte(db: Session, reporte: Reporte, nuevo: str) -> None:
     actual = reporte.estado.nombre

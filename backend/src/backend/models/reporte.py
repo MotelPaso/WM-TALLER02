@@ -46,7 +46,7 @@ class Reporte(Base):
     )
     finalizado_en: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
 
-    dispositivo: Mapped["Dispositivo"] = relationship(back_populates="reportes")
-    creado_por: Mapped["Usuario"] = relationship()
-    estado: Mapped["EstadoReporte"] = relationship()
-    prioridad: Mapped["Prioridad | None"] = relationship()
+    dispositivo: Mapped[Dispositivo] = relationship(back_populates="reportes")
+    creado_por: Mapped[Usuario] = relationship()
+    estado: Mapped[EstadoReporte] = relationship()
+    prioridad: Mapped[Prioridad | None] = relationship()

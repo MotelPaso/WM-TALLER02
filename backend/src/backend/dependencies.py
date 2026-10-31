@@ -9,8 +9,10 @@ from backend.security import oauth2_scheme, verify_access_token
 
 DbSession = Annotated[Session, Depends(get_db)]
 
+
 def get_current_user(
-    token: Annotated[str, Depends(oauth2_scheme)], db: DbSession) -> Usuario:
+    token: Annotated[str, Depends(oauth2_scheme)], db: DbSession
+) -> Usuario:
     credentials_exception = HTTPException(
         status_code=status.HTTP_401_UNAUTHORIZED,
         detail="No se pudieron validar las credenciales",
@@ -30,10 +32,13 @@ def get_current_user(
         raise credentials_exception
     return user
 
+
 CurrentUser = Annotated[Usuario, Depends(get_current_user)]
+
 
 def is_technician(user: Usuario) -> bool:
     return user.rol.nombre == "tecnico"
+
 
 def require_technician(user: CurrentUser) -> Usuario:
     if not is_technician(user):
@@ -42,5 +47,6 @@ def require_technician(user: CurrentUser) -> Usuario:
             detail="Se requiere rol técnico",
         )
     return user
+
 
 TechnicianUser = Annotated[Usuario, Depends(require_technician)]

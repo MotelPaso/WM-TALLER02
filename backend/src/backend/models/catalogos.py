@@ -1,6 +1,8 @@
 from sqlalchemy import SmallInteger, String
 from sqlalchemy.orm import Mapped, mapped_column
+
 from backend.models.base import Base
+
 
 class Rol(Base):
     __tablename__ = "roles"

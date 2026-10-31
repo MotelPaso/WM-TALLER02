@@ -2,6 +2,7 @@ from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
 from backend.schemas.catalogos import RolOut
 
+
 class UsuarioCreate(BaseModel):
     nombre: str = Field(min_length=1, max_length=100)
     correo: EmailStr = Field(max_length=254)
@@ -20,11 +21,13 @@ class UsuarioCreate(BaseModel):
     def lowercase_correo(cls, v: str) -> str:
         return v.lower()
 
+
 class UsuarioResumenOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
     id: int
     nombre: str
+
 
 class UsuarioOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)

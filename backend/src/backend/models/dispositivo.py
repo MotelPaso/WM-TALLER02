@@ -16,7 +16,9 @@ class Dispositivo(Base):
     __tablename__ = "dispositivos"
 
     id: Mapped[int] = mapped_column(primary_key=True)
-    codigo_inventario: Mapped[str] = mapped_column(String(30), unique=True, nullable=False)
+    codigo_inventario: Mapped[str] = mapped_column(
+        String(30), unique=True, nullable=False
+    )
     tipo_dispositivo_id: Mapped[int] = mapped_column(
         ForeignKey("tipos_dispositivos.id", ondelete="RESTRICT"),
         nullable=False,
@@ -42,10 +44,10 @@ class Dispositivo(Base):
         nullable=False,
     )
 
-    tipo: Mapped["TipoDispositivo"] = relationship()
-    sala: Mapped["Sala"] = relationship()
-    estado: Mapped["EstadoDispositivo"] = relationship()
-    reportes: Mapped[list["Reporte"]] = relationship(
+    tipo: Mapped[TipoDispositivo] = relationship()
+    sala: Mapped[Sala] = relationship()
+    estado: Mapped[EstadoDispositivo] = relationship()
+    reportes: Mapped[list[Reporte]] = relationship(
         back_populates="dispositivo",
         passive_deletes=True,
     )

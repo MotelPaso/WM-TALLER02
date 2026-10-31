@@ -6,8 +6,16 @@ from sqlalchemy.orm import Session
 from backend.database.config import settings
 from backend.database.session import SessionLocal, engine
 from backend.models import (
-    Dispositivo, Edificio, EstadoDispositivo, EstadoReporte,
-    Prioridad, Reporte, Rol, Sala, TipoDispositivo, Usuario,
+    Dispositivo,
+    Edificio,
+    EstadoDispositivo,
+    EstadoReporte,
+    Prioridad,
+    Reporte,
+    Rol,
+    Sala,
+    TipoDispositivo,
+    Usuario,
 )
 from backend.security import hash_password
 from backend.services import recalcular_estado_dispositivo
@@ -17,8 +25,14 @@ ESTADOS_DISPOSITIVO = ["operativo", "con_falla", "en_reparacion", "fuera_de_serv
 ESTADOS_REPORTE = ["abierto", "en_proceso", "resuelto"]
 PRIORIDADES = [("baja", 1), ("media", 2), ("alta", 3)]
 TIPOS_DISPOSITIVO = [
-    "Computador", "Monitor", "Proyector", "Impresora",
-    "Pantalla", "Audio", "Cámara", "Punto WiFi",
+    "Computador",
+    "Monitor",
+    "Proyector",
+    "Impresora",
+    "Pantalla",
+    "Audio",
+    "Cámara",
+    "Punto WiFi",
 ]
 
 SALAS = {
@@ -40,15 +54,45 @@ DISPOSITIVOS = [
     ("UCN-004510", "Monitor", "101", "operativo", "Monitor del puesto 1"),
     ("UCN-004511", "Impresora", "102", "operativo", "Impresora láser"),
     ("UCN-004512", "Punto WiFi", "102", "operativo", None),
-    ("UCN-004513", "Proyector", "201", "fuera_de_servicio", "Lámpara quemada, pendiente de baja"),
+    (
+        "UCN-004513",
+        "Proyector",
+        "201",
+        "fuera_de_servicio",
+        "Lámpara quemada, pendiente de baja",
+    ),
     ("UCN-004514", "Punto WiFi", "201", "operativo", None),
 ]
 
 REPORTES = [
-    ("UCN-004504", "No proyecta imagen", "El proyector enciende pero no muestra señal del PC.", "abierto", None),
-    ("UCN-004514", "Señal intermitente", "El WiFi se corta cada pocos minutos en la sala.", "abierto", "baja"),
-    ("UCN-004508", "No enciende", "El computador del puesto 1 no da señal al presionar el botón.", "en_proceso", "alta"),
-    ("UCN-004511", "Atasco de papel", "La impresora se atasca con cada hoja.", "resuelto", "media"),
+    (
+        "UCN-004504",
+        "No proyecta imagen",
+        "El proyector enciende pero no muestra señal del PC.",
+        "abierto",
+        None,
+    ),
+    (
+        "UCN-004514",
+        "Señal intermitente",
+        "El WiFi se corta cada pocos minutos en la sala.",
+        "abierto",
+        "baja",
+    ),
+    (
+        "UCN-004508",
+        "No enciende",
+        "El computador del puesto 1 no da señal al presionar el botón.",
+        "en_proceso",
+        "alta",
+    ),
+    (
+        "UCN-004511",
+        "Atasco de papel",
+        "La impresora se atasca con cada hoja.",
+        "resuelto",
+        "media",
+    ),
 ]
 
 
@@ -84,7 +128,9 @@ def seed_tecnico(db: Session) -> Usuario | None:
 
     rol = get_or_create(db, Rol, nombre="tecnico")
     return get_or_create(
-        db, Usuario, correo=correo.strip().lower(),
+        db,
+        Usuario,
+        correo=correo.strip().lower(),
         defaults={
             "nombre": nombre,
             "contrasena_hash": hash_password(contrasena.get_secret_value()),
@@ -98,13 +144,17 @@ def seed_demo(db: Session) -> None:
     for nombre_edificio, numeros in SALAS.items():
         edificio = get_or_create(db, Edificio, nombre=nombre_edificio)
         for numero in numeros:
-            salas[numero] = get_or_create(db, Sala, numero=numero, defaults={"edificio": edificio})
+            salas[numero] = get_or_create(
+                db, Sala, numero=numero, defaults={"edificio": edificio}
+            )
 
     tipos = {t.nombre: t for t in db.scalars(select(TipoDispositivo))}
     estados = {e.nombre: e for e in db.scalars(select(EstadoDispositivo))}
     for codigo, tipo, sala, estado, descripcion in DISPOSITIVOS:
         get_or_create(
-            db, Dispositivo, codigo_inventario=codigo,
+            db,
+            Dispositivo,
+            codigo_inventario=codigo,
             defaults={
                 "tipo": tipos[tipo],
                 "sala": salas[sala],
@@ -119,9 +169,14 @@ def seed_reportes(db: Session, autor: Usuario) -> None:
     prioridades = {p.nombre: p for p in db.scalars(select(Prioridad))}
 
     for codigo, titulo, descripcion, estado, prioridad in REPORTES:
-        dispositivo = db.scalars(select(Dispositivo).filter_by(codigo_inventario=codigo)).one()
+        dispositivo = db.scalars(
+            select(Dispositivo).filter_by(codigo_inventario=codigo)
+        ).one()
         get_or_create(
-            db, Reporte, titulo=titulo, dispositivo_id=dispositivo.id,
+            db,
+            Reporte,
+            titulo=titulo,
+            dispositivo_id=dispositivo.id,
             defaults={
                 "descripcion": descripcion,
                 "creado_por": autor,
