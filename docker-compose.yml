@@ -1,0 +1,33 @@
+services:
+  db:
+    image: postgres:17
+    env_file: backend/.env
+    volumes:
+      - db_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U $${POSTGRES_USER} -d $${POSTGRES_DB}"]
+      interval: 2s
+      timeout: 5s
+      retries: 15
+
+  api:
+    build: backend
+    env_file: backend/.env
+    environment:
+      POSTGRES_HOST: db
+      POSTGRES_PORT: 5432
+    ports:
+      - "8000:8000"
+    depends_on:
+      db:
+        condition: service_healthy
+
+  web:
+    build: frontend
+    ports:
+      - "4200:80"
+    depends_on:
+      - api
+
+volumes:
+  db_data:
