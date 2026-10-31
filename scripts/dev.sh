@@ -107,7 +107,7 @@ printf '[dev] Levantando PostgreSQL...\n'
 compose up -d --wait
 
 printf '[dev] Preparando la base de datos...\n'
-(cd "$BACKEND" && uv run init-db)
+(cd "$BACKEND" && uv run alembic upgrade head)
 
 roles_count="$(compose exec -T db sh -lc 'psql -U "$POSTGRES_USER" -d "$POSTGRES_DB" -tAc "SELECT COUNT(*) FROM roles"' 2>/dev/null | tr -d '[:space:]' || true)"
 if [[ "$FORCE_INIT" == true || -z "$roles_count" || "$roles_count" == "0" ]]; then

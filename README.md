@@ -27,7 +27,7 @@ El script:
 
 - levanta PostgreSQL con Docker y espera a que esté sano,
 - instala las dependencias si faltan (`uv sync` y `npm install`),
-- crea las tablas con `init-db` y carga el seed solo si la base está vacía,
+- aplica las migraciones (`alembic upgrade head`) y carga el seed solo si la base está vacía,
 - inicia la API y el frontend con logs etiquetados `[api]` y `[web]`.
 
 - Frontend: http://localhost:4200
@@ -107,7 +107,7 @@ docker compose up -d --wait
 ### 4. Crear las tablas y cargar datos iniciales
 
 ```bash
-uv run init-db
+uv run alembic upgrade head
 uv run seed
 ```
 

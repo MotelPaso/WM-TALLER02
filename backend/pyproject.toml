@@ -8,6 +8,7 @@ authors = [
 ]
 requires-python = ">=3.14"
 dependencies = [
+    "alembic>=1.20.1",
     "fastapi[standard]>=0.143.3",
     "psycopg[binary]>=3.3.6",
     "pwdlib[argon2]>=0.3.1",
@@ -18,9 +19,16 @@ dependencies = [
 
 [project.scripts]
 backend = "backend:main"
-init-db = "backend.database.init_db:main"
 seed = "backend.database.seed:main"
 
 [build-system]
-requires = ["uv_build>=0.12.1,<0.13.0"]
+requires = ["uv_build>=0.12.1,<0.14.0"]
 build-backend = "uv_build"
+
+[dependency-groups]
+dev = [
+    "ruff>=0.17.3",
+]
+
+[tool.ruff.lint]
+extend-select = ["I"]
