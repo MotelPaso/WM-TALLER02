@@ -1,3 +1,4 @@
+import { DatePipe } from '@angular/common';
 import {
   ChangeDetectionStrategy,
   Component,
@@ -6,6 +7,7 @@ import {
   inject,
   signal,
 } from '@angular/core';
+import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
@@ -19,14 +21,22 @@ import { MatTableModule } from '@angular/material/table';
 import { EstadoVacio } from '../../components/estado-vacio/estado-vacio';
 import { ReporteChips } from '../../components/reporte-chips/reporte-chips';
 import { TarjetaDispositivo } from '../../components/tarjeta-dispositivo/tarjeta-dispositivo';
+import { Confirmar } from '../../dialogs/confirmar/confirmar';
 import { GestionarReporte } from '../../dialogs/gestionar-reporte/gestionar-reporte';
 import { ESTADOS_REPORTE, etiquetaEstadoReporte, etiquetaPrioridad, Reporte } from '../../models';
 import { AuthService } from '../../services/auth.service';
 import { ReportesService } from '../../services/reportes.service';
 
+export interface GrupoSalaReportes {
+  sala: string;
+  reportes: Reporte[];
+}
+
 @Component({
   selector: 'app-reportes',
   imports: [
+    DatePipe,
+    ReactiveFormsModule,
     MatButtonModule,
     MatCardModule,
     MatFormFieldModule,
@@ -47,15 +57,26 @@ export class Reportes implements OnInit {
   private readonly auth = inject(AuthService);
   private readonly snackBar = inject(MatSnackBar);
   private readonly dialog = inject(MatDialog);
+  private readonly fb = inject(NonNullableFormBuilder);
 
   protected readonly estados = ESTADOS_REPORTE;
-  protected readonly esTecnico = this.auth.esTecnico;
-
-  protected readonly columnas = computed(() =>
-    this.esTecnico
-      ? ['titulo', 'dispositivo', 'usuario', 'prioridad', 'estado']
-      : ['titulo', 'dispositivo', 'prioridad', 'estado', 'acciones'],
+  protected readonly esTecnico = computed(
+    () => this.auth.usuario()?.rol?.nombre === 'tecnico',
   );
+
+  protected readonly filtros = this.fb.group({
+    q: [''],
+    estado: ['todos'],
+    prioridad: ['todas'],
+    sala: ['todas'],
+  });
+
+  private readonly filtroValores = signal({
+    q: '',
+    estado: 'todos',
+    prioridad: 'todas',
+    sala: 'todas',
+  });
 
   protected readonly reportes = signal<Reporte[]>([]);
   protected readonly cargando = signal(false);
@@ -66,6 +87,93 @@ export class Reportes implements OnInit {
 
   protected etiquetaEstado = etiquetaEstadoReporte;
   protected etiquetaPrioridad = etiquetaPrioridad;
+
+  constructor() {
+    this.filtros.valueChanges.subscribe((vals) => {
+      this.filtroValores.set({
+        q: vals.q ?? '',
+        estado: vals.estado ?? 'todos',
+        prioridad: vals.prioridad ?? 'todas',
+        sala: vals.sala ?? 'todas',
+      });
+    });
+  }
+
+  protected readonly salasDisponibles = computed<string[]>(() => {
+    const salasSet = new Set<string>();
+    for (const r of this.reportes()) {
+      if (r.dispositivo?.sala?.codigo) {
+        salasSet.add(r.dispositivo.sala.codigo);
+      }
+    }
+    return Array.from(salasSet).sort();
+  });
+
+  protected readonly reportesFiltrados = computed<Reporte[]>(() => {
+    const { q, estado, prioridad, sala } = this.filtroValores();
+    const query = (q || '').trim().toLowerCase();
+
+    return this.reportes().filter((r) => {
+      // Filtro texto q
+      if (query) {
+        const codigoRep = this.formatoCodigo(r.id).toLowerCase();
+        const titulo = (r.titulo || '').toLowerCase();
+        const descripcion = (r.descripcion || '').toLowerCase();
+        const creador = (r.creado_por?.nombre || '').toLowerCase();
+        const codigoDisp = (r.dispositivo?.codigo_inventario || '').toLowerCase();
+        const tipoDisp = (r.dispositivo?.tipo?.nombre || '').toLowerCase();
+        const salaDisp = (r.dispositivo?.sala?.codigo || '').toLowerCase();
+
+        const match =
+          codigoRep.includes(query) ||
+          String(r.id).includes(query) ||
+          titulo.includes(query) ||
+          descripcion.includes(query) ||
+          creador.includes(query) ||
+          codigoDisp.includes(query) ||
+          tipoDisp.includes(query) ||
+          salaDisp.includes(query);
+
+        if (!match) return false;
+      }
+
+      // Filtro estado
+      if (estado !== 'todos' && r.estado?.nombre !== estado) {
+        return false;
+      }
+
+      // Filtro prioridad
+      if (prioridad !== 'todas') {
+        if (prioridad === 'sin_prioridad') {
+          if (r.prioridad) return false;
+        } else if (r.prioridad?.nombre !== prioridad) {
+          return false;
+        }
+      }
+
+      // Filtro sala
+      if (sala !== 'todas' && r.dispositivo?.sala?.codigo !== sala) {
+        return false;
+      }
+
+      return true;
+    });
+  });
+
+  protected readonly reportesPorSala = computed<GrupoSalaReportes[]>(() => {
+    const mapa = new Map<string, Reporte[]>();
+    for (const r of this.reportesFiltrados()) {
+      const codigoSala = r.dispositivo?.sala?.codigo ?? 'Sin sala';
+      if (!mapa.has(codigoSala)) {
+        mapa.set(codigoSala, []);
+      }
+      mapa.get(codigoSala)!.push(r);
+    }
+    return Array.from(mapa.entries()).map(([sala, reportes]) => ({
+      sala,
+      reportes,
+    }));
+  });
 
   ngOnInit(): void {
     this.cargar();
@@ -90,54 +198,63 @@ export class Reportes implements OnInit {
     });
   }
 
+  protected formatoCodigo(id: number): string {
+    return `REP-${String(id).padStart(4, '0')}`;
+  }
+
   /** Un reporte se puede eliminar si es propio y sigue "abierto". */
   protected sePuedeEliminar(reporte: Reporte): boolean {
     const usuario = this.auth.usuario();
-    return !!usuario && reporte.creado_por.id === usuario.id && reporte.estado.nombre === 'abierto';
+    return !!usuario && reporte.creado_por?.id === usuario.id && reporte.estado?.nombre === 'abierto';
   }
 
-  protected async eliminar(reporte: Reporte): Promise<void> {
-    const confirmado = await this.confirmar(`¿Eliminar el reporte "${reporte.titulo}"?`);
-    if (!confirmado) return;
+  protected eliminar(reporte: Reporte): void {
+    const dialogRef = this.dialog.open(Confirmar, {
+      width: '440px',
+      data: {
+        titulo: `¿Eliminar ${this.formatoCodigo(reporte.id)}?`,
+        mensaje: `¿Estás seguro de que deseas eliminar el reporte "${reporte.titulo}"? Esta acción no se puede deshacer.`,
+        accion: 'Eliminar',
+      },
+    });
 
-    this.marcarEnProceso(reporte.id, true);
-    this.reportesService.eliminar(reporte.id).subscribe({
-      next: () => {
-        this.reportes.update((lista) => lista.filter((r) => r.id !== reporte.id));
-        this.marcarEnProceso(reporte.id, false);
-        this.snackBar.open('Reporte eliminado.', 'OK', { duration: 3000 });
-      },
-      error: (err) => {
-        this.marcarEnProceso(reporte.id, false);
-        this.snackBar.open(`No se pudo eliminar (status ${err.status ?? 'sin conexión'}).`, 'OK', {
-          duration: 4000,
-        });
-      },
+    dialogRef.afterClosed().subscribe((confirmado) => {
+      if (!confirmado) return;
+
+      this.marcarEnProceso(reporte.id, true);
+      this.reportesService.eliminar(reporte.id).subscribe({
+        next: () => {
+          this.reportes.update((lista) => lista.filter((r) => r.id !== reporte.id));
+          this.marcarEnProceso(reporte.id, false);
+          this.snackBar.open('Reporte eliminado.', 'OK', { duration: 3000 });
+        },
+        error: (err) => {
+          this.marcarEnProceso(reporte.id, false);
+          const detalle =
+            err.error?.detail ?? `No se pudo eliminar (${err.status ?? 'sin conexión'}).`;
+          this.snackBar.open(detalle, 'OK', {
+            duration: 4000,
+          });
+        },
+      });
     });
   }
 
-  protected cambiarEstado(reporte: Reporte, estado: string): void {
-    if (estado === reporte.estado.nombre) return;
-    this.marcarEnProceso(reporte.id, true);
-    this.reportesService.cambiarEstado(reporte.id, estado).subscribe({
-      next: (actualizado) => {
-        this.reportes.update((lista) => lista.map((r) => (r.id === reporte.id ? actualizado : r)));
-        this.marcarEnProceso(reporte.id, false);
-        this.snackBar.open('Estado actualizado.', 'OK', { duration: 3000 });
-      },
-      error: (err) => {
-        this.marcarEnProceso(reporte.id, false);
-        this.snackBar.open(
-          `No se pudo actualizar (status ${err.status ?? 'sin conexión'}).`,
-          'OK',
-          { duration: 4000 },
+  protected abrirGestionar(reporte: Reporte): void {
+    const dialogRef = this.dialog.open(GestionarReporte, {
+      data: reporte,
+      width: '560px',
+    });
+
+    dialogRef.afterClosed().subscribe((actualizado?: Reporte) => {
+      if (actualizado && actualizado.id) {
+        this.reportes.update((lista) =>
+          lista.map((r) => (r.id === actualizado.id ? actualizado : r)),
         );
-      },
+      } else if (actualizado) {
+        this.cargar();
+      }
     });
-  }
-
-  protected abrirGestionar(): void {
-    this.dialog.open(GestionarReporte, { width: '560px' });
   }
 
   private marcarEnProceso(id: number, activo: boolean): void {
@@ -147,10 +264,5 @@ export class Reportes implements OnInit {
       else copia.delete(id);
       return copia;
     });
-  }
-
-  private confirmar(mensaje: string): Promise<boolean> {
-    // Confirm nativo para la zona de pruebas; luego se puede reemplazar por un MatDialog.
-    return Promise.resolve(window.confirm(mensaje));
   }
 }

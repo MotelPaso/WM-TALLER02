@@ -46,7 +46,15 @@ export class DispositivoFicha {
   }
 
   protected abrirReportarFalla(): void {
-    this.dialog.open(ReportarFalla, { width: '560px' });
+    const disp = this.dispositivo();
+    if (!disp) return;
+    const ref = this.dialog.open(ReportarFalla, { data: disp, width: '560px' });
+    ref.afterClosed().subscribe((creado) => {
+      if (creado) {
+        this.getReportes(disp.id);
+        this.getDispositivo(disp.id);
+      }
+    });
   }
 
   protected abrirConfirmarEliminar(): void {

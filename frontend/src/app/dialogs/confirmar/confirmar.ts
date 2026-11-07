@@ -1,6 +1,13 @@
-import { ChangeDetectionStrategy, Component } from '@angular/core';
+import { ChangeDetectionStrategy, Component, inject } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
-import { MatDialogModule } from '@angular/material/dialog';
+import { MAT_DIALOG_DATA, MatDialogModule } from '@angular/material/dialog';
+
+export interface ConfirmarData {
+  titulo?: string;
+  mensaje?: string;
+  accion?: string;
+  error?: string;
+}
 
 @Component({
   selector: 'app-confirmar',
@@ -9,4 +16,6 @@ import { MatDialogModule } from '@angular/material/dialog';
   styleUrl: './confirmar.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Confirmar {}
+export class Confirmar {
+  readonly data = inject<ConfirmarData>(MAT_DIALOG_DATA, { optional: true });
+}
