@@ -62,6 +62,7 @@ export class DispositivosList implements OnInit {
 
   protected readonly esTecnico = computed(() => this.auth.usuario()?.rol?.nombre === 'tecnico');
   protected readonly columnas = ['nombre', 'tipo', 'ubicacion', 'estado'];
+  protected readonly vista = signal<'sala' | 'cuadricula'>('sala');
 
   protected readonly filtros = this.fb.group({
     q: [''],
@@ -197,6 +198,16 @@ export class DispositivosList implements OnInit {
 
   protected limpiarFiltros() {
     this.filtros.reset();
+  }
+
+  protected etiquetaEstado(nombre?: string): string {
+    const mapa: Record<string, string> = {
+      operativo: 'Operativo',
+      con_falla: 'Con falla',
+      en_reparacion: 'En reparación',
+      fuera_de_servicio: 'Fuera de servicio',
+    };
+    return nombre ? (mapa[nombre] ?? nombre) : '';
   }
 
   private filtrosActuales(): DispositivoFiltros {

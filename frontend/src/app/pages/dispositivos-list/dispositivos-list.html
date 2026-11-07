@@ -79,7 +79,8 @@
   <div class="flex gap-2" role="group" aria-label="Vista">
     <button
       type="button"
-      aria-pressed="true"
+      [attr.aria-pressed]="vista() === 'sala'"
+      (click)="vista.set('sala')"
       class="group inline-flex h-8 items-center gap-2 rounded-lg border border-borde-fuerte px-4 font-medium text-texto-suave transition-colors hover:bg-neutro aria-pressed:border-transparent aria-pressed:bg-primario-contenedor aria-pressed:text-en-primario-contenedor"
     >
       <span
@@ -91,7 +92,8 @@
     </button>
     <button
       type="button"
-      aria-pressed="false"
+      [attr.aria-pressed]="vista() === 'cuadricula'"
+      (click)="vista.set('cuadricula')"
       class="group inline-flex h-8 items-center gap-2 rounded-lg border border-borde-fuerte px-4 font-medium text-texto-suave transition-colors hover:bg-neutro aria-pressed:border-transparent aria-pressed:bg-primario-contenedor aria-pressed:text-en-primario-contenedor"
     >
       <span
@@ -145,17 +147,52 @@
     <button matButton="outlined" type="button" (click)="limpiarFiltros()">Limpiar filtros</button>
   </app-estado-vacio>
 } @else {
-  <div
-    class="mt-8 grid grid-cols-1 items-start gap-6 transition-opacity duration-300 xl:grid-cols-2"
-    [class.opacity-50]="cargando()"
-    [attr.aria-busy]="cargando()"
-  >
-    @for (sala of salasConDispositivos(); track sala.id) {
-      <app-tarjeta-sala
-        animate.enter="fundido"
-        [sala]="sala"
-        [dispositivos]="dispositivos()"
-      ></app-tarjeta-sala>
-    }
-  </div>
+  @if (vista() === 'sala') {
+    <div
+      class="mt-8 grid grid-cols-1 items-start gap-6 transition-opacity duration-300 xl:grid-cols-2"
+      [class.opacity-50]="cargando()"
+      [attr.aria-busy]="cargando()"
+    >
+      @for (sala of salasConDispositivos(); track sala.id) {
+        <app-tarjeta-sala
+          animate.enter="fundido"
+          [sala]="sala"
+          [dispositivos]="dispositivos()"
+        ></app-tarjeta-sala>
+      }
+    </div>
+  } @else {
+    <ul
+      class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4 transition-opacity duration-300"
+      [class.opacity-50]="cargando()"
+      [attr.aria-busy]="cargando()"
+    >
+      @for (dispositivo of dispositivos(); track dispositivo.id) {
+        <li animate.enter="fundido">
+          <a
+            [routerLink]="['/dispositivos', dispositivo.id]"
+            class="group block h-full rounded-xl text-inherit no-underline"
+          >
+            <div
+              class="flex h-full min-h-[110px] flex-col justify-between rounded-xl border border-borde bg-white p-5 transition-[border-color,box-shadow] duration-200 ease-salida group-hover:border-borde-fuerte group-hover:shadow-[0_6px_16px_-6px_rgb(29_27_32/0.14)]"
+            >
+              <div>
+                <div class="flex items-center justify-between gap-2">
+                  <span class="text-lg font-medium">{{ dispositivo.codigo_inventario }}</span>
+                  <span class="etiqueta etiqueta-{{ dispositivo.estado.nombre }}">{{ etiquetaEstado(dispositivo.estado.nombre) }}</span>
+                </div>
+                <p class="mt-2 text-[13px] text-texto-tenue line-clamp-1">
+                  {{ dispositivo.descripcion || dispositivo.tipo.nombre }}
+                </p>
+              </div>
+              <div class="mt-3 flex items-center gap-1.5 text-xs text-texto-suave border-t border-borde/60 pt-2.5">
+                <span class="material-symbols-outlined text-base" aria-hidden="true">location_on</span>
+                <span>{{ dispositivo.sala.codigo }}</span>
+              </div>
+            </div>
+          </a>
+        </li>
+      }
+    </ul>
+  }
 }
