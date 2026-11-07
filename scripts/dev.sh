@@ -5,6 +5,7 @@ ROOT="$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)"
 BACKEND="$ROOT/backend"
 FRONTEND="$ROOT/frontend"
 FORCE_INIT=false
+API_HOST="${API_HOST:-0.0.0.0}"
 SERVICE_PIDS=()
 CLEANED=0
 
@@ -15,6 +16,10 @@ Uso: ./scripts/dev.sh [--init]
   --init   Fuerza la creación de tablas y la carga de datos iniciales (seed).
   -h, --help
            Muestra esta ayuda.
+
+Variables de entorno:
+  API_HOST Interfaz donde escucha la API (por defecto 0.0.0.0, accesible desde
+           la red). Usa API_HOST=127.0.0.1 para dejarla solo en localhost.
 
 Levanta PostgreSQL (Docker), la API (FastAPI) y el frontend (Angular) con
 logs etiquetados [api] y [web]. Ctrl+C detiene la API y el frontend; la base
@@ -116,7 +121,11 @@ if [[ "$FORCE_INIT" == true || -z "$roles_count" || "$roles_count" == "0" ]]; th
 fi
 
 printf '[dev] Iniciando API en http://localhost:8000 (docs en /docs)\n'
-start_service api "$BACKEND" uv run fastapi dev src/backend/main.py
+if [[ "$API_HOST" != "127.0.0.1" && "$API_HOST" != "localhost" ]]; then
+  api_ip="$(tailscale ip -4 2>/dev/null | head -n1 || true)"
+  [[ -n "$api_ip" ]] && printf '[dev] API accesible por Tailscale: http://%s:8000 (docs en /docs)\n' "$api_ip"
+fi
+start_service api "$BACKEND" uv run fastapi dev src/backend/main.py --host "$API_HOST" --port 8000
 
 printf '[dev] Iniciando frontend en http://localhost:4200\n'
 start_service web "$FRONTEND" npm start
