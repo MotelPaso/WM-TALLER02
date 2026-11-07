@@ -31,6 +31,9 @@ export class DispositivosService {
     if (filtros.tipo_id != null) {
       params = params.set('tipo_id', filtros.tipo_id);
     }
+    if (filtros.edificio_id != null) {
+      params = params.set('edificio_id', filtros.edificio_id);
+    }
     if (filtros.sala_id != null) {
       params = params.set('sala_id', filtros.sala_id);
     }

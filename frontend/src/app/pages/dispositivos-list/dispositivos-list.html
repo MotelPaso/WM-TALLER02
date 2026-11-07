@@ -56,6 +56,13 @@
   />
 
   <app-filtro-select
+    [control]="filtros.controls.edificioId"
+    [opciones]="opcionesEdificios()"
+    etiqueta="Edificio"
+    textoTodos="Edificio: Todos"
+  />
+
+  <app-filtro-select
     [control]="filtros.controls.salaId"
     [opciones]="opcionesSalas()"
     etiqueta="Sala"

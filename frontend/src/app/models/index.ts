@@ -86,6 +86,7 @@ export interface DispositivoUpdatePayload {
 export interface DispositivoFiltros {
   sala_id?: number;
   tipo_id?: number;
+  edificio_id?: number;
   q?: string;
   estado?: string;
 }

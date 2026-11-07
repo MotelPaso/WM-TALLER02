@@ -24,6 +24,7 @@ import { FiltroSelect } from '../../components/filtro-select/filtro-select';
 import {
   Dispositivo,
   DispositivoFiltros,
+  Edificio,
   EstadoDispositivo,
   OpcionFiltro,
   Sala,
@@ -66,16 +67,25 @@ export class DispositivosList implements OnInit {
     q: [''],
     estado: this.fb.control<number | null>(null),
     tipoId: this.fb.control<number | null>(null),
+    edificioId: this.fb.control<number | null>(null),
     salaId: this.fb.control<number | null>(null),
   });
 
   protected readonly estados = signal<EstadoDispositivo[]>([]);
   protected readonly dispositivos = signal<Dispositivo[]>([]);
-  protected readonly salas = signal<Sala[]>([]);
+  protected readonly todasSalas = signal<Sala[]>([]);
   protected readonly tipos = signal<TipoDispositivo[]>([]);
+  protected readonly edificios = signal<Edificio[]>([]);
+
+  // Salas filtradas según el edificio seleccionado en el filtro
+  protected readonly salasFiltradas = computed<Sala[]>(() => {
+    const edificioId = this.filtros.controls.edificioId.value;
+    if (!edificioId) return this.todasSalas();
+    return this.todasSalas().filter((s) => s.edificio?.id === edificioId);
+  });
 
   protected readonly opcionesSalas = computed<OpcionFiltro[]>(() =>
-    this.salas().map((sala) => ({ id: sala.id, label: sala.codigo })),
+    this.salasFiltradas().map((sala) => ({ id: sala.id, label: sala.codigo })),
   );
   protected readonly opcionesTipos = computed<OpcionFiltro[]>(() =>
     this.tipos().map((tipo) => ({ id: tipo.id, label: tipo.nombre })),
@@ -83,10 +93,13 @@ export class DispositivosList implements OnInit {
   protected readonly opcionesEstados = computed<OpcionFiltro[]>(() =>
     this.estados().map((estado) => ({ id: estado.id, label: estado.nombre })),
   );
+  protected readonly opcionesEdificios = computed<OpcionFiltro[]>(() =>
+    this.edificios().map((edificio) => ({ id: edificio.id, label: edificio.nombre })),
+  );
 
   protected readonly salasConDispositivos = computed(() => {
     const ids = new Set(this.dispositivos().map((dispositivo) => dispositivo.sala.id));
-    return this.salas().filter((sala) => ids.has(sala.id));
+    return this.salasFiltradas().filter((sala) => ids.has(sala.id));
   });
 
   protected readonly cargando = signal(false);
@@ -96,12 +109,18 @@ export class DispositivosList implements OnInit {
   private readonly recargar$ = new Subject<void>();
 
   constructor() {
-    const { q, estado, tipoId, salaId } = this.filtros.controls;
+    const { q, estado, tipoId, edificioId, salaId } = this.filtros.controls;
+
+    // Cuando cambia el edificio, resetea la sala seleccionada (cascada)
+    edificioId.valueChanges.pipe(takeUntilDestroyed(this.destroyRef)).subscribe(() => {
+      salaId.setValue(null, { emitEvent: false });
+    });
 
     merge(
       q.valueChanges.pipe(debounceTime(300)),
       estado.valueChanges,
       tipoId.valueChanges,
+      edificioId.valueChanges,
       salaId.valueChanges,
       this.recargar$,
     )
@@ -137,6 +156,7 @@ export class DispositivosList implements OnInit {
     this.cargarSalas();
     this.cargarTipos();
     this.cargarEstados();
+    this.cargarEdificios();
   }
 
   protected cargarEstados(): void {
@@ -150,7 +170,7 @@ export class DispositivosList implements OnInit {
   protected cargarSalas(): void {
     this.dispositivosService.getSalas().subscribe({
       next: (salas) => {
-        this.salas.set(salas);
+        this.todasSalas.set(salas);
       },
     });
   }
@@ -159,6 +179,14 @@ export class DispositivosList implements OnInit {
     this.dispositivosService.getTiposDispositivo().subscribe({
       next: (tipos) => {
         this.tipos.set(tipos);
+      },
+    });
+  }
+
+  protected cargarEdificios(): void {
+    this.dispositivosService.getEdificios().subscribe({
+      next: (edificios) => {
+        this.edificios.set(edificios);
       },
     });
   }
@@ -172,13 +200,14 @@ export class DispositivosList implements OnInit {
   }
 
   private filtrosActuales(): DispositivoFiltros {
-    const { q, estado, tipoId, salaId } = this.filtros.getRawValue();
+    const { q, estado, tipoId, edificioId, salaId } = this.filtros.getRawValue();
     const estadoSeleccionado = this.estados().find((item) => item.id === estado);
 
     return {
       q: q.trim() || undefined,
       estado: estadoSeleccionado?.nombre ?? undefined,
       tipo_id: tipoId ?? undefined,
+      edificio_id: edificioId ?? undefined,
       sala_id: salaId ?? undefined,
     };
   }
