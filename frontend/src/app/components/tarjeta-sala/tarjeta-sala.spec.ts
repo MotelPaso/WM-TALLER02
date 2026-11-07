@@ -16,7 +16,7 @@ describe('TarjetaSala', () => {
       id: 1,
       codigo: 'X1-29',
       numero: '29',
-      edificio: { id: 1, numero: 'X1' },
+      edificio: { id: 1, nombre: 'X1' },
     });
     fixture.componentRef.setInput('dispositivos', []);
     await fixture.whenStable();

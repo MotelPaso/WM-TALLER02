@@ -16,10 +16,12 @@
     </p>
   </div>
   <!-- Solo técnico: @if (esTecnico) -->
-  <a matButton="filled" routerLink="/dispositivos/nuevo">
-    <span class="material-symbols-outlined" aria-hidden="true">add</span>
-    Nuevo dispositivo
-  </a>
+  @if (esTecnico()) {
+    <a matButton="filled" routerLink="/dispositivos/nuevo">
+      <span class="material-symbols-outlined" aria-hidden="true">add</span>
+      Nuevo dispositivo
+    </a>
+  }
 </div>
 
 <!-- ===== Filtros ===== -->

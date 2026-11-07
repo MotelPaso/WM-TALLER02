@@ -54,19 +54,25 @@
         Reportar falla
       </button>
       <!-- Editar y Eliminar: solo técnico -->
-      <a matButton="outlined" routerLink="/dispositivos/1/editar" class="flex-1 sm:flex-none">
-        <span class="material-symbols-outlined" aria-hidden="true">edit</span>
-        Editar
-      </a>
-      <button
-        matButton="outlined"
-        type="button"
-        class="boton-peligro flex-1 sm:flex-none"
-        (click)="abrirConfirmarEliminar()"
-      >
-        <span class="material-symbols-outlined" aria-hidden="true">delete</span>
-        Eliminar
-      </button>
+      @if (esTecnico() && dispositivo()) {
+        <a
+          matButton="outlined"
+          [routerLink]="['/dispositivos', dispositivo()?.id, 'editar']"
+          class="flex-1 sm:flex-none"
+        >
+          <span class="material-symbols-outlined" aria-hidden="true">edit</span>
+          Editar
+        </a>
+        <button
+          matButton="outlined"
+          type="button"
+          class="boton-peligro flex-1 sm:flex-none"
+          (click)="abrirConfirmarEliminar()"
+        >
+          <span class="material-symbols-outlined" aria-hidden="true">delete</span>
+          Eliminar
+        </button>
+      }
     </div>
   </div>
 

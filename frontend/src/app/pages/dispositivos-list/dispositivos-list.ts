@@ -30,6 +30,7 @@ import {
   TipoDispositivo,
 } from '../../models';
 import { DispositivosService } from '../../services/dispositivos.service';
+import { AuthService } from '../../services/auth.service';
 import { TarjetaSala } from '../../components/tarjeta-sala/tarjeta-sala';
 
 @Component({
@@ -54,9 +55,11 @@ import { TarjetaSala } from '../../components/tarjeta-sala/tarjeta-sala';
 })
 export class DispositivosList implements OnInit {
   private readonly dispositivosService = inject(DispositivosService);
+  private readonly auth = inject(AuthService);
   private readonly fb = inject(NonNullableFormBuilder);
   private readonly destroyRef = inject(DestroyRef);
 
+  protected readonly esTecnico = computed(() => this.auth.usuario()?.rol?.nombre === 'tecnico');
   protected readonly columnas = ['nombre', 'tipo', 'ubicacion', 'estado'];
 
   protected readonly filtros = this.fb.group({

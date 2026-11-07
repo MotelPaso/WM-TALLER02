@@ -15,6 +15,7 @@ const dispositivo: Dispositivo = {
     edificio: { id: 1, nombre: 'X1' },
   },
   estado: { id: 2, nombre: 'con_falla' },
+  creado_en: '2026-10-25T10:00:00Z',
 };
 
 describe('TarjetaDispositivo', () => {

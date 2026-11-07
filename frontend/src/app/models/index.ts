@@ -68,6 +68,21 @@ export interface Edificio {
   nombre: string;
 }
 
+export interface DispositivoCreatePayload {
+  codigo_inventario: string;
+  tipo_dispositivo_id: number;
+  sala_id: number;
+  descripcion?: string | null;
+}
+
+export interface DispositivoUpdatePayload {
+  codigo_inventario?: string;
+  tipo_dispositivo_id?: number;
+  sala_id?: number;
+  descripcion?: string | null;
+  fuera_de_servicio?: boolean;
+}
+
 export interface DispositivoFiltros {
   sala_id?: number;
   tipo_id?: number;

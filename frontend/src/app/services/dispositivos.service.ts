@@ -4,7 +4,9 @@ import { Observable } from 'rxjs';
 
 import {
   Dispositivo,
+  DispositivoCreatePayload,
   DispositivoFiltros,
+  DispositivoUpdatePayload,
   Edificio,
   EstadoDispositivo,
   Reporte,
@@ -35,8 +37,12 @@ export class DispositivosService {
     return this.http.get<Dispositivo[]>(`${API}/dispositivos`, { params });
   }
 
-  getSalas(): Observable<Sala[]> {
-    return this.http.get<Sala[]>(`${API}/salas`);
+  getSalas(edificioId?: number): Observable<Sala[]> {
+    let params = new HttpParams();
+    if (edificioId != null) {
+      params = params.set('edificio_id', edificioId);
+    }
+    return this.http.get<Sala[]>(`${API}/salas`, { params });
   }
 
   getEdificios(): Observable<Edificio[]> {
@@ -55,5 +61,17 @@ export class DispositivosService {
 
   getReportesDispositivo(id: number): Observable<Reporte[]> {
     return this.http.get<Reporte[]>(`${API}/dispositivos/${id}/reportes`);
+  }
+
+  crearDispositivo(payload: DispositivoCreatePayload): Observable<Dispositivo> {
+    return this.http.post<Dispositivo>(`${API}/dispositivos`, payload);
+  }
+
+  actualizarDispositivo(id: number, payload: DispositivoUpdatePayload): Observable<Dispositivo> {
+    return this.http.patch<Dispositivo>(`${API}/dispositivos/${id}`, payload);
+  }
+
+  eliminarDispositivo(id: number): Observable<void> {
+    return this.http.delete<void>(`${API}/dispositivos/${id}`);
   }
 }
