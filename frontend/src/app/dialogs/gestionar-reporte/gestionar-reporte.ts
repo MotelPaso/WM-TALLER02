@@ -37,6 +37,7 @@ export class GestionarReporte {
   protected readonly form = this.fb.group({
     prioridad_id: this.fb.control<number | null>(this.data.prioridad?.id ?? null),
     estado: this.fb.control<string>(this.data.estado.nombre),
+    notas_resolucion: this.fb.control<string>(this.data.notas_resolucion ?? ''),
   });
 
   protected readonly codigoReporte = String(this.data.id).padStart(4, '0');
@@ -53,21 +54,26 @@ export class GestionarReporte {
   protected formularioModificado(): boolean {
     const p = this.form.controls.prioridad_id.value;
     const e = this.form.controls.estado.value;
+    const n = this.form.controls.notas_resolucion.value.trim();
     const initialP = this.data.prioridad?.id ?? null;
     const initialE = this.data.estado.nombre;
-    return p !== initialP || e !== initialE;
+    const initialN = (this.data.notas_resolucion ?? '').trim();
+    return p !== initialP || e !== initialE || n !== initialN;
   }
 
   protected guardar(): void {
     const nuevaPrioridad = this.form.controls.prioridad_id.value;
     const nuevoEstado = this.form.controls.estado.value;
+    const nuevasNotas = this.form.controls.notas_resolucion.value.trim();
     const anteriorPrioridad = this.data.prioridad?.id ?? null;
     const anteriorEstado = this.data.estado.nombre;
+    const anterioresNotas = (this.data.notas_resolucion ?? '').trim();
 
     const cambioPrioridad = nuevaPrioridad !== null && nuevaPrioridad !== anteriorPrioridad;
     const cambioEstado = nuevoEstado !== anteriorEstado;
+    const cambioNotas = nuevasNotas !== anterioresNotas;
 
-    if (!cambioPrioridad && !cambioEstado) {
+    if (!cambioPrioridad && !cambioEstado && !cambioNotas) {
       this.dialogRef.close();
       return;
     }
@@ -83,12 +89,12 @@ export class GestionarReporte {
     const peticion$ = cambioPrioridad
       ? this.reportesService.cambiarPrioridad(this.data.id, nuevaPrioridad!).pipe(
           switchMap((repActualizado) =>
-            cambioEstado
-              ? this.reportesService.cambiarEstado(this.data.id, nuevoEstado)
+            cambioEstado || cambioNotas
+              ? this.reportesService.cambiarEstado(this.data.id, nuevoEstado, nuevasNotas || null)
               : of(repActualizado),
           ),
         )
-      : this.reportesService.cambiarEstado(this.data.id, nuevoEstado);
+      : this.reportesService.cambiarEstado(this.data.id, nuevoEstado, nuevasNotas || null);
 
     peticion$.pipe(finalize(() => this.guardando.set(false))).subscribe({
       next: (resultado) => {

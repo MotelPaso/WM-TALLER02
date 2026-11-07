@@ -31,6 +31,7 @@ class ReportePrioridadUpdate(BaseModel):
 
 class ReporteEstadoUpdate(BaseModel):
     estado: Literal["en_proceso", "resuelto"]
+    notas_resolucion: str | None = None
 
 
 class ReporteOut(BaseModel):
@@ -46,3 +47,4 @@ class ReporteOut(BaseModel):
     creado_en: datetime
     actualizado_en: datetime
     finalizado_en: datetime | None
+    notas_resolucion: str | None = None

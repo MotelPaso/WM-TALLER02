@@ -86,6 +86,7 @@ export interface Reporte {
   creado_en: string;
   actualizado_en?: string;
   finalizado_en?: string;
+  notas_resolucion?: string;
 }
 
 export interface CreadoPor {

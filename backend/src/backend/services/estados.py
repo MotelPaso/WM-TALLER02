@@ -59,7 +59,9 @@ def cambiar_fuera_de_servicio(
         recalcular_estado_dispositivo(db, dispositivo)
 
 
-def cambiar_estado_reporte(db: Session, reporte: Reporte, nuevo: str) -> None:
+def cambiar_estado_reporte(
+    db: Session, reporte: Reporte, nuevo: str, notas_resolucion: str | None = None
+) -> None:
     actual = reporte.estado.nombre
     if ORDEN_ESTADOS_REPORTE.index(nuevo) <= ORDEN_ESTADOS_REPORTE.index(actual):
         raise HTTPException(
@@ -75,5 +77,7 @@ def cambiar_estado_reporte(db: Session, reporte: Reporte, nuevo: str) -> None:
     reporte.estado = obtener_por_nombre(db, EstadoReporte, nuevo)
     if nuevo == "resuelto":
         reporte.finalizado_en = datetime.now(UTC)
+        if notas_resolucion is not None:
+            reporte.notas_resolucion = notas_resolucion.strip() or None
 
     recalcular_estado_dispositivo(db, reporte.dispositivo)

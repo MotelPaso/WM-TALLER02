@@ -28,6 +28,22 @@
       <mat-chip-option value="resuelto" [disabled]="bloquearResuelto()">Resuelto</mat-chip-option>
     </mat-chip-listbox>
 
+    @if (form.controls.estado.value === 'resuelto') {
+      <div class="mt-4 flex flex-col gap-1.5">
+        <label for="notas_resolucion" class="font-form text-sm font-medium text-texto">
+          Nota de resolución o solución técnica
+        </label>
+        <textarea
+          id="notas_resolucion"
+          formControlName="notas_resolucion"
+          rows="3"
+          maxlength="1000"
+          placeholder="Ej: Se reemplazó el componente dañado y se verificó el correcto funcionamiento."
+          class="w-full rounded-xl border border-borde bg-white p-3 text-sm text-texto placeholder:text-texto-suave transition-colors focus:border-primario focus:outline-none"
+        ></textarea>
+      </div>
+    }
+
     <p class="mt-5 flex items-start gap-2.5 rounded-lg bg-crema px-4 py-3 text-[13px] text-texto-suave">
       <span class="material-symbols-outlined text-xl" aria-hidden="true">info</span>
       Asigna una prioridad antes de avanzar el estado. Al resolver se registra la fecha de cierre y el

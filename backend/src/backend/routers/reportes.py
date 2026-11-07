@@ -122,7 +122,7 @@ def update_estado(
     reporte_id: int, data: ReporteEstadoUpdate, db: DbSession, user: TechnicianUser
 ):
     reporte = obtener_reporte(db, reporte_id)
-    cambiar_estado_reporte(db, reporte, data.estado)
+    cambiar_estado_reporte(db, reporte, data.estado, data.notas_resolucion)
     db.commit()
     return obtener_reporte(db, reporte_id)
 

@@ -50,8 +50,16 @@ export class ReportesService {
   }
 
   /** Cambia el estado del reporte; el backend valida que sea técnico. */
-  cambiarEstado(id: number, estado: string): Observable<Reporte> {
-    return this.http.patch<Reporte>(`${API}/reportes/${id}/estado`, { estado });
+  cambiarEstado(
+    id: number,
+    estado: string,
+    notas_resolucion?: string | null,
+  ): Observable<Reporte> {
+    const body: { estado: string; notas_resolucion?: string } = { estado };
+    if (notas_resolucion !== undefined && notas_resolucion !== null && notas_resolucion.trim()) {
+      body.notas_resolucion = notas_resolucion.trim();
+    }
+    return this.http.patch<Reporte>(`${API}/reportes/${id}/estado`, body);
   }
 
   /** Solo permitido para reportes propios que sigan "abiertos". */

@@ -45,6 +45,7 @@ class Reporte(Base):
         nullable=False,
     )
     finalizado_en: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
+    notas_resolucion: Mapped[str | None] = mapped_column(Text, nullable=True)
 
     dispositivo: Mapped[Dispositivo] = relationship(back_populates="reportes")
     creado_por: Mapped[Usuario] = relationship()
