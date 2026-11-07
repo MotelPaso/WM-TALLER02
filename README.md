@@ -81,13 +81,27 @@ npm start
 
 La aplicación queda en http://localhost:4200. `npm start` usa `proxy.conf.json` para redirigir `/api` al backend en `localhost:8000`; con `ng serve` a secas las llamadas a la API fallan.
 
-| Comando | Qué hace |
-|---|---|
-| `npm run build` | Build de producción |
-| `npm test` | Tests |
+| Comando                            | Qué hace             |
+| ---------------------------------- | -------------------- |
+| `npm run build`                    | Build de producción  |
+| `npm test`                         | Tests                |
 | `npx ng generate component nombre` | Genera un componente |
 
 ### Backend
+
+Actualmente, la ip del backend es mi ip de tailscale para el uso del gian.
+se tiene que cambiar esta lista de `frontend/proxy.conf.json`
+
+```json
+{
+	"/api": {
+		"target": "http://localhost:8000",
+		"secure": false,
+		"changeOrigin": false,
+		"pathRewrite": { "^/api": "" }
+	}
+}
+```
 
 Todos los comandos se ejecutan desde `backend/`.
 
