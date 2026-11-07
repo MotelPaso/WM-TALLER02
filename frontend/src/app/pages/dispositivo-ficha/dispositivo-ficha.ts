@@ -10,6 +10,7 @@ import { finalize } from 'rxjs';
 import { EstadoVacio } from '../../components/estado-vacio/estado-vacio';
 import { ReporteChips } from '../../components/reporte-chips/reporte-chips';
 import { Confirmar } from '../../dialogs/confirmar/confirmar';
+import { GestionarReporte } from '../../dialogs/gestionar-reporte/gestionar-reporte';
 import { ReportarFalla } from '../../dialogs/reportar-falla/reportar-falla';
 import { DispositivosService } from '../../services/dispositivos.service';
 import { AuthService } from '../../services/auth.service';
@@ -59,6 +60,22 @@ export class DispositivoFicha {
       if (creado) {
         this.getReportes(disp.id);
         this.getDispositivo(disp.id);
+      }
+    });
+  }
+
+  /** Solo técnico: abre el diálogo para gestionar prioridad/estado del reporte. */
+  protected abrirGestionar(reporte: Reporte): void {
+    const ref = this.dialog.open(GestionarReporte, { data: reporte, width: '560px' });
+    ref.afterClosed().subscribe((actualizado?: Reporte) => {
+      if (actualizado) {
+        // Actualiza el reporte en la lista local sin recargar toda la ficha
+        this.reportes.update((lista) =>
+          lista.map((r) => (r.id === actualizado.id ? actualizado : r)),
+        );
+        // Si el estado del dispositivo puede haber cambiado, recargamos la cabecera
+        const disp = this.dispositivo();
+        if (disp) this.getDispositivo(disp.id);
       }
     });
   }
