@@ -1,6 +1,6 @@
 import { Routes } from '@angular/router';
 
-import { authGuard, logged } from './guards/auth.guard';
+import { authGuard, logged, tecnicoGuard } from './guards/auth.guard';
 import { Login } from './pages/login/login';
 import { DispositivosList } from './pages/dispositivos-list/dispositivos-list';
 import { DispositivoFicha } from './pages/dispositivo-ficha/dispositivo-ficha';
@@ -21,7 +21,7 @@ export const routes: Routes = [
     path: 'dispositivos/nuevo',
     component: DispositivoForm,
     title: 'Nuevo dispositivo',
-    canActivate: [authGuard],
+    canActivate: [authGuard, tecnicoGuard],
   },
   {
     path: 'dispositivos/:id',
@@ -33,7 +33,7 @@ export const routes: Routes = [
     path: 'dispositivos/:id/editar',
     component: DispositivoForm,
     title: 'Editar dispositivo',
-    canActivate: [authGuard],
+    canActivate: [authGuard, tecnicoGuard],
   },
   { path: 'reportes', component: Reportes, title: 'Reportes', canActivate: [authGuard] },
   { path: '', pathMatch: 'full', redirectTo: 'dispositivos' },

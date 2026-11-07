@@ -23,3 +23,18 @@ export const logged: CanActivateFn = () => {
   }
   return router.createUrlTree(['/dispositivos']);
 };
+
+/**
+ * Bloquea rutas exclusivas de técnico.
+ * Si el usuario tiene sesión pero no es técnico, redirige a /dispositivos.
+ * Si no tiene sesión, primero lo manda a /login (via authGuard en cadena).
+ */
+export const tecnicoGuard: CanActivateFn = () => {
+  const auth = inject(AuthService);
+  const router = inject(Router);
+
+  if (auth.esTecnico) {
+    return true;
+  }
+  return router.createUrlTree(['/dispositivos']);
+};

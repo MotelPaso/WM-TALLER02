@@ -106,14 +106,8 @@ export class DispositivoForm implements OnInit {
   }
 
   ngOnInit(): void {
-    if (!this.auth.esTecnico) {
-      this.snackBar.open('Solo los técnicos tienen acceso a esta sección.', 'OK', {
-        duration: 3000,
-      });
-      this.router.navigate(['/dispositivos']);
-      return;
-    }
-
+    // La protección de rol se delega al tecnicoGuard en app.routes.ts.
+    // Este componente solo es alcanzable si el usuario ya es técnico.
     const idParam = this.route.snapshot.paramMap.get('id');
     if (idParam) {
       this.editando.set(true);
