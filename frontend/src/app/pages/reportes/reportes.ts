@@ -85,6 +85,18 @@ export class Reportes implements OnInit {
   /** ids de reportes cuyo cambio de estado/eliminación está en vuelo */
   protected readonly enProceso = signal<Set<number>>(new Set());
 
+  // ===== KPIs: conteos sobre TODOS los reportes (sin aplicar filtros) =====
+  protected readonly conteoTotal = computed(() => this.reportes().length);
+  protected readonly conteoAbiertos = computed(
+    () => this.reportes().filter((r) => r.estado?.nombre === 'abierto').length,
+  );
+  protected readonly conteoEnProceso = computed(
+    () => this.reportes().filter((r) => r.estado?.nombre === 'en_proceso').length,
+  );
+  protected readonly conteoResueltos = computed(
+    () => this.reportes().filter((r) => r.estado?.nombre === 'resuelto').length,
+  );
+
   protected etiquetaEstado = etiquetaEstadoReporte;
   protected etiquetaPrioridad = etiquetaPrioridad;
 
@@ -97,6 +109,13 @@ export class Reportes implements OnInit {
         sala: vals.sala ?? 'todas',
       });
     });
+  }
+
+  /** Aplica filtro de estado al hacer clic en una tarjeta KPI.
+   *  Si el estado ya está activo, lo quita (vuelve a "todos"). */
+  protected filtrarPorEstado(estado: string): void {
+    const actual = this.filtros.controls.estado.value;
+    this.filtros.controls.estado.setValue(actual === estado ? 'todos' : estado);
   }
 
   protected readonly salasDisponibles = computed<string[]>(() => {

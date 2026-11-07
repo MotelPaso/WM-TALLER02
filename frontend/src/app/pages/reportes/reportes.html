@@ -46,6 +46,65 @@
       Revisa los reportes de los usuarios, asigna la prioridad y avanza su estado.
     </p>
 
+    <!-- ===== KPIs / Métricas ===== -->
+    <div class="mt-6 grid grid-cols-2 gap-3 sm:mt-8 sm:grid-cols-4">
+      <!-- Total -->
+      <button
+        type="button"
+        class="group flex flex-col items-start rounded-2xl border border-borde bg-superficie p-4 text-left transition-colors hover:border-borde-fuerte hover:bg-neutro"
+        (click)="filtrarPorEstado('todos')"
+        [class.ring-2]="filtros.controls.estado.value === 'todos'"
+        [class.ring-primario]="filtros.controls.estado.value === 'todos'"
+        aria-label="Ver todos los reportes"
+      >
+        <span class="material-symbols-outlined text-2xl text-primario" aria-hidden="true">inbox</span>
+        <span class="mt-3 text-3xl font-bold tabular-nums">{{ conteoTotal() }}</span>
+        <span class="mt-1 text-sm text-texto-suave">Total</span>
+      </button>
+
+      <!-- Abiertos -->
+      <button
+        type="button"
+        class="group flex flex-col items-start rounded-2xl border border-borde bg-superficie p-4 text-left transition-colors hover:border-borde-fuerte hover:bg-neutro"
+        (click)="filtrarPorEstado('abierto')"
+        [class.ring-2]="filtros.controls.estado.value === 'abierto'"
+        [class.ring-[#b45309]]="filtros.controls.estado.value === 'abierto'"
+        aria-label="Filtrar por reportes abiertos"
+      >
+        <span class="material-symbols-outlined text-2xl text-[#b45309]" aria-hidden="true">warning</span>
+        <span class="mt-3 text-3xl font-bold tabular-nums text-[#92400e]">{{ conteoAbiertos() }}</span>
+        <span class="mt-1 text-sm text-texto-suave">Abiertos</span>
+      </button>
+
+      <!-- En proceso -->
+      <button
+        type="button"
+        class="group flex flex-col items-start rounded-2xl border border-borde bg-superficie p-4 text-left transition-colors hover:border-borde-fuerte hover:bg-neutro"
+        (click)="filtrarPorEstado('en_proceso')"
+        [class.ring-2]="filtros.controls.estado.value === 'en_proceso'"
+        [class.ring-[#1d4ed8]]="filtros.controls.estado.value === 'en_proceso'"
+        aria-label="Filtrar por reportes en proceso"
+      >
+        <span class="material-symbols-outlined text-2xl text-[#1d4ed8]" aria-hidden="true">build</span>
+        <span class="mt-3 text-3xl font-bold tabular-nums text-[#1e3a8a]">{{ conteoEnProceso() }}</span>
+        <span class="mt-1 text-sm text-texto-suave">En proceso</span>
+      </button>
+
+      <!-- Resueltos -->
+      <button
+        type="button"
+        class="group flex flex-col items-start rounded-2xl border border-borde bg-superficie p-4 text-left transition-colors hover:border-borde-fuerte hover:bg-neutro"
+        (click)="filtrarPorEstado('resuelto')"
+        [class.ring-2]="filtros.controls.estado.value === 'resuelto'"
+        [class.ring-[#15803d]]="filtros.controls.estado.value === 'resuelto'"
+        aria-label="Filtrar por reportes resueltos"
+      >
+        <span class="material-symbols-outlined text-2xl text-[#15803d]" aria-hidden="true">check_circle</span>
+        <span class="mt-3 text-3xl font-bold tabular-nums text-[#14532d]">{{ conteoResueltos() }}</span>
+        <span class="mt-1 text-sm text-texto-suave">Resueltos</span>
+      </button>
+    </div>
+
     <form [formGroup]="filtros" class="mt-6 flex flex-wrap items-center gap-x-2 gap-y-3 sm:mt-8" role="search">
       <label class="relative flex w-full items-center lg:mr-2 lg:w-80">
         <span class="sr-only">Buscar por ID, usuario o dispositivo</span>
