@@ -22,9 +22,9 @@ jobs:
       run:
         working-directory: backend
     steps:
-      - uses: actions/checkout@v5
+      - uses: actions/checkout@v7
       - name: Instalar uv
-        uses: astral-sh/setup-uv@v6
+        uses: astral-sh/setup-uv@v10
         with:
           enable-cache: true
       - name: Instalar dependencias
@@ -41,9 +41,9 @@ jobs:
       run:
         working-directory: frontend
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v7
       - name: Descargar Node
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v7
         with:
           node-version: 24
           cache: npm
