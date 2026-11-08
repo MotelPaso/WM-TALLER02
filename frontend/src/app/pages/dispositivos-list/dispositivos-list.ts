@@ -16,7 +16,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
-import { MatTableModule } from '@angular/material/table';
+
 import { Subject, catchError, debounceTime, finalize, merge, of, startWith, switchMap } from 'rxjs';
 
 import { EstadoVacio } from '../../components/estado-vacio/estado-vacio';
@@ -44,7 +44,6 @@ import { TarjetaSala } from '../../components/tarjeta-sala/tarjeta-sala';
     MatInputModule,
     MatProgressSpinnerModule,
     MatSelectModule,
-    MatTableModule,
     RouterLink,
     EstadoVacio,
     FiltroSelect,

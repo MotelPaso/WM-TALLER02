@@ -16,7 +16,6 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
-import { MatTableModule } from '@angular/material/table';
 
 import { EstadoVacio } from '../../components/estado-vacio/estado-vacio';
 import { ReporteChips } from '../../components/reporte-chips/reporte-chips';
@@ -42,7 +41,6 @@ export interface GrupoSalaReportes {
     MatFormFieldModule,
     MatProgressSpinnerModule,
     MatSelectModule,
-    MatTableModule,
     RouterLink,
     EstadoVacio,
     ReporteChips,
@@ -60,9 +58,7 @@ export class Reportes implements OnInit {
   private readonly fb = inject(NonNullableFormBuilder);
 
   protected readonly estados = ESTADOS_REPORTE;
-  protected readonly esTecnico = computed(
-    () => this.auth.usuario()?.rol?.nombre === 'tecnico',
-  );
+  protected readonly esTecnico = computed(() => this.auth.usuario()?.rol?.nombre === 'tecnico');
 
   protected readonly filtros = this.fb.group({
     q: [''],
@@ -224,7 +220,9 @@ export class Reportes implements OnInit {
   /** Un reporte se puede eliminar si es propio y sigue "abierto". */
   protected sePuedeEliminar(reporte: Reporte): boolean {
     const usuario = this.auth.usuario();
-    return !!usuario && reporte.creado_por?.id === usuario.id && reporte.estado?.nombre === 'abierto';
+    return (
+      !!usuario && reporte.creado_por?.id === usuario.id && reporte.estado?.nombre === 'abierto'
+    );
   }
 
   protected eliminar(reporte: Reporte): void {
@@ -320,7 +318,9 @@ export class Reportes implements OnInit {
       '\uFEFF' +
       [
         headers.map((h) => `"${h.replace(/"/g, '""')}"`).join(';'),
-        ...filas.map((fila) => fila.map((campo) => `"${String(campo).replace(/"/g, '""')}"`).join(';')),
+        ...filas.map((fila) =>
+          fila.map((campo) => `"${String(campo).replace(/"/g, '""')}"`).join(';'),
+        ),
       ].join('\r\n');
 
     const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });

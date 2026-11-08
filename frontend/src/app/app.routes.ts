@@ -1,41 +1,53 @@
 import { Routes } from '@angular/router';
 
 import { authGuard, logged, tecnicoGuard } from './guards/auth.guard';
-import { Login } from './pages/login/login';
-import { DispositivosList } from './pages/dispositivos-list/dispositivos-list';
-import { DispositivoFicha } from './pages/dispositivo-ficha/dispositivo-ficha';
-import { DispositivoForm } from './pages/dispositivo-form/dispositivo-form';
-import { Reportes } from './pages/reportes/reportes';
-import { Registro } from './pages/registro/registro';
 
 export const routes: Routes = [
-  { path: 'login', component: Login, title: 'Iniciar sesión', canActivate: [logged] },
-  { path: 'registro', component: Registro, title: 'Registrar' },
+  {
+    path: 'login',
+    loadComponent: () => import('./pages/login/login').then((m) => m.Login),
+    title: 'Iniciar sesión',
+    canActivate: [logged],
+  },
+  {
+    path: 'registro',
+    loadComponent: () => import('./pages/registro/registro').then((m) => m.Registro),
+    title: 'Registrar',
+  },
   {
     path: 'dispositivos',
-    component: DispositivosList,
+    loadComponent: () =>
+      import('./pages/dispositivos-list/dispositivos-list').then((m) => m.DispositivosList),
     title: 'Dispositivos',
     canActivate: [authGuard],
   },
   {
     path: 'dispositivos/nuevo',
-    component: DispositivoForm,
+    loadComponent: () =>
+      import('./pages/dispositivo-form/dispositivo-form').then((m) => m.DispositivoForm),
     title: 'Nuevo dispositivo',
     canActivate: [authGuard, tecnicoGuard],
   },
   {
     path: 'dispositivos/:id',
-    component: DispositivoFicha,
+    loadComponent: () =>
+      import('./pages/dispositivo-ficha/dispositivo-ficha').then((m) => m.DispositivoFicha),
     title: 'Dispositivo',
     canActivate: [authGuard],
   },
   {
     path: 'dispositivos/:id/editar',
-    component: DispositivoForm,
+    loadComponent: () =>
+      import('./pages/dispositivo-form/dispositivo-form').then((m) => m.DispositivoForm),
     title: 'Editar dispositivo',
     canActivate: [authGuard, tecnicoGuard],
   },
-  { path: 'reportes', component: Reportes, title: 'Reportes', canActivate: [authGuard] },
+  {
+    path: 'reportes',
+    loadComponent: () => import('./pages/reportes/reportes').then((m) => m.Reportes),
+    title: 'Reportes',
+    canActivate: [authGuard],
+  },
   { path: '', pathMatch: 'full', redirectTo: 'dispositivos' },
   { path: '**', redirectTo: 'dispositivos' },
 ];
