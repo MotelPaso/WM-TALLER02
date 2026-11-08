@@ -31,8 +31,8 @@
                     placeholder="nombre@alumnos.ucn.cl" />
                 @if (form.controls.correo.hasError('required')) {
                 <mat-error>Ingresa tu correo.</mat-error>
-                } @else if (form.controls.correo.hasError('email')) {
-                <mat-error>Ingresa un correo válido.</mat-error>
+                } @else if (form.controls.correo.hasError('email') || form.controls.correo.hasError('pattern')) {
+                <mat-error>El correo debe ser institucional (@ucn.cl o @alumnos.ucn.cl).</mat-error>
                 }
             </mat-form-field>
 

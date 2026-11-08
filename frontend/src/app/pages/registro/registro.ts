@@ -29,7 +29,7 @@ export class Registro {
 
   protected readonly form = this.fb.group({
     nombre: ['', Validators.required],
-    correo: ['', [Validators.required, Validators.email, Validators.pattern('.*@ucn.*')]],
+    correo: ['', [Validators.required, Validators.email, Validators.pattern(/^[a-zA-Z0-9._%+\-]+@(alumnos\.)?ucn\.cl$/)]],
     contrasena: ['', [Validators.required, Validators.minLength(8)]],
   });
   protected async submit(): Promise<void> {
