@@ -276,6 +276,67 @@ export class Reportes implements OnInit {
     });
   }
 
+  protected exportarCSV(): void {
+    const lista = this.reportesFiltrados();
+    if (lista.length === 0) {
+      this.snackBar.open('No hay reportes para exportar con los filtros actuales.', 'OK', {
+        duration: 3000,
+      });
+      return;
+    }
+
+    const headers = [
+      'Código',
+      'Título',
+      'Descripción',
+      'Estado',
+      'Prioridad',
+      'Código Dispositivo',
+      'Tipo Dispositivo',
+      'Edificio',
+      'Sala',
+      'Reportado Por',
+      'Fecha Creación',
+      'Solución Técnica',
+    ];
+
+    const filas = lista.map((r) => [
+      this.formatoCodigo(r.id),
+      r.titulo ?? '',
+      r.descripcion ?? '',
+      this.etiquetaEstado(r.estado?.nombre ?? ''),
+      r.prioridad ? this.etiquetaPrioridad(r.prioridad) : 'Sin prioridad',
+      r.dispositivo?.codigo_inventario ?? '',
+      r.dispositivo?.tipo?.nombre ?? '',
+      r.dispositivo?.sala?.edificio?.nombre ?? '',
+      r.dispositivo?.sala?.codigo ?? '',
+      r.creado_por?.nombre ?? '',
+      r.creado_en ? new Date(r.creado_en).toLocaleString('es-CL') : '',
+      r.notas_resolucion ?? '',
+    ]);
+
+    // \uFEFF es el BOM UTF-8 para que Excel abra acentos y caracteres especiales correctamente
+    const csvContent =
+      '\uFEFF' +
+      [
+        headers.map((h) => `"${h.replace(/"/g, '""')}"`).join(';'),
+        ...filas.map((fila) => fila.map((campo) => `"${String(campo).replace(/"/g, '""')}"`).join(';')),
+      ].join('\r\n');
+
+    const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const link = document.createElement('a');
+    link.href = url;
+    const timestamp = new Date().toISOString().slice(0, 10);
+    link.download = `reportes_${timestamp}.csv`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+    URL.revokeObjectURL(url);
+
+    this.snackBar.open(`Se exportaron ${lista.length} reportes a CSV.`, 'OK', { duration: 3000 });
+  }
+
   private marcarEnProceso(id: number, activo: boolean): void {
     this.enProceso.update((set) => {
       const copia = new Set(set);

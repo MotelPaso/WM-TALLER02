@@ -39,12 +39,27 @@
 } @else {
   @if (esTecnico()) {
     <!-- ================= VISTA TÉCNICO: todos los reportes ================= -->
-    <h1 class="text-[28px] leading-tight font-semibold tracking-tight sm:text-[32px]">
-      Todos los reportes
-    </h1>
-    <p class="mt-2 max-w-[70ch] text-sm text-texto-suave">
-      Revisa los reportes de los usuarios, asigna la prioridad y avanza su estado.
-    </p>
+    <div class="flex flex-wrap items-start justify-between gap-x-6 gap-y-4">
+      <div>
+        <h1 class="text-[28px] leading-tight font-semibold tracking-tight sm:text-[32px]">
+          Todos los reportes
+        </h1>
+        <p class="mt-2 max-w-[70ch] text-sm text-texto-suave">
+          Revisa los reportes de los usuarios, asigna la prioridad y avanza su estado.
+        </p>
+      </div>
+      <button
+        matButton="outlined"
+        type="button"
+        (click)="exportarCSV()"
+        [disabled]="reportesFiltrados().length === 0"
+        class="inline-flex items-center gap-1.5"
+        title="Descargar reportes filtrados en formato CSV"
+      >
+        <span class="material-symbols-outlined text-lg" aria-hidden="true">download</span>
+        Exportar CSV
+      </button>
+    </div>
 
     <!-- ===== KPIs / Métricas ===== -->
     <div class="mt-6 grid grid-cols-2 gap-3 sm:mt-8 sm:grid-cols-4">
@@ -236,12 +251,27 @@
     }
   } @else {
     <!-- ================= VISTA USUARIO: mis reportes ================= -->
-    <h1 class="text-[28px] leading-tight font-semibold tracking-tight sm:text-[32px]">
-      Mis reportes
-    </h1>
-    <p class="mt-2 max-w-[70ch] text-sm text-texto-suave">
-      Sigue el estado de las fallas que has reportado.
-    </p>
+    <div class="flex flex-wrap items-start justify-between gap-x-6 gap-y-4">
+      <div>
+        <h1 class="text-[28px] leading-tight font-semibold tracking-tight sm:text-[32px]">
+          Mis reportes
+        </h1>
+        <p class="mt-2 max-w-[70ch] text-sm text-texto-suave">
+          Sigue el estado de las fallas que has reportado.
+        </p>
+      </div>
+      <button
+        matButton="outlined"
+        type="button"
+        (click)="exportarCSV()"
+        [disabled]="reportesFiltrados().length === 0"
+        class="inline-flex items-center gap-1.5"
+        title="Descargar mis reportes en formato CSV"
+      >
+        <span class="material-symbols-outlined text-lg" aria-hidden="true">download</span>
+        Exportar CSV
+      </button>
+    </div>
 
     <form [formGroup]="filtros" class="mt-6 flex flex-wrap items-center gap-x-2 gap-y-3 sm:mt-8" role="search">
       <label class="relative flex w-full items-center lg:mr-2 lg:w-80">
