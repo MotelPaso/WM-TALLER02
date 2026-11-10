@@ -4,6 +4,10 @@
     {
       "source": "/api/:path*",
       "destination": "https://motelpaso.tail519a1f.ts.net/:path*"
+    },
+    {
+      "source": "/((?!api/).*)",
+      "destination": "/index.html"
     }
   ]
 }
