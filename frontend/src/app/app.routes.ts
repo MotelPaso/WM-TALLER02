@@ -1,11 +1,12 @@
 import { Routes } from '@angular/router';
 
 import { authGuard, logged, tecnicoGuard } from './guards/auth.guard';
+import { Login } from './pages/login/login';
 
 export const routes: Routes = [
   {
     path: 'login',
-    loadComponent: () => import('./pages/login/login').then((m) => m.Login),
+    component: Login,
     title: 'Iniciar sesión',
     canActivate: [logged],
   },
