@@ -89,20 +89,6 @@ La aplicación queda en http://localhost:4200. `npm start` usa `proxy.conf.json`
 
 ### Backend
 
-Actualmente, la ip del backend es mi ip de tailscale para el uso del gian.
-se tiene que cambiar esta lista de `frontend/proxy.conf.json`
-
-```json
-{
-	"/api": {
-		"target": "http://localhost:8000",
-		"secure": false,
-		"changeOrigin": false,
-		"pathRewrite": { "^/api": "" }
-	}
-}
-```
-
 Todos los comandos se ejecutan desde `backend/`.
 
 ```bash
@@ -121,7 +107,7 @@ uv sync
 cp .env.example .env      # Windows: copy .env.example .env
 ```
 
-Completa `.env` con tus valores. Este archivo no se sube al repositorio.
+Completa `.env` con tus valores.
 
 #### 3. Levantar la base de datos
 
