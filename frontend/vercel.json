@@ -1,13 +1,17 @@
 {
   "$schema": "https://openapi.vercel.sh/vercel.json",
-  "rewrites": [
+  "routes": [
     {
-      "source": "/api/:path*",
-      "destination": "https://motelpaso.tail519a1f.ts.net/:path*"
+      "src": "/api/(.*)",
+      "dest": "${BACKEND_URL}/$1",
+      "env": ["BACKEND_URL"]
     },
     {
-      "source": "/((?!api/).*)",
-      "destination": "/index.html"
+      "handle": "filesystem"
+    },
+    {
+      "src": "/(.*)",
+      "dest": "/index.html"
     }
   ]
 }
