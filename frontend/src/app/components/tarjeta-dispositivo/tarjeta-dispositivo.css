@@ -1,0 +1,19 @@
+.estado-operativo {
+  background: var(--color-neutro);
+  color: var(--color-texto-suave);
+}
+
+.estado-con_falla {
+  background: var(--color-alerta);
+  color: var(--color-alerta-texto);
+}
+
+.estado-en_reparacion {
+  background: var(--color-info);
+  color: var(--color-info-texto);
+}
+
+.estado-fuera_de_servicio {
+  background: var(--color-peligro);
+  color: var(--color-peligro-texto);
+}

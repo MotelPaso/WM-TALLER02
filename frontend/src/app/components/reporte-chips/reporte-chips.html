@@ -1,8 +1,15 @@
 @if (prioridad(); as prioridad) {
-  <span class="chip chip-{{ prioridad.nombre }}"
-    >Prioridad: {{ etiquetaPrioridad(prioridad) }}</span
+  <span
+    class="chip chip-prioridad chip-{{ prioridad.nombre }}"
+    [attr.aria-label]="'Prioridad ' + etiquetaPrioridad(prioridad)"
   >
+    <span class="material-symbols-outlined text-base" aria-hidden="true">flag</span>
+    {{ etiquetaPrioridad(prioridad) }}
+  </span>
 } @else {
-  <span class="chip chip-sin_prioridad">Prioridad: Sin prioridad</span>
+  <span class="chip chip-prioridad chip-sin_prioridad">
+    <span class="material-symbols-outlined text-base" aria-hidden="true">outlined_flag</span>
+    Sin prioridad
+  </span>
 }
 <span class="chip chip-{{ estado() }}">{{ etiquetaEstado(estado()) || estado() }}</span>

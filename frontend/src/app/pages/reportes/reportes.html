@@ -53,7 +53,7 @@
         type="button"
         (click)="exportarCSV()"
         [disabled]="reportesFiltrados().length === 0"
-        class="inline-flex items-center gap-1.5"
+       
         title="Descargar reportes filtrados en formato CSV"
       >
         <span class="material-symbols-outlined text-lg" aria-hidden="true">download</span>
@@ -61,67 +61,23 @@
       </button>
     </div>
 
-    <!-- ===== KPIs / Métricas ===== -->
-    <div class="mt-6 grid grid-cols-2 gap-3 sm:mt-8 sm:grid-cols-4">
-      <!-- Total -->
-      <button
-        type="button"
-        class="group flex flex-col items-start rounded-2xl border border-borde bg-superficie p-4 text-left transition-colors hover:border-borde-fuerte hover:bg-neutro"
-        (click)="filtrarPorEstado('todos')"
-        [class.ring-2]="filtros.controls.estado.value === 'todos'"
-        [class.ring-primario]="filtros.controls.estado.value === 'todos'"
-        aria-label="Ver todos los reportes"
-      >
-        <span class="material-symbols-outlined text-2xl text-primario" aria-hidden="true">inbox</span>
-        <span class="mt-3 text-3xl font-bold tabular-nums">{{ conteoTotal() }}</span>
-        <span class="mt-1 text-sm text-texto-suave">Total</span>
-      </button>
-
-      <!-- Abiertos -->
-      <button
-        type="button"
-        class="group flex flex-col items-start rounded-2xl border border-borde bg-superficie p-4 text-left transition-colors hover:border-borde-fuerte hover:bg-neutro"
-        (click)="filtrarPorEstado('abierto')"
-        [class.ring-2]="filtros.controls.estado.value === 'abierto'"
-        [class.ring-[#b45309]]="filtros.controls.estado.value === 'abierto'"
-        aria-label="Filtrar por reportes abiertos"
-      >
-        <span class="material-symbols-outlined text-2xl text-[#b45309]" aria-hidden="true">warning</span>
-        <span class="mt-3 text-3xl font-bold tabular-nums text-[#92400e]">{{ conteoAbiertos() }}</span>
-        <span class="mt-1 text-sm text-texto-suave">Abiertos</span>
-      </button>
-
-      <!-- En proceso -->
-      <button
-        type="button"
-        class="group flex flex-col items-start rounded-2xl border border-borde bg-superficie p-4 text-left transition-colors hover:border-borde-fuerte hover:bg-neutro"
-        (click)="filtrarPorEstado('en_proceso')"
-        [class.ring-2]="filtros.controls.estado.value === 'en_proceso'"
-        [class.ring-[#1d4ed8]]="filtros.controls.estado.value === 'en_proceso'"
-        aria-label="Filtrar por reportes en proceso"
-      >
-        <span class="material-symbols-outlined text-2xl text-[#1d4ed8]" aria-hidden="true">build</span>
-        <span class="mt-3 text-3xl font-bold tabular-nums text-[#1e3a8a]">{{ conteoEnProceso() }}</span>
-        <span class="mt-1 text-sm text-texto-suave">En proceso</span>
-      </button>
-
-      <!-- Resueltos -->
-      <button
-        type="button"
-        class="group flex flex-col items-start rounded-2xl border border-borde bg-superficie p-4 text-left transition-colors hover:border-borde-fuerte hover:bg-neutro"
-        (click)="filtrarPorEstado('resuelto')"
-        [class.ring-2]="filtros.controls.estado.value === 'resuelto'"
-        [class.ring-[#15803d]]="filtros.controls.estado.value === 'resuelto'"
-        aria-label="Filtrar por reportes resueltos"
-      >
-        <span class="material-symbols-outlined text-2xl text-[#15803d]" aria-hidden="true">check_circle</span>
-        <span class="mt-3 text-3xl font-bold tabular-nums text-[#14532d]">{{ conteoResueltos() }}</span>
-        <span class="mt-1 text-sm text-texto-suave">Resueltos</span>
-      </button>
+    <div class="mt-6 grid grid-cols-4 gap-2 sm:mt-8 sm:gap-3">
+      @for (kpi of kpis(); track kpi.estado) {
+        <button
+          type="button"
+          class="flex flex-col items-start rounded-2xl border border-borde bg-superficie p-3 text-left transition-[background-color,border-color,transform] duration-150 ease-salida hover:border-borde-fuerte active:scale-[0.98] aria-pressed:border-borde-fuerte aria-pressed:bg-neutro sm:p-4"
+          [attr.aria-pressed]="filtros.controls.estado.value === kpi.estado"
+          (click)="filtrarPorEstado(kpi.estado)"
+        >
+          <span class="material-symbols-outlined hidden sm:inline {{ kpi.tono }}" aria-hidden="true">{{ kpi.icono }}</span>
+          <span class="text-xl font-bold text-marino tabular-nums sm:mt-3 sm:text-3xl">{{ kpi.cantidad }}</span>
+          <span class="mt-0.5 text-xs text-texto-suave sm:mt-1 sm:text-sm">{{ kpi.etiqueta }}</span>
+        </button>
+      }
     </div>
 
-    <form [formGroup]="filtros" class="mt-6 flex flex-wrap items-center gap-x-2 gap-y-3 sm:mt-8" role="search">
-      <label class="relative flex w-full items-center lg:mr-2 lg:w-80">
+    <form [formGroup]="filtros" class="mt-6 flex flex-col gap-3 sm:mt-8 lg:flex-row lg:items-center lg:gap-2" role="search">
+      <label class="relative flex w-full shrink-0 items-center lg:mr-2 lg:w-80">
         <span class="sr-only">Buscar por ID, usuario o dispositivo</span>
         <span
           class="material-symbols-outlined pointer-events-none absolute left-4 text-texto-suave"
@@ -131,38 +87,40 @@
         <input
           type="search"
           formControlName="q"
-          placeholder="Buscar por ID, usuario o dispositivo"
-          class="h-14 w-full rounded-full bg-busqueda pr-5 pl-14 text-base text-texto placeholder:text-texto-suave transition-colors hover:bg-[#e6dfea] focus:bg-white focus:outline-2 focus:outline-primario"
+          placeholder="Buscar ID, usuario o equipo"
+          class="h-14 w-full rounded-full bg-busqueda pr-5 pl-14 text-base text-texto placeholder:text-texto-suave transition-colors hover:bg-busqueda-hover focus:bg-white focus:outline-2 focus:outline-primario"
         />
       </label>
 
-      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="filtro w-40">
-        <mat-select aria-label="Estado" formControlName="estado">
-          <mat-option value="todos">Estado: Todos</mat-option>
-          <mat-option value="abierto">Abierto</mat-option>
-          <mat-option value="en_proceso">En proceso</mat-option>
-          <mat-option value="resuelto">Resuelto</mat-option>
-        </mat-select>
-      </mat-form-field>
+      <div class="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="filtro shrink-0 w-40">
+          <mat-select aria-label="Estado" formControlName="estado">
+            <mat-option value="todos">Estado: Todos</mat-option>
+            <mat-option value="abierto">Abierto</mat-option>
+            <mat-option value="en_proceso">En proceso</mat-option>
+            <mat-option value="resuelto">Resuelto</mat-option>
+          </mat-select>
+        </mat-form-field>
 
-      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="filtro w-44">
-        <mat-select aria-label="Prioridad" formControlName="prioridad">
-          <mat-option value="todas">Prioridad: Todas</mat-option>
-          <mat-option value="sin_prioridad">Sin prioridad</mat-option>
-          <mat-option value="baja">Baja</mat-option>
-          <mat-option value="media">Media</mat-option>
-          <mat-option value="alta">Alta</mat-option>
-        </mat-select>
-      </mat-form-field>
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="filtro shrink-0 w-44">
+          <mat-select aria-label="Prioridad" formControlName="prioridad">
+            <mat-option value="todas">Prioridad: Todas</mat-option>
+            <mat-option value="sin_prioridad">Sin prioridad</mat-option>
+            <mat-option value="baja">Baja</mat-option>
+            <mat-option value="media">Media</mat-option>
+            <mat-option value="alta">Alta</mat-option>
+          </mat-select>
+        </mat-form-field>
 
-      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="filtro w-36">
-        <mat-select aria-label="Sala" formControlName="sala">
-          <mat-option value="todas">Sala: Todas</mat-option>
-          @for (s of salasDisponibles(); track s) {
-            <mat-option [value]="s">{{ s }}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="filtro shrink-0 w-36">
+          <mat-select aria-label="Sala" formControlName="sala">
+            <mat-option value="todas">Sala: Todas</mat-option>
+            @for (s of salasDisponibles(); track s) {
+              <mat-option [value]="s">{{ s }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
     </form>
 
     @if (reportesFiltrados().length > 0) {
@@ -172,25 +130,17 @@
             <article
               class="flex h-full flex-col rounded-2xl border border-borde bg-superficie p-4 sm:p-6"
             >
-              <div class="flex flex-wrap items-center gap-3">
-                <span class="text-sm font-medium text-texto-suave tabular-nums">
+              <div class="flex flex-wrap items-center justify-between gap-3">
+                <span class="text-base font-medium text-marino tabular-nums">
                   {{ formatoCodigo(r.id) }}
-                </span>
-                <span
-                  class="order-1 mr-auto flex basis-full items-center gap-3 text-texto-suave sm:order-none sm:basis-auto"
-                >
-                  <span
-                    class="grid size-10 place-items-center rounded bg-primario-contenedor font-medium text-en-primario-contenedor"
-                    aria-hidden="true"
-                  >
-                    {{ r.creado_por.nombre.charAt(0).toUpperCase() }}
-                  </span>
-                  {{ r.creado_por.nombre }}
                 </span>
                 <app-reporte-chips [prioridad]="r.prioridad" [estado]="r.estado.nombre" />
               </div>
 
-              <h2 class="mt-5 text-lg font-medium">{{ r.titulo }}</h2>
+              <h2 class="mt-4 text-lg font-medium">{{ r.titulo }}</h2>
+              <p class="mt-1 text-[13px] text-texto-tenue">
+                {{ r.creado_por.nombre }} · <time [attr.datetime]="r.creado_en">{{ r.creado_en | date: 'd MMM y' }}</time>
+              </p>
               <p class="mt-2 line-clamp-2 text-sm text-texto-suave">
                 {{ r.descripcion }}
               </p>
@@ -200,7 +150,7 @@
                   <span class="material-symbols-outlined text-xl text-texto" aria-hidden="true"
                     >devices</span
                   >
-                  {{ r.dispositivo.codigo_inventario }} ({{ r.dispositivo.tipo.nombre }})
+                  {{ r.dispositivo.tipo.nombre }} · {{ r.dispositivo.codigo_inventario }}
                 </li>
                 <li class="flex items-center gap-2">
                   <span class="material-symbols-outlined text-xl text-texto" aria-hidden="true"
@@ -209,27 +159,20 @@
                   {{ r.dispositivo.sala.codigo }}
                 </li>
               </ul>
-              <time class="mt-3 text-xs text-texto-suave" [attr.datetime]="r.creado_en">
-                {{ r.creado_en | date:'d MMM y' }}
-              </time>
 
               @if (r.notas_resolucion) {
-                <div class="mt-3 flex items-start gap-2 rounded-lg bg-[#f0f7f4] p-3 text-xs text-[#1e4620]">
-                  <span class="material-symbols-outlined text-base text-[#2e7d32]" aria-hidden="true">check_circle</span>
-                  <div>
-                    <strong class="font-medium">Solución técnica:</strong> {{ r.notas_resolucion }}
-                  </div>
-                </div>
+                <app-nota-solucion class="mt-3" [texto]="r.notas_resolucion" [recortar]="true" />
               }
 
               <div class="mt-auto flex flex-wrap gap-2 pt-6">
                 @if (r.estado.nombre !== 'resuelto') {
                   <button
-                    matButton="filled"
+                    matButton="tonal"
                     type="button"
                     class="flex-1 sm:flex-none"
                     (click)="abrirGestionar(r)"
                   >
+                    <span class="material-symbols-outlined" aria-hidden="true">tune</span>
                     Gestionar
                   </button>
                 }
@@ -245,9 +188,13 @@
       <app-estado-vacio
         class="mt-8"
         icono="inbox"
-        titulo="No hay reportes"
-        mensaje="Cuando un usuario reporte una falla aparecerá aquí. Si usaste filtros, prueba quitándolos."
-      />
+        [titulo]="hayFiltros() ? 'Sin resultados' : 'No hay reportes'"
+        [mensaje]="hayFiltros() ? 'Ningún reporte coincide con la búsqueda y los filtros elegidos.' : 'Cuando un usuario reporte una falla aparecerá aquí.'"
+      >
+        @if (hayFiltros()) {
+          <button matButton="outlined" type="button" (click)="limpiarFiltros()">Limpiar filtros</button>
+        }
+      </app-estado-vacio>
     }
   } @else {
     <!-- ================= VISTA USUARIO: mis reportes ================= -->
@@ -265,7 +212,7 @@
         type="button"
         (click)="exportarCSV()"
         [disabled]="reportesFiltrados().length === 0"
-        class="inline-flex items-center gap-1.5"
+       
         title="Descargar mis reportes en formato CSV"
       >
         <span class="material-symbols-outlined text-lg" aria-hidden="true">download</span>
@@ -273,8 +220,8 @@
       </button>
     </div>
 
-    <form [formGroup]="filtros" class="mt-6 flex flex-wrap items-center gap-x-2 gap-y-3 sm:mt-8" role="search">
-      <label class="relative flex w-full items-center lg:mr-2 lg:w-80">
+    <form [formGroup]="filtros" class="mt-6 flex flex-col gap-3 sm:mt-8 lg:flex-row lg:items-center lg:gap-2" role="search">
+      <label class="relative flex w-full shrink-0 items-center lg:mr-2 lg:w-80">
         <span class="sr-only">Buscar por ID o dispositivo</span>
         <span
           class="material-symbols-outlined pointer-events-none absolute left-4 text-texto-suave"
@@ -285,27 +232,29 @@
           type="search"
           formControlName="q"
           placeholder="Buscar por ID o dispositivo"
-          class="h-14 w-full rounded-full bg-busqueda pr-5 pl-14 text-base text-texto placeholder:text-texto-suave transition-colors hover:bg-[#e6dfea] focus:bg-white focus:outline-2 focus:outline-primario"
+          class="h-14 w-full rounded-full bg-busqueda pr-5 pl-14 text-base text-texto placeholder:text-texto-suave transition-colors hover:bg-busqueda-hover focus:bg-white focus:outline-2 focus:outline-primario"
         />
       </label>
 
-      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="filtro w-40">
-        <mat-select aria-label="Estado" formControlName="estado">
-          <mat-option value="todos">Estado: Todos</mat-option>
-          <mat-option value="abierto">Abierto</mat-option>
-          <mat-option value="en_proceso">En proceso</mat-option>
-          <mat-option value="resuelto">Resuelto</mat-option>
-        </mat-select>
-      </mat-form-field>
+      <div class="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="filtro shrink-0 w-40">
+          <mat-select aria-label="Estado" formControlName="estado">
+            <mat-option value="todos">Estado: Todos</mat-option>
+            <mat-option value="abierto">Abierto</mat-option>
+            <mat-option value="en_proceso">En proceso</mat-option>
+            <mat-option value="resuelto">Resuelto</mat-option>
+          </mat-select>
+        </mat-form-field>
 
-      <mat-form-field appearance="outline" subscriptSizing="dynamic" class="filtro w-36">
-        <mat-select aria-label="Sala" formControlName="sala">
-          <mat-option value="todas">Sala: Todas</mat-option>
-          @for (s of salasDisponibles(); track s) {
-            <mat-option [value]="s">{{ s }}</mat-option>
-          }
-        </mat-select>
-      </mat-form-field>
+        <mat-form-field appearance="outline" subscriptSizing="dynamic" class="filtro shrink-0 w-36">
+          <mat-select aria-label="Sala" formControlName="sala">
+            <mat-option value="todas">Sala: Todas</mat-option>
+            @for (s of salasDisponibles(); track s) {
+              <mat-option [value]="s">{{ s }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+      </div>
     </form>
 
     @if (reportesPorSala().length > 0) {
@@ -360,12 +309,7 @@
                   </p>
 
                   @if (r.notas_resolucion) {
-                    <div class="mt-3 flex items-start gap-2 rounded-lg bg-[#f0f7f4] p-3 text-xs text-[#1e4620]">
-                      <span class="material-symbols-outlined text-base text-[#2e7d32]" aria-hidden="true">check_circle</span>
-                      <div>
-                        <strong class="font-medium">Solución técnica:</strong> {{ r.notas_resolucion }}
-                      </div>
-                    </div>
+                    <app-nota-solucion class="mt-3" [texto]="r.notas_resolucion" [recortar]="true" />
                   }
 
                   <a

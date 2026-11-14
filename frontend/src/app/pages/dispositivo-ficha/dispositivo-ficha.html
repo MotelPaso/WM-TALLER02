@@ -7,11 +7,9 @@
 
 <a
   routerLink="/dispositivos"
-  class="mb-6 inline-flex items-center gap-1 text-sm font-medium text-texto-suave no-underline hover:text-texto hover:underline hover:underline-offset-[3px]"
+  class="mb-4 inline-flex min-h-11 items-center gap-1 text-sm font-medium text-texto-suave no-underline hover:text-texto hover:underline hover:underline-offset-[3px]"
 >
-  <span class="material-symbols-outlined text-lg hover:no-underline" aria-hidden="true"
-    >arrow_back</span
-  >
+  <span class="material-symbols-outlined text-lg" aria-hidden="true">arrow_back</span>
   Volver a Dispositivos
 </a>
 
@@ -32,15 +30,14 @@
   </app-estado-vacio>
 } @else {
   <div class="flex flex-wrap items-start justify-between gap-x-6 gap-y-5">
-    <div>
+    <div class="min-w-0">
       <div class="flex flex-wrap items-center gap-3">
         <h1 class="text-[28px] leading-tight font-semibold tracking-tight sm:text-[32px]">
-          Dispositivo {{ dispositivo()?.codigo_inventario }}
+          {{ titulo() }}
         </h1>
-        <span class="chip chip-{{ dispositivo()?.estado.nombre }} text-[15px]">{{
-          dispositivo()?.estado.nombre
-        }}</span>
+        <span class="chip chip-{{ dispositivo()?.estado?.nombre }}">{{ etiquetaEstado() }}</span>
       </div>
+      <p class="mt-1 text-sm text-texto-suave tabular-nums">{{ dispositivo()?.codigo_inventario }}</p>
     </div>
 
     <div class="flex w-full flex-wrap gap-2 sm:w-auto">
@@ -53,7 +50,6 @@
         <span class="material-symbols-outlined" aria-hidden="true">report</span>
         Reportar falla
       </button>
-      <!-- Editar y Eliminar: solo técnico -->
       @if (esTecnico() && dispositivo()) {
         <a
           matButton="outlined"
@@ -63,15 +59,28 @@
           <span class="material-symbols-outlined" aria-hidden="true">edit</span>
           Editar
         </a>
-        <button
-          matButton="outlined"
-          type="button"
-          class="boton-peligro flex-1 sm:flex-none"
-          (click)="abrirConfirmarEliminar()"
-        >
-          <span class="material-symbols-outlined" aria-hidden="true">delete</span>
-          Eliminar
-        </button>
+        @if (puedeEliminar()) {
+          <button
+            matButton="outlined"
+            type="button"
+            class="boton-peligro flex-1 sm:flex-none"
+            (click)="abrirConfirmarEliminar()"
+          >
+            <span class="material-symbols-outlined" aria-hidden="true">delete</span>
+            Eliminar
+          </button>
+        } @else if (puedeRetirar()) {
+          <button
+            matButton="outlined"
+            type="button"
+            class="boton-peligro flex-1 sm:flex-none"
+            title="Tiene reportes en su historial, por eso no se puede eliminar"
+            (click)="abrirConfirmarFueraDeServicio()"
+          >
+            <span class="material-symbols-outlined" aria-hidden="true">block</span>
+            Marcar fuera de servicio
+          </button>
+        }
       }
     </div>
   </div>
@@ -83,28 +92,20 @@
       aria-labelledby="titulo-info"
     >
       <h2 id="titulo-info" class="text-lg font-medium">Información</h2>
-      <dl class="mt-5 grid grid-cols-1 gap-x-6 gap-y-4 sm:grid-cols-2 lg:grid-cols-3 lg:gap-y-5">
+      <dl class="mt-5 grid grid-cols-2 gap-x-6 gap-y-4 lg:grid-cols-4 lg:gap-y-5">
         <div>
           <dt class="text-xs text-texto-tenue">Tipo</dt>
-          <dd class="mt-1 text-base font-medium">{{ dispositivo()?.tipo.nombre }}</dd>
+          <dd class="mt-1 text-base font-medium">{{ dispositivo()?.tipo?.nombre }}</dd>
         </div>
         <div>
-          <dt class="text-xs text-texto-tenue">Edificio</dt>
-          <dd class="mt-1 text-base font-medium">{{ dispositivo()?.sala?.edificio?.nombre }}</dd>
-        </div>
-        <div>
-          <dt class="text-xs text-texto-tenue">Sala</dt>
-          <dd class="mt-1 text-base font-medium">{{ dispositivo()?.sala?.numero }}</dd>
+          <dt class="text-xs text-texto-tenue">Ubicación</dt>
+          <dd class="mt-1 text-base font-medium">{{ dispositivo()?.sala?.codigo }}</dd>
         </div>
         <div>
           <dt class="text-xs text-texto-tenue">Código de inventario</dt>
           <dd class="mt-1 text-base font-medium tabular-nums">
             {{ dispositivo()?.codigo_inventario }}
           </dd>
-        </div>
-        <div>
-          <dt class="text-xs text-texto-tenue">Estado</dt>
-          <dd class="mt-1 text-base font-medium">{{ dispositivo()?.estado.nombre }}</dd>
         </div>
         <div>
           <dt class="text-xs text-texto-tenue">Registrado</dt>
@@ -115,7 +116,7 @@
         @if (dispositivo()?.descripcion) {
           <div class="col-span-full">
             <dt class="text-xs text-texto-tenue">Descripción</dt>
-            <dd class="mt-1 text-base font-medium [overflow-wrap:anywhere]">
+            <dd class="mt-1 text-base font-medium whitespace-pre-line">
               {{ dispositivo()?.descripcion }}
             </dd>
           </div>
@@ -140,45 +141,39 @@
           <li
             class="flex flex-col gap-3 border-b border-borde py-5 last:border-b-0 last:pb-0"
           >
-            <!-- Fila superior: título + chips de estado/prioridad -->
             <div class="flex flex-wrap items-start justify-between gap-x-6 gap-y-2">
-              <div>
+              <div class="min-w-0">
                 <h3 class="text-base font-medium">{{ reporte.titulo }}</h3>
                 <p class="mt-1 text-[13px] text-texto-suave">
                   {{ reporte.creado_por.nombre }} · {{ reporte.creado_en | date: 'd MMM y' }}
+                </p>
+                <p class="mt-2 line-clamp-3 text-sm whitespace-pre-line text-texto-suave">
+                  {{ reporte.descripcion }}
                 </p>
               </div>
               <app-reporte-chips [prioridad]="reporte.prioridad" [estado]="reporte.estado.nombre" />
             </div>
 
-            <!-- Nota de solución técnica (solo si existe) -->
             @if (reporte.notas_resolucion) {
-              <div class="flex items-start gap-2 rounded-lg bg-[#f0f7f4] px-3 py-2.5 text-xs text-[#1e4620]">
-                <span class="material-symbols-outlined text-base text-[#2e7d32]" aria-hidden="true">check_circle</span>
-                <div>
-                  <strong class="font-medium">Solución técnica:</strong>
-                  {{ reporte.notas_resolucion }}
-                </div>
-              </div>
+              <app-nota-solucion [texto]="reporte.notas_resolucion" />
             }
 
-            <!-- Botón "Gestionar": solo técnico y solo si el reporte no está resuelto -->
             @if (esTecnico() && reporte.estado.nombre !== 'resuelto') {
               <div>
-                <button
-                  matButton="outlined"
-                  type="button"
-                  class="text-sm"
-                  (click)="abrirGestionar(reporte)"
-                >
-                  <span class="material-symbols-outlined text-base" aria-hidden="true">settings</span>
+                <button matButton="tonal" type="button" (click)="abrirGestionar(reporte)">
+                  <span class="material-symbols-outlined" aria-hidden="true">tune</span>
                   Gestionar
                 </button>
               </div>
             }
           </li>
         } @empty {
-          @if (!cargando_reportes()) {
+          @if (errorHistorial()) {
+            <p role="alert" class="aviso aviso-error mt-5">
+              <span class="material-symbols-outlined shrink-0 text-xl" aria-hidden="true">error</span>
+              No pudimos cargar el historial de reportes. Recarga la página para intentarlo de nuevo.
+            </p>
+          } @else if (!cargando_reportes()) {
             <p class="pt-5 text-sm text-texto-suave text-center">
               Este dispositivo no tiene reportes.
             </p>

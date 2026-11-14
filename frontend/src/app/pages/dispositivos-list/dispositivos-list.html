@@ -25,8 +25,8 @@
 </div>
 
 <!-- ===== Filtros ===== -->
-<div class="mt-6 flex flex-wrap items-center gap-x-2 gap-y-3 sm:mt-8" role="search">
-  <label class="relative flex w-full items-center lg:mr-2 lg:w-80">
+<div class="mt-6 flex flex-col gap-3 sm:mt-8 lg:flex-row lg:items-center lg:gap-2" role="search">
+  <label class="relative flex w-full shrink-0 items-center lg:mr-2 lg:w-80">
     <span class="sr-only">Buscar por código</span>
     <span
       class="material-symbols-outlined pointer-events-none absolute left-4 text-texto-suave"
@@ -37,11 +37,15 @@
       type="search"
       placeholder="Buscar por código, tipo o sala"
       [formControl]="filtros.controls.q"
-      class="h-14 w-full rounded-full bg-busqueda pr-5 pl-14 text-base text-texto placeholder:text-texto-suave transition-colors hover:bg-[#e6dfea] focus:bg-white focus:outline-2 focus:outline-primario"
+      class="h-14 w-full rounded-full bg-busqueda pr-5 pl-14 text-base text-texto placeholder:text-texto-suave transition-colors hover:bg-busqueda-hover focus:bg-white focus:outline-2 focus:outline-primario"
     />
   </label>
 
+  <div
+    class="-mx-4 flex gap-2 overflow-x-auto px-4 pb-1 sm:mx-0 sm:flex-wrap sm:overflow-visible sm:px-0 sm:pb-0"
+  >
   <app-filtro-select
+    class="shrink-0"
     [control]="filtros.controls.estado"
     [opciones]="opcionesEstados()"
     etiqueta="Estado"
@@ -49,6 +53,7 @@
   ></app-filtro-select>
 
   <app-filtro-select
+    class="shrink-0"
     [control]="filtros.controls.tipoId"
     [opciones]="opcionesTipos()"
     etiqueta="Tipo"
@@ -56,6 +61,7 @@
   />
 
   <app-filtro-select
+    class="shrink-0"
     [control]="filtros.controls.edificioId"
     [opciones]="opcionesEdificios()"
     etiqueta="Edificio"
@@ -63,25 +69,30 @@
   />
 
   <app-filtro-select
+    class="shrink-0"
     [control]="filtros.controls.salaId"
     [opciones]="opcionesSalas()"
     etiqueta="Sala"
     textoTodos="Salas: Todas"
   />
+  </div>
 </div>
 
 <!-- ===== Resumen + selector de vista ===== -->
 <div
   class="mt-6 mb-4 flex flex-wrap items-center justify-between gap-3 text-sm text-texto-suave tabular-nums sm:mt-8"
 >
-  <p>{{ dispositivos().length }} dispositivos · {{ salasConDispositivos().length }} salas</p>
+  <p>
+    {{ dispositivos().length }} {{ dispositivos().length === 1 ? 'dispositivo' : 'dispositivos' }} ·
+    {{ salasConDispositivos().length }} {{ salasConDispositivos().length === 1 ? 'sala' : 'salas' }}
+  </p>
   <!-- Vista activa: aria-pressed="true" (cambia el color). (click)="vista.set('sala' | 'cuadricula')" -->
   <div class="flex gap-2" role="group" aria-label="Vista">
     <button
       type="button"
       [attr.aria-pressed]="vista() === 'sala'"
       (click)="vista.set('sala')"
-      class="group inline-flex h-8 items-center gap-2 rounded-lg border border-borde-fuerte px-4 font-medium text-texto-suave transition-colors hover:bg-neutro aria-pressed:border-transparent aria-pressed:bg-primario-contenedor aria-pressed:text-en-primario-contenedor"
+      class="group inline-flex h-11 items-center gap-2 rounded-lg sm:h-8 border border-borde-fuerte px-4 font-medium text-texto-suave transition-colors hover:bg-neutro aria-pressed:border-transparent aria-pressed:bg-primario-contenedor aria-pressed:text-en-primario-contenedor"
     >
       <span
         class="material-symbols-outlined hidden text-lg group-aria-pressed:inline"
@@ -94,7 +105,7 @@
       type="button"
       [attr.aria-pressed]="vista() === 'cuadricula'"
       (click)="vista.set('cuadricula')"
-      class="group inline-flex h-8 items-center gap-2 rounded-lg border border-borde-fuerte px-4 font-medium text-texto-suave transition-colors hover:bg-neutro aria-pressed:border-transparent aria-pressed:bg-primario-contenedor aria-pressed:text-en-primario-contenedor"
+      class="group inline-flex h-11 items-center gap-2 rounded-lg sm:h-8 border border-borde-fuerte px-4 font-medium text-texto-suave transition-colors hover:bg-neutro aria-pressed:border-transparent aria-pressed:bg-primario-contenedor aria-pressed:text-en-primario-contenedor"
     >
       <span
         class="material-symbols-outlined hidden text-lg group-aria-pressed:inline"
@@ -149,7 +160,7 @@
 } @else {
   @if (vista() === 'sala') {
     <div
-      class="mt-8 grid grid-cols-1 items-start gap-6 transition-opacity duration-300 xl:grid-cols-2"
+      class="mt-8 grid grid-cols-1 items-start gap-6 transition-opacity duration-300 xl:grid-flow-row-dense xl:grid-cols-2"
       [class.opacity-50]="cargando()"
       [attr.aria-busy]="cargando()"
     >
@@ -163,7 +174,7 @@
     </div>
   } @else {
     <ul
-      class="mt-8 grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-4 transition-opacity duration-300"
+      class="mt-8 grid grid-cols-1 gap-3 transition-opacity duration-300 sm:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4"
       [class.opacity-50]="cargando()"
       [attr.aria-busy]="cargando()"
     >
@@ -173,23 +184,7 @@
             [routerLink]="['/dispositivos', dispositivo.id]"
             class="group block h-full rounded-xl text-inherit no-underline"
           >
-            <div
-              class="flex h-full min-h-[110px] flex-col justify-between rounded-xl border border-borde bg-white p-5 transition-[border-color,box-shadow] duration-200 ease-salida group-hover:border-borde-fuerte group-hover:shadow-[0_6px_16px_-6px_rgb(29_27_32/0.14)]"
-            >
-              <div>
-                <div class="flex items-center justify-between gap-2">
-                  <span class="text-lg font-medium">{{ dispositivo.codigo_inventario }}</span>
-                  <span class="etiqueta etiqueta-{{ dispositivo.estado.nombre }}">{{ etiquetaEstado(dispositivo.estado.nombre) }}</span>
-                </div>
-                <p class="mt-2 text-[13px] text-texto-tenue line-clamp-1">
-                  {{ dispositivo.descripcion || dispositivo.tipo.nombre }}
-                </p>
-              </div>
-              <div class="mt-3 flex items-center gap-1.5 text-xs text-texto-suave border-t border-borde/60 pt-2.5">
-                <span class="material-symbols-outlined text-base" aria-hidden="true">location_on</span>
-                <span>{{ dispositivo.sala.codigo }}</span>
-              </div>
-            </div>
+            <app-tarjeta-dispositivo [dispositivo]="dispositivo" [mostrarSala]="true" />
           </a>
         </li>
       }

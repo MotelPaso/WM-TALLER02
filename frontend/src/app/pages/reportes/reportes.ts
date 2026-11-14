@@ -1,12 +1,7 @@
 import { DatePipe } from '@angular/common';
-import {
-  ChangeDetectionStrategy,
-  Component,
-  OnInit,
-  computed,
-  inject,
-  signal,
-} from '@angular/core';
+import { HttpErrorResponse } from '@angular/common/http';
+import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
 import { RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
@@ -18,6 +13,7 @@ import { MatSelectModule } from '@angular/material/select';
 import { MatSnackBar } from '@angular/material/snack-bar';
 
 import { EstadoVacio } from '../../components/estado-vacio/estado-vacio';
+import { NotaSolucion } from '../../components/nota-solucion/nota-solucion';
 import { ReporteChips } from '../../components/reporte-chips/reporte-chips';
 import { TarjetaDispositivo } from '../../components/tarjeta-dispositivo/tarjeta-dispositivo';
 import { Confirmar } from '../../dialogs/confirmar/confirmar';
@@ -25,6 +21,20 @@ import { GestionarReporte } from '../../dialogs/gestionar-reporte/gestionar-repo
 import { ESTADOS_REPORTE, etiquetaEstadoReporte, etiquetaPrioridad, Reporte } from '../../models';
 import { AuthService } from '../../services/auth.service';
 import { ReportesService } from '../../services/reportes.service';
+
+function urgencia(r: Reporte): number {
+  if (r.estado.nombre === 'abierto') return r.prioridad ? 1 : 0;
+  return r.estado.nombre === 'en_proceso' ? 2 : 3;
+}
+
+function compararUrgencia(a: Reporte, b: Reporte): number {
+  return (
+    urgencia(a) - urgencia(b) ||
+    (b.prioridad?.nivel ?? 0) - (a.prioridad?.nivel ?? 0) ||
+    a.creado_en.localeCompare(b.creado_en) ||
+    a.id - b.id
+  );
+}
 
 export interface GrupoSalaReportes {
   sala: string;
@@ -45,12 +55,13 @@ export interface GrupoSalaReportes {
     EstadoVacio,
     ReporteChips,
     TarjetaDispositivo,
+    NotaSolucion,
   ],
   templateUrl: './reportes.html',
   styleUrl: './reportes.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
 })
-export class Reportes implements OnInit {
+export class Reportes {
   private readonly reportesService = inject(ReportesService);
   private readonly auth = inject(AuthService);
   private readonly snackBar = inject(MatSnackBar);
@@ -67,17 +78,26 @@ export class Reportes implements OnInit {
     sala: ['todas'],
   });
 
-  private readonly filtroValores = signal({
-    q: '',
-    estado: 'todos',
-    prioridad: 'todas',
-    sala: 'todas',
+  private readonly filtroValores = toSignal(this.filtros.valueChanges, {
+    initialValue: this.filtros.getRawValue(),
   });
 
-  protected readonly reportes = signal<Reporte[]>([]);
-  protected readonly cargando = signal(false);
-  protected readonly cargado = signal(false);
-  protected readonly mensajeError = signal('');
+  protected readonly reportesRecurso = rxResource({
+    stream: () => this.reportesService.listar(),
+  });
+
+  protected readonly reportes = computed(() =>
+    this.reportesRecurso.hasValue() ? this.reportesRecurso.value() : [],
+  );
+  protected readonly cargando = computed(
+    () => this.reportesRecurso.isLoading() && !this.reportesRecurso.hasValue(),
+  );
+  protected readonly mensajeError = computed(() => {
+    const err = this.reportesRecurso.error();
+    if (!err) return '';
+    const status = err instanceof HttpErrorResponse ? err.status : undefined;
+    return `No se pudieron cargar los reportes (status ${status ?? 'sin conexión'}). Revisa que el backend esté corriendo en localhost:8000.`;
+  });
   /** ids de reportes cuyo cambio de estado/eliminación está en vuelo */
   protected readonly enProceso = signal<Set<number>>(new Set());
 
@@ -95,17 +115,6 @@ export class Reportes implements OnInit {
 
   protected etiquetaEstado = etiquetaEstadoReporte;
   protected etiquetaPrioridad = etiquetaPrioridad;
-
-  constructor() {
-    this.filtros.valueChanges.subscribe((vals) => {
-      this.filtroValores.set({
-        q: vals.q ?? '',
-        estado: vals.estado ?? 'todos',
-        prioridad: vals.prioridad ?? 'todas',
-        sala: vals.sala ?? 'todas',
-      });
-    });
-  }
 
   /** Aplica filtro de estado al hacer clic en una tarjeta KPI.
    *  Si el estado ya está activo, lo quita (vuelve a "todos"). */
@@ -128,7 +137,8 @@ export class Reportes implements OnInit {
     const { q, estado, prioridad, sala } = this.filtroValores();
     const query = (q || '').trim().toLowerCase();
 
-    return this.reportes().filter((r) => {
+    return this.reportes()
+      .filter((r) => {
       // Filtro texto q
       if (query) {
         const codigoRep = this.formatoCodigo(r.id).toLowerCase();
@@ -172,7 +182,8 @@ export class Reportes implements OnInit {
       }
 
       return true;
-    });
+    })
+      .sort((a, b) => (this.esTecnico() ? compararUrgencia(a, b) : 0));
   });
 
   protected readonly reportesPorSala = computed<GrupoSalaReportes[]>(() => {
@@ -190,28 +201,25 @@ export class Reportes implements OnInit {
     }));
   });
 
-  ngOnInit(): void {
-    this.cargar();
+  protected cargar(): void {
+    this.reportesRecurso.reload();
   }
 
-  protected cargar(): void {
-    this.cargando.set(true);
-    this.mensajeError.set('');
-    this.reportesService.listar().subscribe({
-      next: (reportes) => {
-        this.reportes.set(reportes);
-        this.cargando.set(false);
-        this.cargado.set(true);
-      },
-      error: (err) => {
-        this.mensajeError.set(
-          `No se pudieron cargar los reportes (status ${err.status ?? 'sin conexión'}). Revisa que el backend esté corriendo en localhost:8000.`,
-        );
-        this.cargando.set(false);
-        this.cargado.set(true);
-      },
-    });
+  protected limpiarFiltros(): void {
+    this.filtros.reset();
   }
+
+  protected readonly hayFiltros = computed(() => {
+    const { q, estado, prioridad, sala } = this.filtroValores();
+    return !!q?.trim() || estado !== 'todos' || prioridad !== 'todas' || sala !== 'todas';
+  });
+
+  protected readonly kpis = computed(() => [
+    { estado: 'todos', etiqueta: 'Total', icono: 'inbox', tono: 'text-pizarra', cantidad: this.conteoTotal() },
+    { estado: 'abierto', etiqueta: 'Abiertos', icono: 'error', tono: 'text-alerta-texto', cantidad: this.conteoAbiertos() },
+    { estado: 'en_proceso', etiqueta: 'En proceso', icono: 'build', tono: 'text-info-texto', cantidad: this.conteoEnProceso() },
+    { estado: 'resuelto', etiqueta: 'Resueltos', icono: 'check_circle', tono: 'text-ok-texto', cantidad: this.conteoResueltos() },
+  ]);
 
   protected formatoCodigo(id: number): string {
     return `REP-${String(id).padStart(4, '0')}`;
@@ -241,7 +249,7 @@ export class Reportes implements OnInit {
       this.marcarEnProceso(reporte.id, true);
       this.reportesService.eliminar(reporte.id).subscribe({
         next: () => {
-          this.reportes.update((lista) => lista.filter((r) => r.id !== reporte.id));
+          this.reportesRecurso.update((lista) => lista?.filter((r) => r.id !== reporte.id));
           this.marcarEnProceso(reporte.id, false);
           this.snackBar.open('Reporte eliminado.', 'OK', { duration: 3000 });
         },
@@ -261,12 +269,13 @@ export class Reportes implements OnInit {
     const dialogRef = this.dialog.open(GestionarReporte, {
       data: reporte,
       width: '560px',
+      autoFocus: 'first-heading',
     });
 
     dialogRef.afterClosed().subscribe((actualizado?: Reporte) => {
       if (actualizado && actualizado.id) {
-        this.reportes.update((lista) =>
-          lista.map((r) => (r.id === actualizado.id ? actualizado : r)),
+        this.reportesRecurso.update((lista) =>
+          lista?.map((r) => (r.id === actualizado.id ? actualizado : r)),
         );
       } else if (actualizado) {
         this.cargar();

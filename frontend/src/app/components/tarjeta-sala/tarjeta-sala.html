@@ -1,20 +1,29 @@
 <section
   class="rounded-2xl border border-borde bg-[#fdf3ee] p-4 sm:p-6"
-  aria-labelledby="sala-{{ sala().codigo.toLowerCase() }}"
+  [attr.aria-labelledby]="'sala-' + sala().id"
 >
-  <h2
-    id="sala-{{ sala().codigo.toLowerCase() }}"
-    class="mb-5 flex items-center gap-3 text-lg font-medium"
-  >
-    <span class="material-symbols-outlined" aria-hidden="true">location_on</span>
-    {{ sala().codigo }}
-    <span class="text-[13px] font-normal text-texto-tenue"
-      >{{ dispositivos_en_sala().length }} dispositivos</span
-    >
+  <h2 [id]="'sala-' + sala().id" class="mb-4 flex flex-wrap items-baseline gap-x-3 gap-y-1">
+    <span class="flex items-center gap-2 text-lg font-medium">
+      <span class="material-symbols-outlined self-center" aria-hidden="true">location_on</span>
+      {{ sala().codigo }}
+    </span>
+    <span class="text-[13px] font-normal text-texto-tenue tabular-nums">
+      {{ enSala().length }} {{ enSala().length === 1 ? 'dispositivo' : 'dispositivos' }}
+    </span>
+    @if (resumen().length > 1 || resumen()[0]?.estado !== 'operativo') {
+      <span class="flex flex-wrap items-center gap-x-3 gap-y-1 text-[13px] font-normal text-texto-suave tabular-nums">
+        @for (item of resumen(); track item.estado) {
+          <span class="inline-flex items-center gap-1.5">
+            <span class="punto punto-{{ item.estado }}" aria-hidden="true"></span>
+            {{ item.cantidad }} {{ item.texto }}
+          </span>
+        }
+      </span>
+    }
   </h2>
 
-  <ul class="flex flex-col gap-3">
-    @for (dispositivo of dispositivos_en_sala(); track dispositivo.id) {
+  <ul class="grid grid-cols-[repeat(auto-fill,minmax(min(100%,240px),1fr))] gap-3">
+    @for (dispositivo of visibles(); track dispositivo.id) {
       <li animate.enter="fundido">
         <a
           [routerLink]="['/dispositivos', dispositivo.id]"
@@ -25,4 +34,18 @@
       </li>
     }
   </ul>
+
+  @if (hayMas()) {
+    <button
+      type="button"
+      class="mt-4 inline-flex h-11 items-center sm:h-9 gap-1 rounded-full px-4 text-sm font-medium text-en-primario-contenedor transition-colors hover:bg-primario-contenedor"
+      [attr.aria-expanded]="expandida()"
+      (click)="expandida.update((v) => !v)"
+    >
+      {{ expandida() ? 'Ver menos' : 'Ver los ' + enSala().length }}
+      <span class="material-symbols-outlined text-xl" aria-hidden="true">{{
+        expandida() ? 'expand_less' : 'expand_more'
+      }}</span>
+    </button>
+  }
 </section>

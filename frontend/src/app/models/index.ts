@@ -128,3 +128,27 @@ export function etiquetaEstadoReporte(estado: string): string {
 export function etiquetaPrioridad(prioridad: PrioridadReporte): string {
   return prioridad.nombre.charAt(0).toUpperCase() + prioridad.nombre.slice(1);
 }
+
+export const ETIQUETAS_ESTADO_DISPOSITIVO: Record<string, string> = {
+  fuera_de_servicio: 'Fuera de servicio',
+  en_reparacion: 'En reparación',
+  con_falla: 'Con falla',
+  operativo: 'Operativo',
+};
+
+export const GRAVEDAD_ESTADO_DISPOSITIVO = Object.keys(ETIQUETAS_ESTADO_DISPOSITIVO);
+
+const ICONOS_TIPO_DISPOSITIVO: Record<string, string> = {
+  Computador: 'computer',
+  Monitor: 'monitor',
+  Proyector: 'present_to_all',
+  Impresora: 'print',
+  Pantalla: 'tv',
+  Audio: 'speaker',
+  Cámara: 'videocam',
+  'Punto WiFi': 'wifi',
+};
+
+export function iconoTipoDispositivo(tipo?: string): string {
+  return (tipo && ICONOS_TIPO_DISPOSITIVO[tipo]) || 'devices_other';
+}

@@ -1,0 +1,30 @@
+:host {
+  display: block;
+}
+
+:host(.sala-ancha) {
+  grid-column: 1 / -1;
+}
+
+.punto {
+  display: inline-block;
+  width: 8px;
+  height: 8px;
+  border-radius: 9999px;
+}
+
+.punto-operativo {
+  background: var(--color-ok-texto);
+}
+
+.punto-con_falla {
+  background: var(--color-alerta-texto);
+}
+
+.punto-en_reparacion {
+  background: var(--color-info-texto);
+}
+
+.punto-fuera_de_servicio {
+  background: var(--color-peligro-texto);
+}
