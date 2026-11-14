@@ -17,9 +17,17 @@ class Settings(BaseSettings):
     algorithm: str = "HS256"
     access_token_expire_minutes: int = 30
 
+    cors_origins: str = "http://localhost:4200"
+
     seed_tecnico_nombre: str | None = None
     seed_tecnico_correo: str | None = None
     seed_tecnico_contrasena: SecretStr | None = None
+
+    @property
+    def cors_origins_list(self) -> list[str]:
+        return [
+            origen.strip() for origen in self.cors_origins.split(",") if origen.strip()
+        ]
 
     @property
     def database_url(self) -> str:
