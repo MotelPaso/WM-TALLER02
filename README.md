@@ -1,4 +1,4 @@
-# WM-TALLER02 – ReportaUCN
+# WM-TALLER02 – ReportesUCN
 
 App web para reportar fallas en dispositivos tecnológicos de la UCN (computadores, proyectores, impresoras, etc.) y hacer seguimiento a su reparación. Los usuarios reportan fallas y los técnicos gestionan los dispositivos, asignan prioridades y cambian el estado de los reportes.
 
