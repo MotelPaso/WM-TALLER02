@@ -7,23 +7,12 @@
     <header
       class="flex flex-wrap items-center gap-4 bg-superficie px-4 py-4 sm:sticky sm:top-0 sm:z-10 sm:col-span-2 sm:flex-nowrap sm:border-b sm:border-borde sm:px-6 lg:px-8"
     >
-      <a routerLink="/dispositivos" class="mr-auto flex items-center gap-3 text-xl font-semibold tracking-tight text-texto no-underline sm:mr-0">
+      <a routerLink="/dispositivos" class="mr-auto flex items-center gap-3 text-xl font-semibold tracking-tight text-texto no-underline">
         <span class="grid size-10 place-items-center rounded-lg bg-menta text-marino">
           <span class="material-symbols-outlined" aria-hidden="true">desktop_windows</span>
         </span>
         ReportesUCN
       </a>
-
-      <!-- Búsqueda global (opcional; si no se implementa, se puede quitar) -->
-      <label class="relative order-3 flex w-full items-center sm:order-none sm:ml-auto sm:w-80">
-        <span class="sr-only">Buscar dispositivo o sala</span>
-        <span class="material-symbols-outlined pointer-events-none absolute left-4 text-texto-suave" aria-hidden="true">search</span>
-        <input
-          type="search"
-          placeholder="Buscar dispositivo o sala"
-          class="h-14 w-full rounded-full bg-busqueda pr-5 pl-14 text-base text-texto placeholder:text-texto-suave transition-colors hover:bg-[#e6dfea] focus:bg-white focus:outline-2 focus:outline-primario"
-        />
-      </label>
 
       <div class="flex items-center gap-2">
         <span
@@ -31,7 +20,7 @@
           [title]="usuario.nombre + ' · ' + usuario.rol.nombre"
           aria-hidden="true"
         >
-          {{ usuario.nombre.charAt(0) }}
+          {{ inicial() }}
         </span>
         <button matIconButton type="button" (click)="logout()" aria-label="Cerrar sesión" title="Cerrar sesión">
           <span class="material-symbols-outlined">logout</span>
@@ -42,7 +31,7 @@
     <!-- ===== Navigation rail ===== -->
     <nav
       aria-label="Principal"
-      class="sticky top-0 z-10 flex justify-around border-t border-borde bg-superficie px-2 py-3 sm:top-[89px] sm:h-[calc(100dvh-89px)] sm:flex-col sm:justify-center sm:gap-3 sm:border-t-0 sm:border-r sm:px-0 sm:py-4"
+      class="sticky top-0 z-10 flex justify-around border-t border-borde bg-superficie px-2 py-3 sm:top-[73px] sm:h-[calc(100dvh-73px)] sm:flex-col sm:justify-start sm:gap-3 sm:pt-6 sm:border-t-0 sm:border-r sm:px-0 sm:py-4"
     >
       <a
         routerLink="/dispositivos"

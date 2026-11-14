@@ -10,7 +10,7 @@ html {
   @include mat.theme(
     (
       color: (
-        primary: mat.$violet-palette,
+        primary: mat.$azure-palette,
         tertiary: mat.$green-palette,
       ),
       typography: Roboto,
@@ -20,22 +20,22 @@ html {
 
   // Colores exactos del Figma sobre las variables de sistema de Material.
   // Todo componente de Material que use "primary", "surface", "error"... toma estos.
-  --mat-sys-primary: #65558f;
+  --mat-sys-primary: #28587b;
   --mat-sys-on-primary: #ffffff;
-  --mat-sys-primary-container: #e8def8;
-  --mat-sys-on-primary-container: #4f378b;
-  --mat-sys-secondary-container: #e8def8;
-  --mat-sys-on-secondary-container: #4f378b;
+  --mat-sys-primary-container: #dbe7f0;
+  --mat-sys-on-primary-container: #1f4a6b;
+  --mat-sys-secondary-container: #dbe7f0;
+  --mat-sys-on-secondary-container: #1f4a6b;
   --mat-sys-surface: #fff5ef; // background/light
   --mat-sys-surface-container-lowest: #ffffff;
-  --mat-sys-surface-container-low: #fef7ff;
-  --mat-sys-surface-container: #fef7ff;
-  --mat-sys-surface-container-high: #ece6f0;
-  --mat-sys-surface-container-highest: #ece6f0;
-  --mat-sys-on-surface: #1d1b20;
-  --mat-sys-on-surface-variant: #49454f;
-  --mat-sys-outline: #79747e;
-  --mat-sys-outline-variant: #cac4d0;
+  --mat-sys-surface-container-low: #fffbf8;
+  --mat-sys-surface-container: #fffbf8;
+  --mat-sys-surface-container-high: #f3e9e1;
+  --mat-sys-surface-container-highest: #f3e9e1;
+  --mat-sys-on-surface: #1f1b18;
+  --mat-sys-on-surface-variant: #4f4843;
+  --mat-sys-outline: #8a7f78;
+  --mat-sys-outline-variant: #e6d9cf;
   --mat-sys-error: #c3423f; // red/brick
   --mat-sys-error-container: #fbe9e8;
   --mat-sys-on-error-container: #a8332f;
@@ -44,14 +44,14 @@ html {
   @include mat.form-field-overrides(
     (
       outlined-container-shape: 12px,
-      outlined-outline-color: #79747e,
-      outlined-hover-outline-color: #1d1b20,
-      outlined-focus-outline-color: #65558f,
+      outlined-outline-color: #8a7f78,
+      outlined-hover-outline-color: #1f1b18,
+      outlined-focus-outline-color: #28587b,
       outlined-error-outline-color: #c3423f,
       outlined-error-hover-outline-color: #a8332f,
       outlined-error-focus-outline-color: #c3423f,
       error-text-color: #c3423f,
-      outlined-input-text-placeholder-color: #6f6977,
+      outlined-input-text-placeholder-color: #6b625c,
       container-text-font: 'Inter, Roboto, sans-serif',
       outlined-label-text-font: 'Inter, Roboto, sans-serif',
       subscript-text-font: 'Inter, Roboto, sans-serif',
@@ -65,9 +65,11 @@ html {
       outlined-container-shape: 999px,
       tonal-container-shape: 999px,
       text-container-shape: 999px,
-      filled-container-color: #65558f,
-      outlined-outline-color: #79747e,
-      outlined-label-text-color: #49454f,
+      filled-container-color: #06d6a0,
+      filled-label-text-color: #031927,
+      filled-state-layer-color: #031927,
+      outlined-outline-color: #8a7f78,
+      outlined-label-text-color: #4f4843,
     )
   );
 
@@ -75,10 +77,10 @@ html {
   @include mat.chips-overrides(
     (
       container-shape-radius: 8px,
-      outline-color: #79747e,
-      label-text-color: #49454f,
-      elevated-selected-container-color: #e8def8,
-      selected-label-text-color: #4f378b,
+      outline-color: #8a7f78,
+      label-text-color: #4f4843,
+      elevated-selected-container-color: #dbe7f0,
+      selected-label-text-color: #1f4a6b,
     )
   );
 
@@ -86,7 +88,7 @@ html {
   @include mat.dialog-overrides(
     (
       container-shape: 28px,
-      container-color: #fef7ff,
+      container-color: #fffbf8,
     )
   );
 
@@ -146,8 +148,38 @@ body {
   @include mat.button-overrides(
     (
       outlined-outline-color: #c3423f,
-      outlined-label-text-color: #c3423f,
+      outlined-label-text-color: #a8332f,
       filled-container-color: #c3423f,
+      filled-label-text-color: #ffffff,
+      filled-state-layer-color: #ffffff,
+    )
+  );
+}
+
+// Chips de prioridad del diálogo "Gestionar reporte": al elegirlos toman su color
+.opcion-media {
+  @include mat.chips-overrides(
+    (
+      elevated-selected-container-color: #fff1dc,
+      selected-label-text-color: #9a4a00,
+    )
+  );
+}
+
+.opcion-alta {
+  @include mat.chips-overrides(
+    (
+      elevated-selected-container-color: #fbe9e8,
+      selected-label-text-color: #a8332f,
+    )
+  );
+}
+
+.opcion-baja {
+  @include mat.chips-overrides(
+    (
+      elevated-selected-container-color: #f3ece6,
+      selected-label-text-color: #4f4843,
     )
   );
 }
@@ -174,9 +206,11 @@ body {
   gap: 8px;
 }
 
-.mat-mdc-button-base .mdc-button__label > .material-symbols-outlined {
+.mat-mdc-button-base:not(.mat-mdc-icon-button) > .material-symbols-outlined {
   font-size: 18px;
-  margin-inline-start: -4px;
+  width: 18px;
+  height: 18px;
+  margin-inline: -4px 8px;
 }
 
 .mat-mdc-button-base:not(:disabled) {

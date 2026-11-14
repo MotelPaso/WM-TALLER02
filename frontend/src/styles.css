@@ -3,6 +3,9 @@
      (header, rail, tarjetas, etiquetas, estados vacío/error).
    - Los componentes de Material se estilan en material-theme.scss (mixins *-overrides). */
 
+@layer fuentes;
+@import url('https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@24,400,0..1,0&display=block')
+  layer(fuentes);
 @import 'tailwindcss';
 
 /* Tokens del Figma → clases de Tailwind: bg-crema, text-marino, border-borde, font-form... */
@@ -16,19 +19,20 @@
   --color-celeste: #b9d6ff; /* blue/light */
   --color-ladrillo: #c3423f; /* red/brick */
 
-  --color-superficie: #fef7ff;
-  --color-busqueda: #ece6f0;
-  --color-borde: #cac4d0;
-  --color-borde-fuerte: #79747e;
-  --color-texto: #1d1b20;
-  --color-texto-suave: #49454f;
-  --color-texto-tenue: #625b71;
+  --color-superficie: #fffbf8;
+  --color-busqueda: #f3e9e1;
+  --color-busqueda-hover: #ece0d6;
+  --color-borde: #e6d9cf;
+  --color-borde-fuerte: #8a7f78;
+  --color-texto: #1f1b18;
+  --color-texto-suave: #4f4843;
+  --color-texto-tenue: #6b625c;
 
-  --color-primario: #65558f;
-  --color-primario-contenedor: #e8def8;
-  --color-en-primario-contenedor: #4f378b;
-  --color-neutro: #eeeaf1;
-  --color-neutro-borde: #d6d0dc;
+  --color-primario: #28587b;
+  --color-primario-contenedor: #dbe7f0;
+  --color-en-primario-contenedor: #1f4a6b;
+  --color-neutro: #f3ece6;
+  --color-neutro-borde: #e2d6cc;
 
   /* Estados (dispositivo / reporte / prioridad) */
   --color-ok: #e3f6ec;
@@ -40,8 +44,9 @@
   --color-peligro: #fbe9e8;
   --color-peligro-texto: #a8332f;
   --color-peligro-borde: #f0c4c3;
-  --color-info: #dbe9ff;
+  --color-info: #dfeaf6;
   --color-info-texto: #1f4a6b;
+  --color-info-borde: #c3d6ea;
 
   --font-app: 'Roboto', system-ui, sans-serif;
   --font-form: 'Inter', system-ui, sans-serif;
@@ -61,6 +66,28 @@
     text-wrap: balance;
   }
 
+  html {
+    -webkit-tap-highlight-color: transparent;
+  }
+
+  a,
+  button {
+    touch-action: manipulation;
+  }
+
+  p {
+    text-wrap: pretty;
+  }
+
+  h1,
+  h2,
+  h3,
+  p,
+  dd,
+  li {
+    overflow-wrap: anywhere;
+  }
+
   ::selection {
     background: var(--color-primario-contenedor);
     color: var(--color-en-primario-contenedor);
@@ -71,13 +98,17 @@
     outline-offset: 2px;
   }
 
+  [tabindex='-1']:focus {
+    outline: none;
+  }
+
   html {
     scrollbar-color: var(--color-borde-fuerte) transparent;
   }
 }
 
 /* Íconos: <span class="material-symbols-outlined">search</span>
-   (la fuente se carga en index.html). "icono-lleno" = versión rellena. */
+   (la fuente se importa al inicio de este archivo, en la capa "fuentes"). "icono-lleno" = versión rellena. */
 @utility icono-lleno {
   font-variation-settings:
     'FILL' 1,
@@ -114,16 +145,16 @@
     color: var(--color-peligro-texto);
   }
   .etiqueta-abierto {
-    background: var(--color-primario-contenedor);
-    color: var(--color-en-primario-contenedor);
+    background: var(--color-alerta);
+    color: var(--color-alerta-texto);
   }
   .etiqueta-en_proceso {
-    background: var(--color-neutro);
-    color: var(--color-texto-suave);
+    background: var(--color-info);
+    color: var(--color-info-texto);
   }
   .etiqueta-resuelto {
-    background: var(--color-neutro);
-    color: var(--color-texto-suave);
+    background: var(--color-ok);
+    color: var(--color-ok-texto);
   }
 
   .chip {
@@ -139,43 +170,46 @@
     font-weight: 500;
     white-space: nowrap;
   }
+  .chip-prioridad {
+    gap: 6px;
+    padding: 0 12px 0 10px;
+    background: #fff;
+  }
   .chip-sin_prioridad {
-    background: var(--color-crema);
-    border-color: #ead9c9;
+    border-style: dashed;
+    border-color: var(--color-alerta-texto);
+    color: var(--color-alerta-texto);
   }
   .chip-baja {
-    background: #dcf5eb;
-    border-color: var(--color-ok-borde);
-    color: #1d5a45;
-  }
-  .chip-abierto {
-    background: var(--color-primario-contenedor);
-    border-color: #d0c4e8;
-    color: var(--color-en-primario-contenedor);
-  }
-  .chip-resuelto {
-    background: #dcf5eb;
-    border-color: var(--color-ok-borde);
-    color: #1d5a45;
+    border-color: var(--color-neutro-borde);
+    color: var(--color-texto-suave);
   }
   .chip-media {
-    background: var(--color-alerta);
     border-color: var(--color-alerta-borde);
-    color: #6d4512;
+    color: var(--color-alerta-texto);
   }
   .chip-alta {
-    background: var(--color-peligro);
     border-color: var(--color-peligro-borde);
     color: var(--color-peligro-texto);
   }
+  .chip-abierto {
+    background: var(--color-alerta);
+    border-color: var(--color-alerta-borde);
+    color: var(--color-alerta-texto);
+  }
+  .chip-resuelto {
+    background: var(--color-ok);
+    border-color: var(--color-ok-borde);
+    color: var(--color-ok-texto);
+  }
   .chip-en_proceso {
     background: var(--color-info);
-    border-color: var(--color-celeste);
+    border-color: var(--color-info-borde);
     color: var(--color-info-texto);
   }
   .chip-operativo {
     background: var(--color-ok);
-    border-color: #bfe6d0;
+    border-color: var(--color-ok-borde);
     color: var(--color-ok-texto);
   }
   .chip-con_falla {
@@ -185,7 +219,7 @@
   }
   .chip-en_reparacion {
     background: var(--color-info);
-    border-color: var(--color-celeste);
+    border-color: var(--color-info-borde);
     color: var(--color-info-texto);
   }
   .chip-fuera_de_servicio {
@@ -195,10 +229,34 @@
   }
 }
 
+@layer components {
+  .aviso {
+    display: flex;
+    align-items: flex-start;
+    gap: 8px;
+    border-radius: 8px;
+    padding: 10px 12px;
+    font-size: 0.8125rem;
+    line-height: 1.45;
+  }
+  .aviso-ok {
+    background: var(--color-ok);
+    color: var(--color-ok-texto);
+  }
+  .aviso-error {
+    background: var(--color-peligro);
+    color: var(--color-peligro-texto);
+  }
+  .aviso-info {
+    background: var(--color-neutro);
+    color: var(--color-texto-suave);
+  }
+}
+
 /* Skeleton de carga */
 @utility esqueleto {
   border-radius: 4px;
-  background: linear-gradient(90deg, #ece7ee 0%, #f6f2f7 50%, #ece7ee 100%) 0 0 / 200% 100%;
+  background: linear-gradient(90deg, #f0e7df 0%, #f8f2ed 50%, #f0e7df 100%) 0 0 / 200% 100%;
   animation: brillo 1.4s ease-in-out infinite;
 }
 
@@ -227,6 +285,10 @@
   }
 }
 
+.material-symbols-outlined {
+  line-height: 1;
+}
+
 @media (prefers-reduced-motion: reduce) {
   *,
   *::before,
@@ -234,5 +296,15 @@
     animation-duration: 1ms !important;
     animation-iteration-count: 1 !important;
     transition-duration: 1ms !important;
+  }
+
+  .fundido {
+    animation: solo-opacidad 200ms ease both !important;
+  }
+}
+
+@keyframes solo-opacidad {
+  from {
+    opacity: 0;
   }
 }
