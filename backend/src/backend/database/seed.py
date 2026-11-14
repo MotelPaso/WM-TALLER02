@@ -35,10 +35,24 @@ TIPOS_DISPOSITIVO = [
     "Punto WiFi",
 ]
 
+
+def rango(desde: int, hasta: int) -> list[str]:
+    return [str(n) for n in range(desde, hasta + 1)]
+
+
 SALAS = {
-    "X1": ["29", "30", "31"],
-    "Y1": ["101", "102"],
-    "LC": ["201"],
+    "B1/B2": rango(31, 35),
+    "D1": rango(24, 28),
+    "D2": ["102", "202", "203", "302", "303", "304"],
+    "G": rango(10, 13),
+    "G1": rango(6, 9),
+    "G2": rango(4, 5),
+    "G3": rango(1, 3),
+    "G4": rango(14, 23),
+    "G5": rango(36, 38),
+    "G6": rango(45, 54),
+    "X": ["104", "107", "204", "205", "206", "207"],
+    "X1": rango(29, 30),
 }
 
 DISPOSITIVOS = [
@@ -49,19 +63,25 @@ DISPOSITIVOS = [
     ("UCN-004505", "Computador", "30", "operativo", "PC del docente"),
     ("UCN-004506", "Pantalla", "31", "operativo", "Pantalla interactiva"),
     ("UCN-004507", "Cámara", "31", "operativo", "Cámara para clases híbridas"),
-    ("UCN-004508", "Computador", "101", "operativo", "Laboratorio, puesto 1"),
-    ("UCN-004509", "Computador", "101", "operativo", "Laboratorio, puesto 2"),
-    ("UCN-004510", "Monitor", "101", "operativo", "Monitor del puesto 1"),
-    ("UCN-004511", "Impresora", "102", "operativo", "Impresora láser"),
-    ("UCN-004512", "Punto WiFi", "102", "operativo", None),
+    ("UCN-004508", "Computador", "104", "operativo", "Laboratorio, puesto 1"),
+    ("UCN-004509", "Computador", "104", "operativo", "Laboratorio, puesto 2"),
+    ("UCN-004510", "Monitor", "104", "operativo", "Monitor del puesto 1"),
+    ("UCN-004511", "Impresora", "107", "operativo", "Impresora láser"),
+    ("UCN-004512", "Punto WiFi", "107", "operativo", None),
     (
         "UCN-004513",
         "Proyector",
-        "201",
+        "202",
         "fuera_de_servicio",
         "Lámpara quemada, pendiente de baja",
     ),
-    ("UCN-004514", "Punto WiFi", "201", "operativo", None),
+    ("UCN-004514", "Punto WiFi", "202", "operativo", None),
+    ("UCN-004515", "Proyector", "24", "operativo", "Proyector de techo"),
+    ("UCN-004516", "Computador", "10", "operativo", "PC del docente"),
+    ("UCN-004517", "Proyector", "6", "operativo", "Proyector de techo"),
+    ("UCN-004518", "Pantalla", "14", "operativo", "Televisor para presentaciones"),
+    ("UCN-004519", "Audio", "36", "operativo", "Parlantes del auditorio"),
+    ("UCN-004520", "Computador", "45", "operativo", "PC del docente"),
 ]
 
 REPORTES = [

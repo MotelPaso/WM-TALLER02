@@ -1,6 +1,10 @@
+import re
+
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 
 from backend.schemas.catalogos import RolOut
+
+CORREO_UCN = re.compile(r"^[a-z0-9._%+\-]+@(alumnos\.)?ucn\.cl$")
 
 
 class UsuarioCreate(BaseModel):
@@ -19,7 +23,10 @@ class UsuarioCreate(BaseModel):
     @field_validator("correo")
     @classmethod
     def lowercase_correo(cls, v: str) -> str:
-        return v.lower()
+        v = v.lower()
+        if not CORREO_UCN.match(v):
+            raise ValueError("El correo debe ser @ucn.cl o @alumnos.ucn.cl")
+        return v
 
 
 class UsuarioResumenOut(BaseModel):

@@ -31,7 +31,7 @@ class ReportePrioridadUpdate(BaseModel):
 
 class ReporteEstadoUpdate(BaseModel):
     estado: Literal["en_proceso", "resuelto"]
-    notas_resolucion: str | None = None
+    notas_resolucion: str | None = Field(default=None, max_length=1000)
 
 
 class ReporteOut(BaseModel):
