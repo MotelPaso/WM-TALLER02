@@ -13,7 +13,7 @@
         <form [formGroup]="form" (ngSubmit)="submit()" class="mt-8 flex flex-col gap-2" novalidate>
             @if (error()) {
             <p role="alert"
-                class="mb-4 flex items-start gap-2.5 rounded-lg bg-[#f8dcdb] px-4 py-3 text-[13px] text-[#9b2f2c]">
+                class="mb-4 flex items-start gap-2.5 rounded-lg bg-peligro px-4 py-3 text-[13px] text-peligro-texto">
                 <span class="material-symbols-outlined text-xl" aria-hidden="true">error</span>
                 {{ error() }}
             </p>
@@ -23,10 +23,15 @@
             <mat-form-field appearance="outline">
                 <input matInput id="nombre" type="text" autocomplete="name" formControlName="nombre"
                     placeholder="Diego Malebran" />
+                @if (form.controls.nombre.hasError('maxlength')) {
+                <mat-error>El nombre puede tener hasta 100 caracteres.</mat-error>
+                } @else {
+                <mat-error>Ingresa tu nombre.</mat-error>
+                }
             </mat-form-field>
 
             <label for="correo" class="text-sm font-medium text-texto">Correo electrónico</label>
-            <mat-form-field appearance="outline">
+            <mat-form-field appearance="outline" subscriptSizing="dynamic">
                 <input matInput id="correo" formControlName="correo" type="email" autocomplete="email"
                     placeholder="nombre@alumnos.ucn.cl" />
                 @if (form.controls.correo.hasError('required')) {
@@ -38,13 +43,45 @@
 
             <label for="contrasena" class="text-sm font-medium text-texto">Contraseña</label>
             <mat-form-field appearance="outline">
-                <input matInput id="contrasena" formControlName="contrasena" type="password" autocomplete="new-password"
+                <input matInput id="contrasena" formControlName="contrasena" [type]="verContrasena() ? 'text' : 'password'" autocomplete="new-password"
                     placeholder="Mínimo 8 caracteres" />
                 @if (form.controls.contrasena.hasError('required')) {
                 <mat-error>Ingresa una contraseña.</mat-error>
                 } @else if (form.controls.contrasena.hasError('minlength')) {
                 <mat-error>La contraseña debe tener al menos 8 caracteres.</mat-error>
                 }
+        <button
+          matIconButton
+          matSuffix
+          type="button"
+          (click)="verContrasena.update((v) => !v)"
+          [attr.aria-label]="verContrasena() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+          [attr.aria-pressed]="verContrasena()"
+        >
+          <span class="material-symbols-outlined" aria-hidden="true">{{ verContrasena() ? 'visibility_off' : 'visibility' }}</span>
+        </button>
+            </mat-form-field>
+
+            <label for="confirmarContrasena" class="text-sm font-medium text-texto">Confirmar contraseña</label>
+            <mat-form-field appearance="outline">
+                <input matInput id="confirmarContrasena" formControlName="confirmarContrasena"
+                    [type]="verConfirmacion() ? 'text' : 'password'" autocomplete="new-password"
+                    placeholder="Repite tu contraseña" />
+                @if (form.controls.confirmarContrasena.hasError('required')) {
+                <mat-error>Repite tu contraseña.</mat-error>
+                } @else if (form.controls.confirmarContrasena.hasError('noCoincide')) {
+                <mat-error>Las contraseñas no coinciden.</mat-error>
+                }
+        <button
+          matIconButton
+          matSuffix
+          type="button"
+          (click)="verConfirmacion.update((v) => !v)"
+          [attr.aria-label]="verConfirmacion() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+          [attr.aria-pressed]="verConfirmacion()"
+        >
+          <span class="material-symbols-outlined" aria-hidden="true">{{ verConfirmacion() ? 'visibility_off' : 'visibility' }}</span>
+        </button>
             </mat-form-field>
 
             <button matButton="filled" type="submit" class="boton-auth group w-full" [disabled]="cargando()">

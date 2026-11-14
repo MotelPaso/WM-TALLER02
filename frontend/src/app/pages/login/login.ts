@@ -29,13 +29,14 @@ export class Login {
 
   protected readonly cargando = signal(false);
   protected readonly error = signal('');
+  protected readonly verContrasena = signal(false);
 
   protected readonly form = this.fb.group({
     correo: ['', [Validators.required, Validators.email]],
     contrasena: ['', Validators.required],
   });
 
-  protected async submit(): Promise<void> {
+  protected submit(): void {
     this.error.set('');
     if (this.form.invalid) {
       this.form.markAllAsTouched();
@@ -43,7 +44,7 @@ export class Login {
     }
     this.cargando.set(true);
     const { correo, contrasena } = this.form.getRawValue();
-    (await this.auth.login(correo, contrasena)).subscribe({
+    this.auth.login(correo, contrasena).subscribe({
       next: () => this.router.navigateByUrl('/dispositivos'),
       error: (err) => {
         this.error.set(

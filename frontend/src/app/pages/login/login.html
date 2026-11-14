@@ -11,7 +11,7 @@
 
     <form [formGroup]="form" (ngSubmit)="submit()" class="mt-8 flex flex-col gap-2" novalidate>
       @if (error()) {
-        <p role="alert" class="mb-4 flex items-start gap-2.5 rounded-lg bg-[#f8dcdb] px-4 py-3 text-[13px] text-[#9b2f2c]">
+        <p role="alert" class="mb-4 flex items-start gap-2.5 rounded-lg bg-peligro px-4 py-3 text-[13px] text-peligro-texto">
           <span class="material-symbols-outlined text-xl" aria-hidden="true">error</span>
           {{ error() }}
         </p>
@@ -33,10 +33,20 @@
           matInput
           id="contrasena"
           formControlName="contrasena"
-          type="password"
+          [type]="verContrasena() ? 'text' : 'password'"
           autocomplete="current-password"
           placeholder="Ingresa tu contraseña"
         />
+        <button
+          matIconButton
+          matSuffix
+          type="button"
+          (click)="verContrasena.update((v) => !v)"
+          [attr.aria-label]="verContrasena() ? 'Ocultar contraseña' : 'Mostrar contraseña'"
+          [attr.aria-pressed]="verContrasena()"
+        >
+          <span class="material-symbols-outlined" aria-hidden="true">{{ verContrasena() ? 'visibility_off' : 'visibility' }}</span>
+        </button>
         @if (form.controls.contrasena.hasError('required')) {
           <mat-error>Ingresa tu contraseña.</mat-error>
         }

@@ -74,7 +74,7 @@ export class DispositivoForm implements OnInit {
   });
 
   protected readonly form = this.fb.group({
-    codigo_inventario: ['', [Validators.required, Validators.maxLength(30)]],
+    codigo_inventario: ['', [Validators.required, Validators.pattern(/\S/), Validators.maxLength(30)]],
     tipo_dispositivo_id: this.fb.control<number | null>(null, Validators.required),
     edificio_id: this.fb.control<number | null>(null, Validators.required),
     sala_id: this.fb.control<number | null>({ value: null, disabled: true }, Validators.required),

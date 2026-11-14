@@ -37,7 +37,10 @@ export class GestionarReporte {
   protected readonly form = this.fb.group({
     prioridad_id: this.fb.control<number | null>(this.data.prioridad?.id ?? null),
     estado: this.fb.control<string>(this.data.estado.nombre),
-    notas_resolucion: this.fb.control<string>(this.data.notas_resolucion ?? ''),
+    notas_resolucion: this.fb.control<string>({
+      value: this.data.notas_resolucion ?? '',
+      disabled: this.data.estado.nombre === 'resuelto',
+    }),
   });
 
   protected readonly codigoReporte = String(this.data.id).padStart(4, '0');
@@ -54,7 +57,9 @@ export class GestionarReporte {
   protected formularioModificado(): boolean {
     const p = this.form.controls.prioridad_id.value;
     const e = this.form.controls.estado.value;
-    const n = this.form.controls.notas_resolucion.value.trim();
+    const n = this.form.controls.notas_resolucion.enabled
+      ? this.form.controls.notas_resolucion.value.trim()
+      : (this.data.notas_resolucion ?? '').trim();
     const initialP = this.data.prioridad?.id ?? null;
     const initialE = this.data.estado.nombre;
     const initialN = (this.data.notas_resolucion ?? '').trim();
@@ -64,16 +69,20 @@ export class GestionarReporte {
   protected guardar(): void {
     const nuevaPrioridad = this.form.controls.prioridad_id.value;
     const nuevoEstado = this.form.controls.estado.value;
-    const nuevasNotas = this.form.controls.notas_resolucion.value.trim();
+    const nuevasNotas =
+      nuevoEstado === 'resuelto' ? this.form.controls.notas_resolucion.value.trim() : '';
     const anteriorPrioridad = this.data.prioridad?.id ?? null;
     const anteriorEstado = this.data.estado.nombre;
-    const anterioresNotas = (this.data.notas_resolucion ?? '').trim();
+
+    if (!nuevoEstado) {
+      this.errorMensaje.set('Selecciona un estado.');
+      return;
+    }
 
     const cambioPrioridad = nuevaPrioridad !== null && nuevaPrioridad !== anteriorPrioridad;
     const cambioEstado = nuevoEstado !== anteriorEstado;
-    const cambioNotas = nuevasNotas !== anterioresNotas;
 
-    if (!cambioPrioridad && !cambioEstado && !cambioNotas) {
+    if (!cambioPrioridad && !cambioEstado) {
       this.dialogRef.close();
       return;
     }
@@ -89,7 +98,7 @@ export class GestionarReporte {
     const peticion$ = cambioPrioridad
       ? this.reportesService.cambiarPrioridad(this.data.id, nuevaPrioridad!).pipe(
           switchMap((repActualizado) =>
-            cambioEstado || cambioNotas
+            cambioEstado
               ? this.reportesService.cambiarEstado(this.data.id, nuevoEstado, nuevasNotas || null)
               : of(repActualizado),
           ),

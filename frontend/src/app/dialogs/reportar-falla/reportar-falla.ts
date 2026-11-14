@@ -35,8 +35,8 @@ export class ReportarFalla {
   protected readonly error = signal('');
 
   protected readonly form = this.fb.group({
-    titulo: ['', [Validators.required, Validators.maxLength(150)]],
-    descripcion: ['', [Validators.required, Validators.maxLength(2000)]],
+    titulo: ['', [Validators.required, Validators.pattern(/\S/), Validators.maxLength(150)]],
+    descripcion: ['', [Validators.required, Validators.pattern(/\S/), Validators.maxLength(2000)]],
   });
 
   protected enviar(): void {

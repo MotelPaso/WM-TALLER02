@@ -6,7 +6,7 @@
 
 <a
   [routerLink]="editando() && dispositivoId() ? ['/dispositivos', dispositivoId()] : '/dispositivos'"
-  class="mb-6 inline-flex items-center gap-1 text-sm font-medium text-texto-suave no-underline hover:text-texto hover:underline hover:underline-offset-[3px]"
+  class="mb-4 inline-flex min-h-11 items-center gap-1 text-sm font-medium text-texto-suave no-underline hover:text-texto hover:underline hover:underline-offset-[3px]"
 >
   <span class="material-symbols-outlined text-lg" aria-hidden="true">arrow_back</span>
   {{ editando() ? 'Volver a la ficha' : 'Volver a Dispositivos' }}
@@ -38,14 +38,14 @@
     @if (error()) {
       <p
         role="alert"
-        class="mb-6 flex items-start gap-2.5 rounded-lg bg-[#f8dcdb] px-4 py-3 text-[13px] text-[#9b2f2c]"
+        class="mb-6 flex items-start gap-2.5 rounded-lg bg-peligro px-4 py-3 text-[13px] text-peligro-texto"
       >
         <span class="material-symbols-outlined text-xl" aria-hidden="true">error</span>
         {{ error() }}
       </p>
     }
 
-    <div class="grid grid-cols-1 gap-x-5 gap-y-1 sm:grid-cols-2">
+    <div class="grid grid-cols-1 gap-x-5 gap-y-4 sm:grid-cols-2">
       <div class="flex flex-col gap-2">
         <label for="codigo" class="text-sm font-medium">Código de inventario</label>
         <mat-form-field appearance="outline">
@@ -57,7 +57,7 @@
             placeholder="UCN-004512"
             spellcheck="false"
           />
-          @if (form.controls.codigo_inventario.hasError('required')) {
+          @if (form.controls.codigo_inventario.hasError('required') || form.controls.codigo_inventario.hasError('pattern')) {
             <mat-error>Ingresa el código de inventario.</mat-error>
           } @else if (form.controls.codigo_inventario.hasError('maxlength')) {
             <mat-error>Máximo 30 caracteres.</mat-error>

@@ -1,11 +1,23 @@
 import { Component, inject, signal } from '@angular/core';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { NonNullableFormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  AbstractControl,
+  NonNullableFormBuilder,
+  ReactiveFormsModule,
+  ValidationErrors,
+  Validators,
+} from '@angular/forms';
 import { AuthService } from '../../services/auth.service';
+
+function coincideConContrasena(control: AbstractControl): ValidationErrors | null {
+  const contrasena = control.parent?.get('contrasena')?.value;
+  return control.value === contrasena ? null : { noCoincide: true };
+}
 
 @Component({
   selector: '',
@@ -26,13 +38,23 @@ export class Registro {
   private readonly auth = inject(AuthService);
   protected readonly error = signal('');
   protected readonly cargando = signal(false);
+  protected readonly verContrasena = signal(false);
+  protected readonly verConfirmacion = signal(false);
 
   protected readonly form = this.fb.group({
-    nombre: ['', Validators.required],
+    nombre: ['', [Validators.required, Validators.pattern(/\S/), Validators.maxLength(100)]],
     correo: ['', [Validators.required, Validators.email, Validators.pattern(/^[a-zA-Z0-9._%+\-]+@(alumnos\.)?ucn\.cl$/)]],
     contrasena: ['', [Validators.required, Validators.minLength(8)]],
+    confirmarContrasena: ['', [Validators.required, coincideConContrasena]],
   });
-  protected async submit(): Promise<void> {
+
+  constructor() {
+    this.form.controls.contrasena.valueChanges
+      .pipe(takeUntilDestroyed())
+      .subscribe(() => this.form.controls.confirmarContrasena.updateValueAndValidity());
+  }
+
+  protected submit(): void {
     this.error.set('');
     if (this.form.invalid) {
       this.form.markAllAsTouched();
@@ -40,7 +62,7 @@ export class Registro {
     }
     this.cargando.set(true);
     const { nombre, correo, contrasena } = this.form.getRawValue();
-    (await this.auth.register(nombre, correo, contrasena)).subscribe({
+    this.auth.register(nombre, correo, contrasena).subscribe({
       next: () => this.router.navigateByUrl('/dispositivos'),
       error: (err) => {
         this.error.set(

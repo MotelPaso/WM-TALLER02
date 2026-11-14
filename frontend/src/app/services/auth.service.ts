@@ -1,6 +1,6 @@
 import { Injectable, inject, signal } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
-import { switchMap, tap } from 'rxjs';
+import { Observable, switchMap, tap } from 'rxjs';
 
 import { LoginResponse, User } from '../models';
 
@@ -27,18 +27,18 @@ export class AuthService {
     return this._usuario()?.rol.nombre === 'tecnico';
   }
 
-  async login(correo: string, contrasena: string) {
+  login(correo: string, contrasena: string): Observable<User> {
     const body = new HttpParams().set('username', correo).set('password', contrasena);
-    return await this.http.post<LoginResponse>(`${API}/auth/login`, body).pipe(
+    return this.http.post<LoginResponse>(`${API}/auth/login`, body).pipe(
       tap((res) => localStorage.setItem(TOKEN_KEY, res.access_token)),
       switchMap(() => this.http.get<User>(`${API}/auth/me`)),
       tap((user) => this.guardarSesion(user)),
     );
   }
 
-  async register(nombre: string, correo: string, contrasena: string) {
-    const body = { nombre: nombre, correo: correo, contrasena: contrasena };
-    return await this.http
+  register(nombre: string, correo: string, contrasena: string): Observable<User> {
+    const body = { nombre, correo, contrasena };
+    return this.http
       .post<User>(`${API}/auth/register`, body)
       .pipe(switchMap(() => this.login(correo, contrasena)));
   }
