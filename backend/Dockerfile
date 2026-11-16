@@ -15,4 +15,4 @@ RUN uv sync --frozen --no-dev
 
 EXPOSE 8000
 
-CMD ["sh", "-c", "alembic upgrade head && seed && fastapi run src/backend/main.py --host 0.0.0.0 --port 8000"]
+CMD ["sh", "-c", "alembic upgrade head && seed && fastapi run src/backend/main.py --host 0.0.0.0 --port ${PORT:-8000} --forwarded-allow-ips '*'"]
