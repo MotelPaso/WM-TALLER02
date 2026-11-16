@@ -108,6 +108,21 @@ def guardar(db: Session) -> None:
         )
 
 
+@router.get("/codigo/{codigo}", response_model=DispositivoOut)
+def get_dispositivo_por_codigo(codigo: str, db: DbSession, user: CurrentUser):
+    dispositivo = db.scalars(
+        select_dispositivos().where(
+            Dispositivo.codigo_inventario == codigo.strip().upper()
+        )
+    ).first()
+    if dispositivo is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="No existe un dispositivo con ese código",
+        )
+    return dispositivo
+
+
 @router.get("/{dispositivo_id}", response_model=DispositivoOut)
 def get_dispositivo(dispositivo_id: int, db: DbSession, user: CurrentUser):
     return obtener_dispositivo(db, dispositivo_id)

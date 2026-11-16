@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import TYPE_CHECKING
 
-from sqlalchemy import DateTime, ForeignKey, String, Text, func
+from sqlalchemy import DateTime, Float, ForeignKey, String, Text, func
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 
 from backend.models.base import Base
@@ -46,6 +46,8 @@ class Reporte(Base):
     )
     finalizado_en: Mapped[datetime | None] = mapped_column(DateTime(timezone=True))
     notas_resolucion: Mapped[str | None] = mapped_column(Text, nullable=True)
+    latitud: Mapped[float | None] = mapped_column(Float)
+    longitud: Mapped[float | None] = mapped_column(Float)
 
     dispositivo: Mapped[Dispositivo] = relationship(back_populates="reportes")
     creado_por: Mapped[Usuario] = relationship()

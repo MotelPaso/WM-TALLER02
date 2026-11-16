@@ -52,6 +52,8 @@ def create_reporte(data: ReporteCreate, db: DbSession, user: CurrentUser):
     reporte = Reporte(
         titulo=data.titulo,
         descripcion=data.descripcion,
+        latitud=data.latitud,
+        longitud=data.longitud,
         dispositivo=dispositivo,
         creado_por=user,
         estado=obtener_por_nombre(db, EstadoReporte, "abierto"),
