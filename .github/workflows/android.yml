@@ -1,0 +1,64 @@
+name: Android APK
+
+on:
+  push:
+    branches: [main]
+  # También en cada PR hacia main: así se prueba el APK antes de integrar.
+  pull_request:
+    branches: [main]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: android-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  apk:
+    name: APK debug
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: frontend
+    steps:
+      - uses: actions/checkout@v7
+      - name: Descargar Node
+        uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          cache: npm
+          cache-dependency-path: frontend/package-lock.json
+      - name: Descargar JDK 21
+        uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: 21
+      - name: Preparar Android SDK
+        uses: android-actions/setup-android@v4
+      - name: Preparar Gradle
+        uses: gradle/actions/setup-gradle@v6
+      - name: Instalar dependencias
+        run: npm ci
+      - name: Apuntar el APK al backend
+        if: ${{ vars.API_URL_MOVIL != '' }}
+        env:
+          API_URL_MOVIL: ${{ vars.API_URL_MOVIL }}
+        run: sed -i "s#^export const API_MOVIL = .*#export const API_MOVIL = '${API_URL_MOVIL}';#" src/app/services/api.ts
+      - name: Build de Angular
+        run: npm run build
+      - name: Sincronizar Capacitor
+        run: npx cap sync android
+      - name: Compilar APK debug
+        working-directory: frontend/android
+        run: |
+          chmod +x gradlew
+          ./gradlew assembleDebug
+      - name: Subir APK
+        uses: actions/upload-artifact@v7
+        with:
+          name: reportesucn-debug
+          path: frontend/android/app/build/outputs/apk/debug/app-debug.apk
+          if-no-files-found: error
