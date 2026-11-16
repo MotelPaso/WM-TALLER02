@@ -9,6 +9,7 @@ import { finalize } from 'rxjs';
 
 import { Dispositivo } from '../../models';
 import { ReportesService } from '../../services/reportes.service';
+import { Ubicacion, UbicacionService } from '../../services/ubicacion.service';
 
 @Component({
   selector: 'app-reportar-falla',
@@ -28,16 +29,37 @@ export class ReportarFalla {
   private readonly dialogRef = inject(MatDialogRef<ReportarFalla>);
   private readonly reportesService = inject(ReportesService);
   private readonly snackBar = inject(MatSnackBar);
+  private readonly ubicacionService = inject(UbicacionService);
 
   readonly data = inject<Dispositivo>(MAT_DIALOG_DATA);
 
   protected readonly enviando = signal(false);
   protected readonly error = signal('');
+  // El GPS es opcional: si falla, el reporte se envía igual sin coordenadas.
+  protected readonly ubicacion = signal<Ubicacion | null>(null);
+  protected readonly buscandoUbicacion = signal(false);
+  protected readonly errorUbicacion = signal('');
 
   protected readonly form = this.fb.group({
     titulo: ['', [Validators.required, Validators.pattern(/\S/), Validators.maxLength(150)]],
     descripcion: ['', [Validators.required, Validators.pattern(/\S/), Validators.maxLength(2000)]],
   });
+
+  constructor() {
+    this.buscarUbicacion();
+  }
+
+  protected async buscarUbicacion(): Promise<void> {
+    this.buscandoUbicacion.set(true);
+    this.errorUbicacion.set('');
+    try {
+      this.ubicacion.set(await this.ubicacionService.obtener());
+    } catch (err) {
+      this.errorUbicacion.set((err as Error).message);
+    } finally {
+      this.buscandoUbicacion.set(false);
+    }
+  }
 
   protected enviar(): void {
     if (this.form.invalid) {
@@ -54,6 +76,8 @@ export class ReportarFalla {
         titulo: titulo.trim(),
         descripcion: descripcion.trim(),
         dispositivo_id: this.data.id,
+        latitud: this.ubicacion()?.latitud,
+        longitud: this.ubicacion()?.longitud,
       })
       .pipe(finalize(() => this.enviando.set(false)))
       .subscribe({

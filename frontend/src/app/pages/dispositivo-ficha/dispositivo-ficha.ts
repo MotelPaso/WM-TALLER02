@@ -1,5 +1,12 @@
 import { DatePipe } from '@angular/common';
-import { ChangeDetectionStrategy, Component, computed, inject, signal } from '@angular/core';
+import {
+  ChangeDetectionStrategy,
+  Component,
+  DestroyRef,
+  computed,
+  inject,
+  signal,
+} from '@angular/core';
 import { rxResource, toSignal } from '@angular/core/rxjs-interop';
 import { HttpErrorResponse } from '@angular/common/http';
 import { ActivatedRoute, Router, RouterLink } from '@angular/router';
@@ -12,11 +19,13 @@ import { finalize, map } from 'rxjs';
 import { EstadoVacio } from '../../components/estado-vacio/estado-vacio';
 import { NotaSolucion } from '../../components/nota-solucion/nota-solucion';
 import { ReporteChips } from '../../components/reporte-chips/reporte-chips';
+import { CodigoQr } from '../../dialogs/codigo-qr/codigo-qr';
 import { Confirmar } from '../../dialogs/confirmar/confirmar';
 import { GestionarReporte } from '../../dialogs/gestionar-reporte/gestionar-reporte';
 import { ReportarFalla } from '../../dialogs/reportar-falla/reportar-falla';
 import { DispositivosService } from '../../services/dispositivos.service';
 import { AuthService } from '../../services/auth.service';
+import { SacudidaService } from '../../services/sacudida.service';
 import { ETIQUETAS_ESTADO_DISPOSITIVO, Reporte } from '../../models';
 
 @Component({
@@ -41,6 +50,7 @@ export class DispositivoFicha {
   private readonly snackBar = inject(MatSnackBar);
   private readonly dispositivosService = inject(DispositivosService);
   private readonly auth = inject(AuthService);
+  private readonly sacudida = inject(SacudidaService);
 
   protected readonly esTecnico = computed(() => this.auth.usuario()?.rol?.nombre === 'tecnico');
   private readonly id = toSignal(
@@ -100,8 +110,26 @@ export class DispositivoFicha {
     const status = !err ? 404 : err instanceof HttpErrorResponse ? err.status : undefined;
     return status === 404
       ? 'Puede que se haya eliminado o que el enlace esté mal.'
-      : `No pudimos cargar el dispositivo (status ${status ?? 'sin conexión'}). Revisa que el backend esté corriendo en localhost:8000.`;
+      : `No pudimos cargar el dispositivo (status ${status || 'sin conexión'}). Revisa tu conexión e inténtalo de nuevo.`;
   });
+
+  /** Solo se avisa del gesto si el equipo tiene acelerómetro; si no, queda el botón. */
+  protected readonly sacudidaDisponible = computed(() => this.sacudida.disponible() === true);
+
+  constructor() {
+    // Acelerómetro: agitar el teléfono en la ficha abre "Reportar falla" de este dispositivo.
+    const escucha = this.sacudida.escuchar(() => {
+      if (this.dialog.openDialogs.length > 0 || !this.dispositivo()) return;
+      navigator.vibrate?.(150);
+      this.abrirReportarFalla();
+    });
+    inject(DestroyRef).onDestroy(() => escucha.then((dejarDeEscuchar) => dejarDeEscuchar()));
+  }
+
+  protected abrirCodigoQr(): void {
+    const disp = this.dispositivo();
+    if (disp) this.dialog.open(CodigoQr, { data: disp, width: '420px' });
+  }
 
   protected abrirReportarFalla(): void {
     const disp = this.dispositivo();
@@ -207,13 +235,19 @@ export class DispositivoFicha {
           .actualizarDispositivo(disp.id, { fuera_de_servicio: true })
           .subscribe({
             next: () => {
-              this.snackBar.open('Dispositivo marcado fuera de servicio.', 'OK', { duration: 3000 });
+              this.snackBar.open('Dispositivo marcado fuera de servicio.', 'OK', {
+                duration: 3000,
+              });
               this.dispositivoRecurso.reload();
             },
             error: (err) =>
-              this.snackBar.open(err.error?.detail || 'No se pudo actualizar el dispositivo.', 'Cerrar', {
-                duration: 4000,
-              }),
+              this.snackBar.open(
+                err.error?.detail || 'No se pudo actualizar el dispositivo.',
+                'Cerrar',
+                {
+                  duration: 4000,
+                },
+              ),
           });
       });
   }

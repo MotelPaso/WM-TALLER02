@@ -1,0 +1,35 @@
+<h2 mat-dialog-title>Código QR</h2>
+
+<mat-dialog-content>
+  <p class="text-texto-suave">
+    {{ data.tipo.nombre }} · {{ data.sala.codigo }}. Imprímelo y pégalo en el equipo para que puedan
+    reportarlo escaneándolo.
+  </p>
+
+  <div class="mt-5 flex flex-col items-center gap-3">
+    @if (imagen()) {
+      <img
+        [src]="imagen()"
+        [alt]="'Código QR de ' + data.codigo_inventario"
+        width="240"
+        height="240"
+        class="rounded-lg border border-borde"
+      />
+    } @else if (error()) {
+      <p role="alert" class="aviso aviso-error">No se pudo generar el código QR.</p>
+    } @else {
+      <mat-spinner diameter="40" />
+    }
+    <strong class="text-lg font-medium tabular-nums">{{ data.codigo_inventario }}</strong>
+  </div>
+</mat-dialog-content>
+
+<mat-dialog-actions align="end">
+  <button matButton="outlined" type="button" mat-dialog-close>Cerrar</button>
+  @if (imagen()) {
+    <a matButton="filled" [href]="imagen()" [attr.download]="data.codigo_inventario + '.png'">
+      <span class="material-symbols-outlined" aria-hidden="true">download</span>
+      Descargar
+    </a>
+  }
+</mat-dialog-actions>

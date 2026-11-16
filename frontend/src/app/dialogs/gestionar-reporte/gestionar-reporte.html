@@ -12,6 +12,17 @@
       <p class="max-h-32 overflow-y-auto overscroll-contain text-[13px] whitespace-pre-line text-texto-suave">
         {{ data.descripcion }}
       </p>
+      @if (enlaceMapa) {
+        <a
+          [href]="enlaceMapa"
+          target="_blank"
+          rel="noopener"
+          class="mt-1 inline-flex items-center gap-1 text-[13px] font-medium text-primario"
+        >
+          <span class="material-symbols-outlined text-lg" aria-hidden="true">location_on</span>
+          Ver en el mapa dónde se reportó
+        </a>
+      }
     </div>
 
     <p id="label-prioridad" class="mt-5 mb-2 font-form text-sm font-medium text-texto">Prioridad</p>

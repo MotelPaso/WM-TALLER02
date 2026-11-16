@@ -2,7 +2,7 @@
   Ficha de dispositivo. Ruta /dispositivos/:id
   Datos: GET /dispositivos/{id} → DispositivoOut
          GET /dispositivos/{id}/reportes → ReporteOut[] (historial)
-  "Reportar falla" abre dialogs/reportar-falla. "Eliminar" abre dialogs/confirmar.
+  "Reportar falla" (o agitar el teléfono) abre dialogs/reportar-falla. "Eliminar" abre dialogs/confirmar.
 -->
 
 <a
@@ -51,10 +51,19 @@
         Reportar falla
       </button>
       @if (esTecnico() && dispositivo()) {
+        <button
+          matButton="outlined"
+          type="button"
+          class="flex-auto whitespace-nowrap sm:flex-none"
+          (click)="abrirCodigoQr()"
+        >
+          <span class="material-symbols-outlined" aria-hidden="true">qr_code_2</span>
+          Ver QR
+        </button>
         <a
           matButton="outlined"
           [routerLink]="['/dispositivos', dispositivo()?.id, 'editar']"
-          class="flex-1 sm:flex-none"
+          class="flex-auto whitespace-nowrap sm:flex-none"
         >
           <span class="material-symbols-outlined" aria-hidden="true">edit</span>
           Editar
@@ -63,7 +72,7 @@
           <button
             matButton="outlined"
             type="button"
-            class="boton-peligro flex-1 sm:flex-none"
+            class="boton-peligro flex-auto whitespace-nowrap sm:flex-none"
             (click)="abrirConfirmarEliminar()"
           >
             <span class="material-symbols-outlined" aria-hidden="true">delete</span>
@@ -73,7 +82,7 @@
           <button
             matButton="outlined"
             type="button"
-            class="boton-peligro flex-1 sm:flex-none"
+            class="boton-peligro flex-auto whitespace-nowrap sm:flex-none"
             title="Tiene reportes en su historial, por eso no se puede eliminar"
             (click)="abrirConfirmarFueraDeServicio()"
           >
@@ -84,6 +93,13 @@
       }
     </div>
   </div>
+
+  @if (sacudidaDisponible()) {
+    <p class="mt-3 flex items-center gap-1.5 text-sm text-texto-suave">
+      <span class="material-symbols-outlined text-lg" aria-hidden="true">vibration</span>
+      También puedes agitar el teléfono para reportar una falla.
+    </p>
+  }
 
   <div class="mt-6 flex flex-col gap-5 sm:mt-8 sm:gap-8">
     <!-- ===== Información ===== -->

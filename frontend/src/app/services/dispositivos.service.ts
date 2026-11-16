@@ -62,6 +62,11 @@ export class DispositivosService {
     return this.http.get<Dispositivo>(`${API}/dispositivos/${id}`);
   }
 
+  /** Busca por código de inventario exacto (el que va en el QR); 404 si no existe. */
+  getPorCodigo(codigo: string): Observable<Dispositivo> {
+    return this.http.get<Dispositivo>(`${API}/dispositivos/codigo/${encodeURIComponent(codigo)}`);
+  }
+
   getReportesDispositivo(id: number): Observable<Reporte[]> {
     return this.http.get<Reporte[]>(`${API}/dispositivos/${id}/reportes`);
   }

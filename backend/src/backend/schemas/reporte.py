@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Annotated, Literal
 
-from pydantic import AfterValidator, BaseModel, ConfigDict, Field
+from pydantic import AfterValidator, BaseModel, ConfigDict, Field, model_validator
 
 from backend.schemas.catalogos import EstadoReporteOut, PrioridadOut
 from backend.schemas.dispositivo import DispositivoOut
@@ -23,6 +23,14 @@ class ReporteCreate(BaseModel):
         str, Field(min_length=1, max_length=2000), AfterValidator(sin_espacios_extremos)
     ]
     dispositivo_id: int
+    latitud: float | None = Field(default=None, ge=-90, le=90)
+    longitud: float | None = Field(default=None, ge=-180, le=180)
+
+    @model_validator(mode="after")
+    def ubicacion_completa(self) -> ReporteCreate:
+        if (self.latitud is None) != (self.longitud is None):
+            raise ValueError("latitud y longitud deben venir juntas")
+        return self
 
 
 class ReportePrioridadUpdate(BaseModel):
@@ -48,3 +56,5 @@ class ReporteOut(BaseModel):
     actualizado_en: datetime
     finalizado_en: datetime | None
     notas_resolucion: str | None = None
+    latitud: float | None = None
+    longitud: float | None = None

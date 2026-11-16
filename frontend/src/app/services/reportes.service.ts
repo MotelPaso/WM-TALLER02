@@ -16,6 +16,8 @@ export interface ReporteCreatePayload {
   titulo: string;
   descripcion: string;
   dispositivo_id: number;
+  latitud?: number;
+  longitud?: number;
 }
 
 @Injectable({ providedIn: 'root' })
@@ -50,11 +52,7 @@ export class ReportesService {
   }
 
   /** Cambia el estado del reporte; el backend valida que sea técnico. */
-  cambiarEstado(
-    id: number,
-    estado: string,
-    notas_resolucion?: string | null,
-  ): Observable<Reporte> {
+  cambiarEstado(id: number, estado: string, notas_resolucion?: string | null): Observable<Reporte> {
     const body: { estado: string; notas_resolucion?: string } = { estado };
     if (notas_resolucion !== undefined && notas_resolucion !== null && notas_resolucion.trim()) {
       body.notas_resolucion = notas_resolucion.trim();

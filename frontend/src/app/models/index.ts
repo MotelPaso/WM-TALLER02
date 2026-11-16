@@ -103,6 +103,8 @@ export interface Reporte {
   actualizado_en?: string;
   finalizado_en?: string;
   notas_resolucion?: string;
+  latitud?: number | null;
+  longitud?: number | null;
 }
 
 export interface CreadoPor {
