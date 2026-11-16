@@ -110,7 +110,7 @@ export class DispositivoFicha {
     const status = !err ? 404 : err instanceof HttpErrorResponse ? err.status : undefined;
     return status === 404
       ? 'Puede que se haya eliminado o que el enlace esté mal.'
-      : `No pudimos cargar el dispositivo (status ${status ?? 'sin conexión'}). Revisa que el backend esté corriendo en localhost:8000.`;
+      : `No pudimos cargar el dispositivo (status ${status || 'sin conexión'}). Revisa tu conexión e inténtalo de nuevo.`;
   });
 
   /** Solo se avisa del gesto si el equipo tiene acelerómetro; si no, queda el botón. */

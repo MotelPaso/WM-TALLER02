@@ -96,7 +96,7 @@ export class Reportes {
     const err = this.reportesRecurso.error();
     if (!err) return '';
     const status = err instanceof HttpErrorResponse ? err.status : undefined;
-    return `No se pudieron cargar los reportes (status ${status ?? 'sin conexión'}). Revisa que el backend esté corriendo en localhost:8000.`;
+    return `No se pudieron cargar los reportes (status ${status || 'sin conexión'}). Revisa tu conexión e inténtalo de nuevo.`;
   });
   /** ids de reportes cuyo cambio de estado/eliminación está en vuelo */
   protected readonly enProceso = signal<Set<number>>(new Set());

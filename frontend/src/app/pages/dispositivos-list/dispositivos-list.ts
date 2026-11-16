@@ -155,7 +155,7 @@ export class DispositivosList implements OnInit {
     const err = this.dispositivosRecurso.error();
     if (!err) return '';
     const status = err instanceof HttpErrorResponse ? err.status : undefined;
-    return `No se pudo cargar el listado (status ${status ?? 'sin conexión'}). Revisa que el backend esté corriendo en localhost:8000.`;
+    return `No se pudo cargar el listado (status ${status || 'sin conexión'}). Revisa tu conexión e inténtalo de nuevo.`;
   });
 
   protected readonly salasConDispositivos = computed(() => {
