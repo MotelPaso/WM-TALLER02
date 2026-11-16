@@ -26,6 +26,7 @@
               }
             ],
             "styles": ["src/material-theme.scss", "src/styles.css"],
+            "allowedCommonJsDependencies": ["qrcode"],
             "outputMode": "static",
             "security": {
               "allowedHosts": ["localhost", "127.0.0.1"]

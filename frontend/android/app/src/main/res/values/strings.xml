@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">ReportesUCN</string>
+    <string name="title_activity_main">ReportesUCN</string>
+    <string name="package_name">cl.ucn.reportesucn</string>
+    <string name="custom_url_scheme">cl.ucn.reportesucn</string>
+</resources>
