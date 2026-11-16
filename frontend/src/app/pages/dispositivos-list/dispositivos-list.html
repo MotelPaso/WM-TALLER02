@@ -15,13 +15,25 @@
       Administra y monitorea los dispositivos de las salas académicas.
     </p>
   </div>
-  <!-- Solo técnico: @if (esTecnico) -->
-  @if (esTecnico()) {
-    <a matButton="filled" routerLink="/dispositivos/nuevo">
-      <span class="material-symbols-outlined" aria-hidden="true">add</span>
-      Nuevo dispositivo
-    </a>
-  }
+  <div class="flex w-full flex-wrap gap-2 sm:w-auto">
+    <button
+      matButton="outlined"
+      type="button"
+      class="flex-auto whitespace-nowrap sm:flex-none"
+      [disabled]="escaneando()"
+      (click)="escanearQr()"
+    >
+      <span class="material-symbols-outlined" aria-hidden="true">qr_code_scanner</span>
+      {{ escaneando() ? 'Buscando…' : 'Escanear QR' }}
+    </button>
+    <!-- Solo técnico: @if (esTecnico) -->
+    @if (esTecnico()) {
+      <a matButton="filled" class="flex-auto whitespace-nowrap sm:flex-none" routerLink="/dispositivos/nuevo">
+        <span class="material-symbols-outlined" aria-hidden="true">add</span>
+        Nuevo dispositivo
+      </a>
+    }
+  </div>
 </div>
 
 <!-- ===== Filtros ===== -->

@@ -2,6 +2,7 @@ import { TestBed } from '@angular/core/testing';
 import { MAT_DIALOG_DATA, MatDialogRef } from '@angular/material/dialog';
 
 import { ReportesService } from '../../services/reportes.service';
+import { UbicacionService } from '../../services/ubicacion.service';
 import { ReportarFalla } from './reportar-falla';
 
 describe('ReportarFalla', () => {
@@ -13,6 +14,7 @@ describe('ReportarFalla', () => {
         { provide: MAT_DIALOG_DATA, useValue: { id: 1 } },
         { provide: MatDialogRef, useValue: { close: vi.fn() } },
         { provide: ReportesService, useValue: servicio },
+        { provide: UbicacionService, useValue: { obtener: vi.fn(() => new Promise(() => {})) } },
       ],
     }).compileComponents();
     const fixture = TestBed.createComponent(ReportarFalla);

@@ -23,6 +23,24 @@
       </mat-form-field>
     </div>
 
+    <div class="mb-3 flex items-center gap-2.5 rounded-lg border border-borde px-4 py-3 text-[13px] text-texto-suave" role="status">
+      <span class="material-symbols-outlined text-xl" aria-hidden="true">
+        {{ ubicacion() ? 'location_on' : 'location_off' }}
+      </span>
+      <span class="flex-1">
+        @if (buscandoUbicacion()) {
+          Obteniendo tu ubicación…
+        } @else if (ubicacion(); as u) {
+          Ubicación obtenida (±{{ u.precision }} m). Se adjunta al reporte.
+        } @else {
+          {{ errorUbicacion() }} El reporte se enviará sin ubicación.
+        }
+      </span>
+      @if (!buscandoUbicacion() && !ubicacion()) {
+        <button matButton type="button" (click)="buscarUbicacion()">Reintentar</button>
+      }
+    </div>
+
     <p class="flex items-start gap-2.5 rounded-lg bg-crema px-4 py-3 text-[13px] text-texto-suave">
       <span class="material-symbols-outlined text-xl" aria-hidden="true">info</span>
       La prioridad la asigna el técnico al revisar tu reporte.

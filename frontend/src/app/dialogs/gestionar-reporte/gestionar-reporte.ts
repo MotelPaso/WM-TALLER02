@@ -9,16 +9,11 @@ import { finalize, of, switchMap } from 'rxjs';
 
 import { Reporte } from '../../models';
 import { ReportesService } from '../../services/reportes.service';
+import { UbicacionService } from '../../services/ubicacion.service';
 
 @Component({
   selector: 'app-gestionar-reporte',
-  imports: [
-    ReactiveFormsModule,
-    MatDialogModule,
-    MatChipsModule,
-    MatButtonModule,
-    DatePipe,
-  ],
+  imports: [ReactiveFormsModule, MatDialogModule, MatChipsModule, MatButtonModule, DatePipe],
   templateUrl: './gestionar-reporte.html',
   styleUrl: './gestionar-reporte.css',
   changeDetection: ChangeDetectionStrategy.OnPush,
@@ -30,6 +25,12 @@ export class GestionarReporte {
   private readonly snackBar = inject(MatSnackBar);
 
   readonly data = inject<Reporte>(MAT_DIALOG_DATA);
+
+  /** Dónde se hizo el reporte (GPS del teléfono), si la persona dio permiso. */
+  protected readonly enlaceMapa =
+    this.data.latitud != null && this.data.longitud != null
+      ? UbicacionService.enlaceMapa(this.data.latitud, this.data.longitud)
+      : null;
 
   protected readonly guardando = signal(false);
   protected readonly errorMensaje = signal('');
@@ -96,13 +97,15 @@ export class GestionarReporte {
     this.errorMensaje.set('');
 
     const peticion$ = cambioPrioridad
-      ? this.reportesService.cambiarPrioridad(this.data.id, nuevaPrioridad!).pipe(
-          switchMap((repActualizado) =>
-            cambioEstado
-              ? this.reportesService.cambiarEstado(this.data.id, nuevoEstado, nuevasNotas || null)
-              : of(repActualizado),
-          ),
-        )
+      ? this.reportesService
+          .cambiarPrioridad(this.data.id, nuevaPrioridad!)
+          .pipe(
+            switchMap((repActualizado) =>
+              cambioEstado
+                ? this.reportesService.cambiarEstado(this.data.id, nuevoEstado, nuevasNotas || null)
+                : of(repActualizado),
+            ),
+          )
       : this.reportesService.cambiarEstado(this.data.id, nuevoEstado, nuevasNotas || null);
 
     peticion$.pipe(finalize(() => this.guardando.set(false))).subscribe({

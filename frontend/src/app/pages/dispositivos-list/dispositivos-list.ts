@@ -11,15 +11,16 @@ import {
 } from '@angular/core';
 import { rxResource, takeUntilDestroyed, toSignal } from '@angular/core/rxjs-interop';
 import { NonNullableFormBuilder, ReactiveFormsModule } from '@angular/forms';
-import { RouterLink } from '@angular/router';
+import { Router, RouterLink } from '@angular/router';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCardModule } from '@angular/material/card';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatSelectModule } from '@angular/material/select';
+import { MatSnackBar } from '@angular/material/snack-bar';
 
-import { debounceTime, map, merge } from 'rxjs';
+import { debounceTime, finalize, map, merge } from 'rxjs';
 
 import { EstadoVacio } from '../../components/estado-vacio/estado-vacio';
 import { FiltroSelect } from '../../components/filtro-select/filtro-select';
@@ -35,6 +36,7 @@ import {
 } from '../../models';
 import { DispositivosService } from '../../services/dispositivos.service';
 import { AuthService } from '../../services/auth.service';
+import { EscanerService } from '../../services/escaner.service';
 import { TarjetaDispositivo } from '../../components/tarjeta-dispositivo/tarjeta-dispositivo';
 import { TarjetaSala } from '../../components/tarjeta-sala/tarjeta-sala';
 
@@ -63,10 +65,14 @@ export class DispositivosList implements OnInit {
   private readonly auth = inject(AuthService);
   private readonly fb = inject(NonNullableFormBuilder);
   private readonly destroyRef = inject(DestroyRef);
+  private readonly escaner = inject(EscanerService);
+  private readonly router = inject(Router);
+  private readonly snackBar = inject(MatSnackBar);
 
   protected readonly esTecnico = computed(() => this.auth.usuario()?.rol?.nombre === 'tecnico');
   protected readonly columnas = ['nombre', 'tipo', 'ubicacion', 'estado'];
   protected readonly vista = signal<'sala' | 'cuadricula'>('sala');
+  protected readonly escaneando = signal(false);
 
   protected readonly filtros = this.fb.group({
     q: [''],
@@ -134,11 +140,13 @@ export class DispositivosList implements OnInit {
     stream: ({ params }) => this.dispositivosService.getDispositivos(params),
   });
 
-  private readonly ultimaCarga = linkedSignal<Dispositivo[] | undefined, Dispositivo[] | undefined>({
-    source: () =>
-      this.dispositivosRecurso.hasValue() ? this.dispositivosRecurso.value() : undefined,
-    computation: (actual, previa) => actual ?? previa?.value,
-  });
+  private readonly ultimaCarga = linkedSignal<Dispositivo[] | undefined, Dispositivo[] | undefined>(
+    {
+      source: () =>
+        this.dispositivosRecurso.hasValue() ? this.dispositivosRecurso.value() : undefined,
+      computation: (actual, previa) => actual ?? previa?.value,
+    },
+  );
 
   protected readonly dispositivos = computed<Dispositivo[]>(() => this.ultimaCarga() ?? []);
   protected readonly cargando = computed(() => this.dispositivosRecurso.isLoading());
@@ -204,6 +212,33 @@ export class DispositivosList implements OnInit {
 
   protected cargar(): void {
     this.dispositivosRecurso.reload();
+  }
+
+  /** Escanea el QR pegado en el equipo y abre su ficha (desde ahí se reporta la falla). */
+  protected async escanearQr(): Promise<void> {
+    let codigo: string | null;
+    try {
+      codigo = await this.escaner.escanearQr();
+    } catch (err) {
+      this.snackBar.open((err as Error).message, 'OK', { duration: 5000 });
+      return;
+    }
+    if (!codigo) return;
+
+    this.escaneando.set(true);
+    this.dispositivosService
+      .getPorCodigo(codigo)
+      .pipe(finalize(() => this.escaneando.set(false)))
+      .subscribe({
+        next: (dispositivo) => this.router.navigate(['/dispositivos', dispositivo.id]),
+        error: (err: HttpErrorResponse) => {
+          const mensaje =
+            err.status === 404
+              ? `El código "${codigo}" no corresponde a ningún dispositivo.`
+              : `No se pudo buscar el dispositivo (${err.status || 'sin conexión'}).`;
+          this.snackBar.open(mensaje, 'OK', { duration: 5000 });
+        },
+      });
   }
 
   protected limpiarFiltros() {
